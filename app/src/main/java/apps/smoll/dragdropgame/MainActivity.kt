@@ -4,13 +4,16 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.graphics.Color
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 const val IMAGEVIEW_TAG = "icon bitmap"
 
@@ -18,12 +21,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        generateShapesOnScreen()
+
         myImageView.setOnLongClickListener() { v: View ->
-         val item = ClipData.Item(v.tag as? CharSequence)
+            val item = ClipData.Item(v.tag as? CharSequence)
             val dragData = ClipData(
                 v.tag as? CharSequence,
                 arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                item)
+                item
+            )
 
             val myShadow = MyDragShadowBuilder(myImageView)
             val dragShadow = View.DragShadowBuilder(myImageView)
@@ -126,12 +134,59 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> {
                     // An unknown action type was received.
-//                    Log.e("DragDrop Example", "Unknown action type received by OnDragListener.")
                     false
                 }
             }
         }
-// Sets the drag event listener for the View
         containerView.setOnDragListener(dragListen)
+    }
+
+
+    private fun generateShapesOnScreen() {
+        val imageShapeSet = setOf(
+            R.drawable.ic_square,
+            R.drawable.ic_hexagonal,
+            R.drawable.ic_star,
+            R.drawable.ic_circle
+        )
+
+        var startX = 100f
+        var startY = 100f
+
+        for (shape in imageShapeSet) {
+            val imageView = ImageView(this)
+
+            imageView.apply {
+                setImageDrawable(ContextCompat.getDrawable(this@MainActivity, shape))
+
+                id = View.generateViewId();
+                containerView.addView(this)
+
+                layoutParams.height = 150;
+                layoutParams.width = 150;
+                this.requestLayout();
+                x = startX
+                y = startY
+
+                startX += 200
+                startY += 200
+            }
+
+
+            val set = ConstraintSet()
+            set.clone(containerView);
+            // connect start and end point of views, in this case top of child to top of parent.
+            set.connect(
+                imageView.getId(),
+                ConstraintSet.TOP,
+                containerView.getId(),
+                ConstraintSet.TOP,
+                60
+            );
+            // ... similarly add other constraints
+            set.applyTo(containerView);
+        }
+
+
     }
 }

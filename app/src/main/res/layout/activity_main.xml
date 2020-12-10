@@ -9,7 +9,7 @@
         android:id="@+id/myImageView"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@color/black"
+        android:src="@drawable/ic_circle"
         app:layout_constraintBottom_toBottomOf="@id/containerView"
         app:layout_constraintEnd_toEndOf="@id/containerView"
         app:layout_constraintStart_toStartOf="@id/containerView"
