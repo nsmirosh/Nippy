@@ -5,6 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/restartGameButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="Restart Game"
+        app:layout_constraintBottom_toBottomOf="@id/containerView"
+        app:layout_constraintEnd_toEndOf="@id/containerView"
+        app:layout_constraintStart_toStartOf="@id/containerView" />
+
     <ImageView
         android:id="@+id/myImageView"
         android:layout_width="50dp"

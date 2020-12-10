@@ -7,4 +7,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="color_1">#FFCCE7</color>
+    <color name="color_2">#DAF2DC</color>
+    <color name="color_3">#81B7D2</color>
+    <color name="color_4">#4D5198</color>
+
+    <array name="shape_colors">
+        <item>@color/color_1</item>
+        <item>@color/color_2</item>
+        <item>@color/color_3</item>
+        <item>@color/color_4</item>
+    </array>
 </resources>

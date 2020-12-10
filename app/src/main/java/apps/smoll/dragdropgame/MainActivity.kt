@@ -2,9 +2,11 @@ package apps.smoll.dragdropgame
 
 import android.content.ClipData
 import android.content.ClipDescription
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
 import android.widget.ImageView
@@ -12,20 +14,35 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
+import apps.smoll.dragdropgame.utils.settleInPosition
 import kotlinx.android.synthetic.main.activity_main.*
-
+import java.util.*
 
 const val IMAGEVIEW_TAG = "icon bitmap"
 
 class MainActivity : AppCompatActivity() {
+
+    val addedViewIds = mutableSetOf<Int>()
+    val shapesCoordinates = mutableSetOf<Pair<Float, Float>>()
+
+    companion object {
+        const val shapeHeight = 150
+        const val shapeWidth = 150
+        const val hitFaultInPixels = 50
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         generateShapesOnScreen()
 
-        myImageView.setOnLongClickListener() { v: View ->
+        restartGameButton.setOnClickListener {
+            generateShapesOnScreen()
+        }
+
+        myImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)
             val dragData = ClipData(
                 v.tag as? CharSequence,
@@ -47,10 +64,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         val dragListen = View.OnDragListener { v, event ->
 
-            // Handles each of the expected events
             when (event.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
                     // Determines if this View can accept the dragged data
@@ -95,14 +110,11 @@ class MainActivity : AppCompatActivity() {
                     // Gets the item containing the dragged data
                     val item: ClipData.Item = event.clipData.getItemAt(0)
 
-                    myImageView.x = event.x
-                    myImageView.y = event.y
-
+                    handleDrop(event)
                     // Gets the text data from the item.
                     val dragData = item.text
 
                     // Displays a message containing the dragged data.
-                    Toast.makeText(this, "Dragged data is  + $dragData", Toast.LENGTH_LONG).show()
 
                     // Turns off any color tints
                     (v as? ImageView)?.clearColorFilter()
@@ -122,12 +134,12 @@ class MainActivity : AppCompatActivity() {
                     v.invalidate()
 
                     // Does a getResult(), and displays what happened.
-                    when (event.result) {
-                        true ->
-                            Toast.makeText(this, "The drop was handled.", Toast.LENGTH_LONG)
-                        else ->
-                            Toast.makeText(this, "The drop didn't work.", Toast.LENGTH_LONG)
-                    }.show()
+                    /*   when (event.result) {
+                           true ->
+                               Toast.makeText(this, "The drop was handled.", Toast.LENGTH_LONG)
+                           else ->
+                               Toast.makeText(this, "The drop didn't work.", Toast.LENGTH_LONG)
+                       }.show()*/
 
                     // returns true; the value is ignored.
                     true
@@ -141,52 +153,111 @@ class MainActivity : AppCompatActivity() {
         containerView.setOnDragListener(dragListen)
     }
 
+    private fun handleDrop(event: DragEvent) {
+        myImageView.settleInPosition(event)
+
+        if (isTargetGetHit(event)) {
+            Toast.makeText(this, "GOOD JOB!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun isTargetGetHit(event: DragEvent): Boolean {
+        var isXHit = false
+        var isYHit = false
+        for (coordinate in shapesCoordinates) {
+            coordinate.apply {
+                isXHit =
+                    event.x - shapeWidth / 2 in this.first - hitFaultInPixels..this.first + hitFaultInPixels
+                isYHit =
+                    event.y - shapeHeight / 2 in this.second - hitFaultInPixels..this.second + hitFaultInPixels
+            }
+        }
+        return isXHit && isYHit
+    }
 
     private fun generateShapesOnScreen() {
-        val imageShapeSet = setOf(
+        fun clearPreviousViews() {
+            if (addedViewIds.isNotEmpty()) {
+                for (viewId in addedViewIds) {
+                    containerView.removeView(findViewById(viewId))
+                }
+            }
+            addedViewIds.clear()
+            shapesCoordinates.clear()
+        }
+
+        fun setViewConstraints(view: View) {
+            val constraintSet = ConstraintSet()
+            constraintSet.apply {
+                clone(containerView)
+                connect(
+                    view.getId(),
+                    ConstraintSet.TOP,
+                    containerView.getId(),
+                    ConstraintSet.TOP
+                )
+                applyTo(containerView)
+            }
+        }
+
+        clearPreviousViews()
+
+        val imageShapeArray = arrayOf(
             R.drawable.ic_square,
             R.drawable.ic_hexagonal,
             R.drawable.ic_star,
             R.drawable.ic_circle
         )
 
-        var startX = 100f
-        var startY = 100f
+        val colors: IntArray = resources.getIntArray(R.array.shape_colors)
 
-        for (shape in imageShapeSet) {
-            val imageView = ImageView(this)
+        imageShapeArray.shuffle()
+        colors.shuffle()
 
-            imageView.apply {
-                setImageDrawable(ContextCompat.getDrawable(this@MainActivity, shape))
+        var startX = 0f
+        var startY = 0f
 
-                id = View.generateViewId();
-                containerView.addView(this)
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenHeight = displayMetrics.heightPixels
+        val screenWidth = displayMetrics.widthPixels
 
-                layoutParams.height = 150;
-                layoutParams.width = 150;
-                this.requestLayout();
-                x = startX
-                y = startY
-
-                startX += 200
-                startY += 200
-            }
-
-
-            val set = ConstraintSet()
-            set.clone(containerView);
-            // connect start and end point of views, in this case top of child to top of parent.
-            set.connect(
-                imageView.getId(),
-                ConstraintSet.TOP,
-                containerView.getId(),
-                ConstraintSet.TOP,
-                60
-            );
-            // ... similarly add other constraints
-            set.applyTo(containerView);
+        if (colors.size < imageShapeArray.size) {
+            return
         }
 
+        for (index in imageShapeArray.indices) {
+            val imageView = ImageView(this)
+            imageView.apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@MainActivity,
+                        imageShapeArray[index]
+                    )
+                )
 
+                ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(colors[index]));
+
+                id = View.generateViewId();
+                addedViewIds.add(id)
+                containerView.addView(this)
+
+                layoutParams.height = shapeHeight;
+                layoutParams.width = shapeWidth;
+                this.requestLayout();
+
+                val xCoord = startX
+                val yCoord = Random().nextInt(screenHeight - shapeHeight / 2).toFloat()
+
+                x = xCoord
+                y = yCoord
+
+                shapesCoordinates.add(Pair(xCoord, yCoord))
+
+                startX += 300
+                startY += 200
+            }
+            setViewConstraints(imageView)
+        }
     }
 }
