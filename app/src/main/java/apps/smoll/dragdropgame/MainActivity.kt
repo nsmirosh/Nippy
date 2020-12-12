@@ -10,13 +10,14 @@ import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import apps.smoll.dragdropgame.utils.settleInPosition
 import kotlinx.android.synthetic.main.activity_main.*
+import apps.smoll.dragdropgame.ShapeType.*
+import apps.smoll.dragdropgame.utils.setImage
 import java.util.*
 
 const val IMAGEVIEW_TAG = "icon bitmap"
@@ -24,13 +25,9 @@ const val IMAGEVIEW_TAG = "icon bitmap"
 class MainActivity : AppCompatActivity() {
 
     val addedViewIds = mutableSetOf<Int>()
-    val shapesCoordinates = mutableSetOf<Pair<Float, Float>>()
-
-    companion object {
-        const val shapeHeight = 150
-        const val shapeWidth = 150
-        const val hitFaultInPixels = 50
-    }
+    val shapesOnScreen = mutableSetOf<Shape>()
+    var score = 0
+    var initialShapeToMatch = SQUARE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +36,12 @@ class MainActivity : AppCompatActivity() {
         generateShapesOnScreen()
 
         restartGameButton.setOnClickListener {
+            score = 0
+            scoreTextView.text = "Your score = 0"
             generateShapesOnScreen()
         }
 
-        myImageView.setOnLongClickListener { v: View ->
+        dragImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)
             val dragData = ClipData(
                 v.tag as? CharSequence,
@@ -50,8 +49,8 @@ class MainActivity : AppCompatActivity() {
                 item
             )
 
-            val myShadow = MyDragShadowBuilder(myImageView)
-            val dragShadow = View.DragShadowBuilder(myImageView)
+            val myShadow = MyDragShadowBuilder(dragImageView)
+            val dragShadow = View.DragShadowBuilder(dragImageView)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 v.startDragAndDrop(dragData, dragShadow, null, 0);
             } else {
@@ -65,83 +64,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         val dragListen = View.OnDragListener { v, event ->
-
             when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> {
-                    // Determines if this View can accept the dragged data
-                    if (event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                        // As an example of what your application might do,
-                        // applies a blue color tint to the View to indicate that it can accept
-                        // data.
-                        (v as? ImageView)?.setColorFilter(Color.BLUE)
 
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate()
-
-                        // returns true to indicate that the View can accept the dragged data.
-                        true
-                    } else {
-                        // Returns false. During the current drag and drop operation, this View will
-                        // not receive events again until ACTION_DRAG_ENDED is sent.
-                        false
-                    }
-                }
-                DragEvent.ACTION_DRAG_ENTERED -> {
-                    // Applies a green tint to the View. Return true; the return value is ignored.
-                    (v as? ImageView)?.setColorFilter(Color.GREEN)
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
-                    true
-                }
-
-                DragEvent.ACTION_DRAG_LOCATION ->
-                    // Ignore the event
-                    true
-                DragEvent.ACTION_DRAG_EXITED -> {
-                    // Re-sets the color tint to blue. Returns true; the return value is ignored.
-                    (v as? ImageView)?.setColorFilter(Color.BLUE)
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
-                    true
-                }
                 DragEvent.ACTION_DROP -> {
-                    // Gets the item containing the dragged data
-                    val item: ClipData.Item = event.clipData.getItemAt(0)
-
                     handleDrop(event)
-                    // Gets the text data from the item.
-                    val dragData = item.text
-
-                    // Displays a message containing the dragged data.
-
-                    // Turns off any color tints
-                    (v as? ImageView)?.clearColorFilter()
-
-                    // Invalidates the view to force a redraw
                     v.invalidate()
-
-                    // Returns true. DragEvent.getResult() will return true.
-                    true
-                }
-
-                DragEvent.ACTION_DRAG_ENDED -> {
-                    // Turns off any color tinting
-                    (v as? ImageView)?.clearColorFilter()
-
-                    // Invalidates the view to force a redraw
-                    v.invalidate()
-
-                    // Does a getResult(), and displays what happened.
-                    /*   when (event.result) {
-                           true ->
-                               Toast.makeText(this, "The drop was handled.", Toast.LENGTH_LONG)
-                           else ->
-                               Toast.makeText(this, "The drop didn't work.", Toast.LENGTH_LONG)
-                       }.show()*/
-
-                    // returns true; the value is ignored.
                     true
                 }
                 else -> {
@@ -154,25 +81,55 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleDrop(event: DragEvent) {
-        myImageView.settleInPosition(event)
-
+        dragImageView.settleInPosition(event)
         if (isTargetGetHit(event)) {
-            Toast.makeText(this, "GOOD JOB!", Toast.LENGTH_LONG).show()
+            scoreTextView.text = "Your score = ${++score}"
         }
     }
 
     private fun isTargetGetHit(event: DragEvent): Boolean {
         var isXHit = false
         var isYHit = false
-        for (coordinate in shapesCoordinates) {
+        for (coordinate in shapesOnScreen) {
             coordinate.apply {
+                val viewXCenter = this.coordinates.first + shapeWidth / 2
+                val viewYCenter = this.coordinates.second + shapeHeight / 2
+
                 isXHit =
-                    event.x - shapeWidth / 2 in this.first - hitFaultInPixels..this.first + hitFaultInPixels
+                    event.x in viewXCenter - hitFaultInPixels..viewXCenter + hitFaultInPixels
                 isYHit =
-                    event.y - shapeHeight / 2 in this.second - hitFaultInPixels..this.second + hitFaultInPixels
+                    event.y in viewYCenter - hitFaultInPixels..viewYCenter + hitFaultInPixels
+                if (isXHit && isYHit) {
+                    return true
+                }
             }
         }
         return isXHit && isYHit
+    }
+
+
+    private fun startGame() {
+
+        val imageShapeArray = arrayOf(
+            R.drawable.ic_square,
+            R.drawable.ic_hexagonal,
+            R.drawable.ic_star,
+            R.drawable.ic_circle
+        )
+
+        val randomPosition = Random().nextInt(4)
+        initialShapeToMatch = when (randomPosition) {
+            0 -> ShapeType.SQUARE
+            1 -> ShapeType.HEXAGON
+            2 -> ShapeType.STAR
+            3 -> ShapeType.CIRCLE
+            else -> ShapeType.SQUARE
+        }
+
+        dragImageView.setImage(
+            this@MainActivity,
+            imageShapeArray.random()
+        )
     }
 
     private fun generateShapesOnScreen() {
@@ -183,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             addedViewIds.clear()
-            shapesCoordinates.clear()
+            shapesOnScreen.clear()
         }
 
         fun setViewConstraints(view: View) {
@@ -229,12 +186,7 @@ class MainActivity : AppCompatActivity() {
         for (index in imageShapeArray.indices) {
             val imageView = ImageView(this)
             imageView.apply {
-                setImageDrawable(
-                    ContextCompat.getDrawable(
-                        this@MainActivity,
-                        imageShapeArray[index]
-                    )
-                )
+                setImage(this@MainActivity, imageShapeArray[index])
 
                 ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(colors[index]));
 
@@ -252,12 +204,18 @@ class MainActivity : AppCompatActivity() {
                 x = xCoord
                 y = yCoord
 
-                shapesCoordinates.add(Pair(xCoord, yCoord))
+                shapesOnScreen.add(Shape(Pair(xCoord, yCoord), SQUARE))
 
                 startX += 300
                 startY += 200
             }
             setViewConstraints(imageView)
         }
+    }
+
+    companion object {
+        const val shapeHeight = 150
+        const val shapeWidth = 150
+        const val hitFaultInPixels = 50
     }
 }
