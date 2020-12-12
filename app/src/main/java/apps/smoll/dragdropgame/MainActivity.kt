@@ -10,9 +10,9 @@ import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import apps.smoll.dragdropgame.utils.settleInPosition
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,19 +27,17 @@ class MainActivity : AppCompatActivity() {
     val addedViewIds = mutableSetOf<Int>()
     val shapesOnScreen = mutableSetOf<Shape>()
     var score = 0
-    var initialShapeToMatch = SQUARE
+    var shapeTypeToMatch = SQUARE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        startGame()
+        initListeners()
+    }
 
-        generateShapesOnScreen()
-
-        restartGameButton.setOnClickListener {
-            score = 0
-            scoreTextView.text = "Your score = 0"
-            generateShapesOnScreen()
-        }
+    private fun initListeners() {
+        restartGameButton.setOnClickListener { restartGame() }
 
         dragImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)
@@ -66,6 +64,10 @@ class MainActivity : AppCompatActivity() {
         val dragListen = View.OnDragListener { v, event ->
             when (event.action) {
 
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    // Determines if this View can accept the dragged data
+                    event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                }
                 DragEvent.ACTION_DROP -> {
                     handleDrop(event)
                     v.invalidate()
@@ -107,7 +109,6 @@ class MainActivity : AppCompatActivity() {
         return isXHit && isYHit
     }
 
-
     private fun startGame() {
 
         val imageShapeArray = arrayOf(
@@ -118,18 +119,27 @@ class MainActivity : AppCompatActivity() {
         )
 
         val randomPosition = Random().nextInt(4)
-        initialShapeToMatch = when (randomPosition) {
-            0 -> ShapeType.SQUARE
-            1 -> ShapeType.HEXAGON
-            2 -> ShapeType.STAR
-            3 -> ShapeType.CIRCLE
-            else -> ShapeType.SQUARE
+        shapeTypeToMatch = when (randomPosition) {
+            0 -> SQUARE
+            1 -> HEXAGON
+            2 -> STAR
+            3 -> CIRCLE
+            else -> SQUARE
         }
 
         dragImageView.setImage(
             this@MainActivity,
             imageShapeArray.random()
         )
+
+        generateShapesOnScreen()
+    }
+
+
+    private fun restartGame() {
+        score = 0
+        scoreTextView.text = "Your score = $score"
+        generateShapesOnScreen()
     }
 
     private fun generateShapesOnScreen() {
