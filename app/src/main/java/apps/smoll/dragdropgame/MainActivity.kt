@@ -3,31 +3,28 @@ package apps.smoll.dragdropgame
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.widget.ImageViewCompat
-import apps.smoll.dragdropgame.utils.settleInPosition
 import kotlinx.android.synthetic.main.activity_main.*
 import apps.smoll.dragdropgame.ShapeType.*
+import apps.smoll.dragdropgame.utils.invisible
 import apps.smoll.dragdropgame.utils.setImage
+import apps.smoll.dragdropgame.utils.visible
 import java.util.*
-
-const val IMAGEVIEW_TAG = "icon bitmap"
 
 class MainActivity : AppCompatActivity() {
 
     val addedViewIds = mutableSetOf<Int>()
     val shapesOnScreen = mutableSetOf<Shape>()
     var score = 0
-    var shapeTypeToMatch = SQUARE
+    val matchingShape = Shape(Pair(500f, 500f), SQUARE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,13 +60,14 @@ class MainActivity : AppCompatActivity() {
 
         val dragListen = View.OnDragListener { v, event ->
             when (event.action) {
-
                 DragEvent.ACTION_DRAG_STARTED -> {
-                    // Determines if this View can accept the dragged data
+                    dragImageView.invisible()
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
                 DragEvent.ACTION_DROP -> {
-                    handleDrop(event)
+
+                    val coordinates = Pair(event.x, event.y)
+                    handleDrop(coordinates)
                     v.invalidate()
                     true
                 }
@@ -82,31 +80,41 @@ class MainActivity : AppCompatActivity() {
         containerView.setOnDragListener(dragListen)
     }
 
-    private fun handleDrop(event: DragEvent) {
-        dragImageView.settleInPosition(event)
-        if (isTargetGetHit(event)) {
+    private fun handleDrop(coordinates: Pair<Float, Float>) {
+        if (isTargetGetHit(coordinates)) {
             scoreTextView.text = "Your score = ${++score}"
         }
+        moveMatchingShapeToInitialPos()
     }
 
-    private fun isTargetGetHit(event: DragEvent): Boolean {
-        var isXHit = false
-        var isYHit = false
-        for (coordinate in shapesOnScreen) {
-            coordinate.apply {
-                val viewXCenter = this.coordinates.first + shapeWidth / 2
-                val viewYCenter = this.coordinates.second + shapeHeight / 2
+    fun moveMatchingShapeToInitialPos() {
+        matchingShape.coordinates.apply {
+            dragImageView.x = first
+            dragImageView.y = second
+        }
+        dragImageView.visible()
+    }
 
-                isXHit =
-                    event.x in viewXCenter - hitFaultInPixels..viewXCenter + hitFaultInPixels
-                isYHit =
-                    event.y in viewYCenter - hitFaultInPixels..viewYCenter + hitFaultInPixels
-                if (isXHit && isYHit) {
-                    return true
-                }
+    private fun isTargetGetHit(targetCoordinates: Pair<Float, Float>): Boolean {
+        for (shapeOnScreen in shapesOnScreen) {
+            shapeOnScreen.apply {
+                val shapeOnScreenXCenter = this.coordinates.first + shapeWidth / 2
+                val shapeOnScreenYCenter = this.coordinates.second + shapeHeight / 2
+                val permissibleXFaultRange =
+                    shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
+                val permissibleYFaultRange =
+                    shapeOnScreenYCenter - permissibleHitFaultInPixels..shapeOnScreenYCenter + permissibleHitFaultInPixels
+
+                val isXHit =
+                    targetCoordinates.first in permissibleXFaultRange
+                val isYHit =
+                    targetCoordinates.second in permissibleYFaultRange
+
+                val shapeMatch = matchingShape.shapeType == shapeType
+                if (isXHit && isYHit && shapeMatch) return true
             }
         }
-        return isXHit && isYHit
+        return false
     }
 
     private fun startGame() {
@@ -118,8 +126,9 @@ class MainActivity : AppCompatActivity() {
             R.drawable.ic_circle
         )
 
-        val randomPosition = Random().nextInt(4)
-        shapeTypeToMatch = when (randomPosition) {
+        val shapeTypeInt = Random().nextInt(imageShapeArray.size)
+
+        matchingShape.shapeType = when (shapeTypeInt) {
             0 -> SQUARE
             1 -> HEXAGON
             2 -> STAR
@@ -129,7 +138,7 @@ class MainActivity : AppCompatActivity() {
 
         dragImageView.setImage(
             this@MainActivity,
-            imageShapeArray.random()
+            imageShapeArray[shapeTypeInt]
         )
 
         generateShapesOnScreen()
@@ -181,13 +190,14 @@ class MainActivity : AppCompatActivity() {
         imageShapeArray.shuffle()
         colors.shuffle()
 
-        var startX = 0f
-        var startY = 0f
+        var startX = 50f
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenHeight = displayMetrics.heightPixels
         val screenWidth = displayMetrics.widthPixels
+
+        val xSpacing = screenWidth / imageShapeArray.size
 
         if (colors.size < imageShapeArray.size) {
             return
@@ -209,15 +219,24 @@ class MainActivity : AppCompatActivity() {
                 this.requestLayout();
 
                 val xCoord = startX
-                val yCoord = Random().nextInt(screenHeight - shapeHeight / 2).toFloat()
+                val yCoord = Random().nextInt((screenHeight * 0.6).toInt()).toFloat()
 
                 x = xCoord
                 y = yCoord
 
-                shapesOnScreen.add(Shape(Pair(xCoord, yCoord), SQUARE))
+                shapesOnScreen.add(
+                    Shape(
+                        Pair(xCoord, yCoord), when (index) {
+                            0 -> SQUARE
+                            1 -> HEXAGON
+                            2 -> STAR
+                            3 -> CIRCLE
+                            else -> SQUARE
+                        }
+                    )
+                )
 
-                startX += 300
-                startY += 200
+                startX += xSpacing
             }
             setViewConstraints(imageView)
         }
@@ -226,6 +245,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val shapeHeight = 150
         const val shapeWidth = 150
-        const val hitFaultInPixels = 50
+        const val permissibleHitFaultInPixels = 50
     }
 }
