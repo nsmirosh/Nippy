@@ -7,13 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import apps.smoll.dragdropgame.utils.MyDragShadowBuilder
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
@@ -29,7 +28,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     val addedViewIds = mutableSetOf<Int>()
     val shapesOnScreen = mutableSetOf<Shape>()
     var score = 0
-    val matchingShape = Shape(Pair(500f, 500f), ShapeType.SQUARE)
+    val shapeToMatch = Shape(Pair(500f, 500f), ShapeType.SQUARE)
+
+    val gameViewModel: GameViewModel by viewModels()
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,7 +94,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     fun moveMatchingShapeToInitialPos() {
-        matchingShape.coordinates.apply {
+        shapeToMatch.coordinates.apply {
             dragImageView.x = first
             dragImageView.y = second
         }
@@ -114,7 +116,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 val isYHit =
                     targetCoordinates.second in permissibleYFaultRange
 
-                val shapeMatch = matchingShape.shapeType == shapeType
+                val shapeMatch = shapeToMatch.shapeType == shapeType
                 if (isXHit && isYHit && shapeMatch) return true
             }
         }
@@ -136,7 +138,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         val shapeTypeInt = Random().nextInt(imageShapeArray.size)
 
-        matchingShape.shapeType = when (shapeTypeInt) {
+        shapeToMatch.shapeType = when (shapeTypeInt) {
             0 -> ShapeType.SQUARE
             1 -> ShapeType.HEXAGON
             2 -> ShapeType.STAR
