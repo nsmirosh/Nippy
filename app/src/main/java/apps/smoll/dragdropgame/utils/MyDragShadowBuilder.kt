@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame
+package apps.smoll.dragdropgame.utils
 
 import android.graphics.Canvas
 import android.graphics.Color

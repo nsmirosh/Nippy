@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame
+package apps.smoll.dragdropgame.features.game
 
 import android.content.ClipData
 import android.content.ClipDescription
@@ -7,28 +7,32 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.widget.ImageViewCompat
-import kotlinx.android.synthetic.main.activity_main.*
-import apps.smoll.dragdropgame.ShapeType.*
+import androidx.fragment.app.Fragment
+import apps.smoll.dragdropgame.utils.MyDragShadowBuilder
+import apps.smoll.dragdropgame.R
+import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.ShapeType
 import apps.smoll.dragdropgame.utils.invisible
 import apps.smoll.dragdropgame.utils.setImage
 import apps.smoll.dragdropgame.utils.visible
+import kotlinx.android.synthetic.main.fragment_main.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainFragment : Fragment(R.layout.fragment_main) {
 
     val addedViewIds = mutableSetOf<Int>()
     val shapesOnScreen = mutableSetOf<Shape>()
     var score = 0
-    val matchingShape = Shape(Pair(500f, 500f), SQUARE)
+    val matchingShape = Shape(Pair(500f, 500f), ShapeType.SQUARE)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         startGame()
         initListeners()
     }
@@ -118,7 +122,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startGame() {
+        drawMatchingShape()
+        generateShapesOnScreen()
+    }
 
+    private fun drawMatchingShape() {
         val imageShapeArray = arrayOf(
             R.drawable.ic_square,
             R.drawable.ic_hexagonal,
@@ -129,19 +137,17 @@ class MainActivity : AppCompatActivity() {
         val shapeTypeInt = Random().nextInt(imageShapeArray.size)
 
         matchingShape.shapeType = when (shapeTypeInt) {
-            0 -> SQUARE
-            1 -> HEXAGON
-            2 -> STAR
-            3 -> CIRCLE
-            else -> SQUARE
+            0 -> ShapeType.SQUARE
+            1 -> ShapeType.HEXAGON
+            2 -> ShapeType.STAR
+            3 -> ShapeType.CIRCLE
+            else -> ShapeType.SQUARE
         }
 
         dragImageView.setImage(
-            this@MainActivity,
+            requireContext(),
             imageShapeArray[shapeTypeInt]
         )
-
-        generateShapesOnScreen()
     }
 
 
@@ -155,7 +161,7 @@ class MainActivity : AppCompatActivity() {
         fun clearPreviousViews() {
             if (addedViewIds.isNotEmpty()) {
                 for (viewId in addedViewIds) {
-                    containerView.removeView(findViewById(viewId))
+                    containerView.removeView(containerView.findViewById(viewId))
                 }
             }
             addedViewIds.clear()
@@ -193,7 +199,11 @@ class MainActivity : AppCompatActivity() {
         var startX = 50f
 
         val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        requireActivity().apply {
+            windowManager!!.defaultDisplay.getMetrics(displayMetrics)
+
+        }
         val screenHeight = displayMetrics.heightPixels
         val screenWidth = displayMetrics.widthPixels
 
@@ -204,9 +214,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         for (index in imageShapeArray.indices) {
-            val imageView = ImageView(this)
+            val imageView = ImageView(requireContext())
             imageView.apply {
-                setImage(this@MainActivity, imageShapeArray[index])
+                setImage(requireContext(), imageShapeArray[index])
 
                 ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(colors[index]));
 
@@ -227,11 +237,11 @@ class MainActivity : AppCompatActivity() {
                 shapesOnScreen.add(
                     Shape(
                         Pair(xCoord, yCoord), when (index) {
-                            0 -> SQUARE
-                            1 -> HEXAGON
-                            2 -> STAR
-                            3 -> CIRCLE
-                            else -> SQUARE
+                            0 -> ShapeType.SQUARE
+                            1 -> ShapeType.HEXAGON
+                            2 -> ShapeType.STAR
+                            3 -> ShapeType.CIRCLE
+                            else -> ShapeType.SQUARE
                         }
                     )
                 )
@@ -248,3 +258,6 @@ class MainActivity : AppCompatActivity() {
         const val permissibleHitFaultInPixels = 50
     }
 }
+
+
+
