@@ -13,10 +13,9 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import apps.smoll.dragdropgame.utils.MyDragShadowBuilder
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
-import apps.smoll.dragdropgame.ShapeType
+import apps.smoll.dragdropgame.utils.MyDragShadowBuilder
 import apps.smoll.dragdropgame.utils.invisible
 import apps.smoll.dragdropgame.utils.setImage
 import apps.smoll.dragdropgame.utils.visible
@@ -26,21 +25,45 @@ import java.util.*
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     val addedViewIds = mutableSetOf<Int>()
-    val shapesOnScreen = mutableSetOf<Shape>()
-    var score = 0
-    val shapeToMatch = Shape(Pair(500f, 500f), ShapeType.SQUARE)
 
     val gameViewModel: GameViewModel by viewModels()
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        startGame()
+        gameViewModel.startGame()
+        startObservingLiveData()
         initListeners()
     }
 
+    private fun startObservingLiveData() {
+        gameViewModel.scoreLiveData.observe(
+            viewLifecycleOwner,
+            { updateScoreText(it) }
+        )
+        gameViewModel.shapeToMatchLiveData.observe(
+            viewLifecycleOwner,
+            { updateShapeToMatch(it) }
+        )
+    }
+
+    private fun updateShapeToMatch(shape: Shape) {
+        shape.coordinates.apply {
+            dragImageView.x = first
+            dragImageView.y = second
+        }
+        dragImageView.visible()
+        dragImageView.setImage(
+            requireContext(),
+            shape.typeResource
+        )
+    }
+
+    private fun updateScoreText(score: Int) {
+        scoreTextView.text = getString(R.string.score, score)
+    }
+
     private fun initListeners() {
-        restartGameButton.setOnClickListener { restartGame() }
+        restartGameButton.setOnClickListener { gameViewModel.restartGame() }
 
         dragImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)
@@ -71,9 +94,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
                 DragEvent.ACTION_DROP -> {
-
-                    val coordinates = Pair(event.x, event.y)
-                    handleDrop(coordinates)
+                    gameViewModel.handleDrop(Pair(event.x, event.y))
                     v.invalidate()
                     true
                 }
@@ -86,80 +107,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         containerView.setOnDragListener(dragListen)
     }
 
-    private fun handleDrop(coordinates: Pair<Float, Float>) {
-        if (isTargetGetHit(coordinates)) {
-            scoreTextView.text = "Your score = ${++score}"
-        }
-        moveMatchingShapeToInitialPos()
-    }
-
-    fun moveMatchingShapeToInitialPos() {
-        shapeToMatch.coordinates.apply {
-            dragImageView.x = first
-            dragImageView.y = second
-        }
-        dragImageView.visible()
-    }
-
-    private fun isTargetGetHit(targetCoordinates: Pair<Float, Float>): Boolean {
-        for (shapeOnScreen in shapesOnScreen) {
-            shapeOnScreen.apply {
-                val shapeOnScreenXCenter = this.coordinates.first + shapeWidth / 2
-                val shapeOnScreenYCenter = this.coordinates.second + shapeHeight / 2
-                val permissibleXFaultRange =
-                    shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
-                val permissibleYFaultRange =
-                    shapeOnScreenYCenter - permissibleHitFaultInPixels..shapeOnScreenYCenter + permissibleHitFaultInPixels
-
-                val isXHit =
-                    targetCoordinates.first in permissibleXFaultRange
-                val isYHit =
-                    targetCoordinates.second in permissibleYFaultRange
-
-                val shapeMatch = shapeToMatch.shapeType == shapeType
-                if (isXHit && isYHit && shapeMatch) return true
-            }
-        }
-        return false
-    }
-
-    private fun startGame() {
-        drawMatchingShape()
-        generateShapesOnScreen()
-    }
-
-    private fun drawMatchingShape() {
-        val imageShapeArray = arrayOf(
-            R.drawable.ic_square,
-            R.drawable.ic_hexagonal,
-            R.drawable.ic_star,
-            R.drawable.ic_circle
-        )
-
-        val shapeTypeInt = Random().nextInt(imageShapeArray.size)
-
-        shapeToMatch.shapeType = when (shapeTypeInt) {
-            0 -> ShapeType.SQUARE
-            1 -> ShapeType.HEXAGON
-            2 -> ShapeType.STAR
-            3 -> ShapeType.CIRCLE
-            else -> ShapeType.SQUARE
-        }
-
-        dragImageView.setImage(
-            requireContext(),
-            imageShapeArray[shapeTypeInt]
-        )
-    }
-
-
-    private fun restartGame() {
-        score = 0
-        scoreTextView.text = "Your score = $score"
-        generateShapesOnScreen()
-    }
-
-    private fun generateShapesOnScreen() {
+    private fun generateShapesOnScreen(shapes: List<Shape>) {
         fun clearPreviousViews() {
             if (addedViewIds.isNotEmpty()) {
                 for (viewId in addedViewIds) {
@@ -167,7 +115,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 }
             }
             addedViewIds.clear()
-            shapesOnScreen.clear()
         }
 
         fun setViewConstraints(view: View) {
@@ -186,18 +133,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         clearPreviousViews()
 
-        val imageShapeArray = arrayOf(
-            R.drawable.ic_square,
-            R.drawable.ic_hexagonal,
-            R.drawable.ic_star,
-            R.drawable.ic_circle
-        )
-
-        val colors: IntArray = resources.getIntArray(R.array.shape_colors)
-
-        imageShapeArray.shuffle()
-        colors.shuffle()
-
         var startX = 50f
 
         val displayMetrics = DisplayMetrics()
@@ -209,18 +144,22 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         val screenHeight = displayMetrics.heightPixels
         val screenWidth = displayMetrics.widthPixels
 
-        val xSpacing = screenWidth / imageShapeArray.size
+        val xSpacing = screenWidth / shapes.size
 
-        if (colors.size < imageShapeArray.size) {
-            return
-        }
 
-        for (index in imageShapeArray.indices) {
+    }
+
+
+    private fun buildShapeOnScreen() {
+
+
+        //TODO generate shapes on screens so that they don't collide with each other
+        for (shape in shapes) {
             val imageView = ImageView(requireContext())
             imageView.apply {
-                setImage(requireContext(), imageShapeArray[index])
+                setImage(requireContext(), shape.type)
 
-                ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(colors[index]));
+                ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(shape.color));
 
                 id = View.generateViewId();
                 addedViewIds.add(id)
@@ -236,22 +175,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 x = xCoord
                 y = yCoord
 
-                shapesOnScreen.add(
-                    Shape(
-                        Pair(xCoord, yCoord), when (index) {
-                            0 -> ShapeType.SQUARE
-                            1 -> ShapeType.HEXAGON
-                            2 -> ShapeType.STAR
-                            3 -> ShapeType.CIRCLE
-                            else -> ShapeType.SQUARE
-                        }
-                    )
-                )
-
                 startX += xSpacing
             }
             setViewConstraints(imageView)
         }
+
     }
 
     companion object {
