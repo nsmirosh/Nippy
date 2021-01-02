@@ -10,11 +10,11 @@ import org.junit.Assert.*
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+class CoordinateUtilsTest {
 
     @Test
-    fun addition_isCorrect() {
-        repeat(100) {
+    fun getRandomXYCoordinates_withValidParameters_isWithinProperRange() {
+        repeat(10000) {
             val widthAndHeight = Pair(500, 500)
             val coords = getRandomXYCoords(widthAndHeight)
             assertTrue(coords.first in shapeWidth / 2 .. widthAndHeight.first - shapeWidth / 2 )

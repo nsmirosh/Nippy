@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.features.Level
+import apps.smoll.dragdropgame.features.game.MainFragment.Companion.permissibleHitFaultInPixels
+import apps.smoll.dragdropgame.shapeHeight
+import apps.smoll.dragdropgame.shapeWidth
 
 
 class GameViewModel : ViewModel() {
@@ -22,7 +25,7 @@ class GameViewModel : ViewModel() {
     private val mutableScoreLiveData: MutableLiveData<Int> = MutableLiveData()
     val scoreLiveData: LiveData<Int> get() = mutableScoreLiveData
 
-    val initialShapeToMatchCoordinates = Pair(500f, 500f)
+    val initialShapeToMatchCoordinates = Pair(500, 500)
 
     fun startGame() {
         buildMatchingShape()
@@ -52,13 +55,13 @@ class GameViewModel : ViewModel() {
         colorsArray.shuffle()
 
         val shapes = (imageShapeArray zip colorsArray).map {
-            Shape(Pair(0f, 0f), (it.first), it.second)
+            Shape(Pair(0, 0), (it.first), it.second)
         }
 
         mutableScreenShapesLiveData.value = shapes
     }
 
-    fun handleDrop(coordinates: Pair<Float, Float>) {
+    fun handleDrop(coordinates: Pair<Int, Int>) {
         if (isTargetGetHit(coordinates)) {
             var previousScore: Int = scoreLiveData.value ?: 0
             mutableScoreLiveData.value = ++previousScore
@@ -71,15 +74,15 @@ class GameViewModel : ViewModel() {
         mutableShapeToMatchLiveData.value = Shape(initialShapeToMatchCoordinates, shapeToMatch.typeResource, shapeToMatch.colorResource)
     }
 
-    private fun isTargetGetHit(targetCoordinates: Pair<Float, Float>): Boolean {
+    private fun isTargetGetHit(targetCoordinates: Pair<Int, Int>): Boolean {
         for (shapeOnScreen in screenShapesLiveData.value!!.iterator()) {
             shapeOnScreen.apply {
-                val shapeOnScreenXCenter = this.coordinates.first + MainFragment.shapeWidth / 2
-                val shapeOnScreenYCenter = this.coordinates.second + MainFragment.shapeHeight / 2
+                val shapeOnScreenXCenter = this.coordinates.first + shapeWidth / 2
+                val shapeOnScreenYCenter = this.coordinates.second + shapeHeight / 2
                 val permissibleXFaultRange =
-                    shapeOnScreenXCenter - MainFragment.permissibleHitFaultInPixels..shapeOnScreenXCenter + MainFragment.permissibleHitFaultInPixels
+                    shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
                 val permissibleYFaultRange =
-                    shapeOnScreenYCenter - MainFragment.permissibleHitFaultInPixels..shapeOnScreenYCenter + MainFragment.permissibleHitFaultInPixels
+                    shapeOnScreenYCenter - permissibleHitFaultInPixels..shapeOnScreenYCenter + permissibleHitFaultInPixels
 
                 val isXHit =
                     targetCoordinates.first in permissibleXFaultRange

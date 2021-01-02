@@ -47,8 +47,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private fun updateShapeToMatch(shape: Shape) {
         shape.coordinates.apply {
-            dragImageView.x = first
-            dragImageView.y = second
+            dragImageView.x = first.toFloat()
+            dragImageView.y = second.toFloat()
         }
         dragImageView.visible()
         dragImageView.setImage(
@@ -93,7 +93,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
                 DragEvent.ACTION_DROP -> {
-                    gameViewModel.handleDrop(Pair(event.x, event.y))
+                    gameViewModel.handleDrop(Pair(event.x.toInt(), event.y.toInt()))
                     v.invalidate()
                     true
                 }
