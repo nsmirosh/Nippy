@@ -1,16 +1,13 @@
 package apps.smoll.dragdropgame.features.game
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.res.ColorStateList
-import android.graphics.Insets
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
-import android.view.WindowInsets
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.widget.ImageViewCompat
@@ -18,9 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.shapeHeight
+import apps.smoll.dragdropgame.shapeWidth
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.android.synthetic.main.fragment_main.*
-import java.util.*
 
 
 class MainFragment : Fragment(R.layout.fragment_main) {
@@ -180,8 +178,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     companion object {
-        const val shapeHeight = 150
-        const val shapeWidth = 150
+
         const val permissibleHitFaultInPixels = 50
     }
 }
