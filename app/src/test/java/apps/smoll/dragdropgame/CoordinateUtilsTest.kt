@@ -61,14 +61,16 @@ class CoordinateUtilsTest {
     fun generateNonCollidingCoordinateList_withValidParams_returnsValidCoordinates() {
         val screenWidth = 1000
         val screenHeight = 1200
-        val coordinatesList = generateNonCollidingCoordinateList(Pair(screenWidth, screenHeight), 5)
+        val generatedCoordinates = generateNonCollidingCoordinateList(Pair(screenWidth, screenHeight), 5)
 
-        for (coordinates in coordinatesList) {
-            val mutableList: MutableList<Pair<Int, Int>> = coordinatesList.toMutableList()
-            mutableList.remove(coordinates)
-            for (newCoords in mutableList) {
-                assertTrue(getDistanceBetween(newCoords, coordinates) > shapeWidth)
+        for (coordinates in generatedCoordinates) {
+            generatedCoordinates.toMutableList().apply {
+                remove(coordinates)
+                for (coordsToCompareWith in this) {
+                    assertTrue(getDistanceBetween(coordsToCompareWith, coordinates) > shapeWidth)
+                }
             }
+
         }
     }
 }

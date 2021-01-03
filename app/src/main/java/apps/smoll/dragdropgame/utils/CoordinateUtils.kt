@@ -12,7 +12,6 @@ fun generateNonCollidingCoordinateList(widthAndHeight: Pair<Int, Int>, amountToG
     return listOfCoords
 }
 
-
 fun generateNewShapeCoords(
     widthAndHeight: Pair<Int, Int>,
     shapeCoordinatesList: List<Pair<Int, Int>>
@@ -31,7 +30,6 @@ fun generateNewShapeCoords(
     } while (shouldContinueLooking)
     return randomCoords
 }
-
 
 fun willShapesCollide(
     firstShapeCoords: Pair<Int, Int>,

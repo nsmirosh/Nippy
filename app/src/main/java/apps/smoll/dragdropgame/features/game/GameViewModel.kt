@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.features.Level
-import apps.smoll.dragdropgame.features.game.MainFragment.Companion.permissibleHitFaultInPixels
 import apps.smoll.dragdropgame.shapeHeight
 import apps.smoll.dragdropgame.shapeWidth
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
+
+
+const val permissibleHitFaultInPixels = 50
 
 
 class GameViewModel : ViewModel() {
@@ -28,43 +30,56 @@ class GameViewModel : ViewModel() {
 
     val initialShapeToMatchCoordinates = Pair(500, 500)
 
-    fun startGame() {
+    fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
         buildMatchingShape()
-        buildInitialShapesToMatch()
+        buildShapesToMatch(screenWidthAndHeight)
     }
 
     private fun buildMatchingShape() {
-        mutableShapeToMatchLiveData.value = Shape(initialShapeToMatchCoordinates, 0, 0)
+        mutableShapeToMatchLiveData.value = Shape(
+            initialShapeToMatchCoordinates,
+            randomShapeResource,
+            randomColorResource
+        )
     }
 
-    private fun buildInitialShapesToMatch() {
-        val imageShapeArray = arrayOf(
-            R.drawable.ic_square,
-            R.drawable.ic_hexagonal,
-            R.drawable.ic_star,
-            R.drawable.ic_circle
-        )
+    private fun buildShapesToMatch(screenWidthAndHeight: Pair<Int, Int>) {
+        val list = mutableListOf<Shape>()
+        generateNonCollidingCoordinateList(screenWidthAndHeight, 5).apply {
+            forEach {
+                list.add(Shape(it, randomShapeResource, randomColorResource))
+            }
+        }
+        mutableScreenShapesLiveData.value = list
+    }
 
-        val colorsArray = arrayOf(
-            R.color.color_1,
-            R.color.color_2,
-            R.color.color_3,
-            R.color.color_4,
-        )
+    private val randomShapeResource: Int
+        get() {
+            val imageShapeArray = arrayOf(
+                R.drawable.ic_square,
+                R.drawable.ic_hexagonal,
+                R.drawable.ic_star,
+                R.drawable.ic_circle
+            )
 
-        imageShapeArray.shuffle()
-        colorsArray.shuffle()
+            imageShapeArray.shuffle()
 
-        val shapes = (imageShapeArray zip colorsArray).map {
-            Shape(Pair(0, 0), (it.first), it.second)
+            return imageShapeArray.first()
         }
 
+    private val randomColorResource: Int
+        get() {
+            val colorsArray = arrayOf(
+                R.color.color_1,
+                R.color.color_2,
+                R.color.color_3,
+                R.color.color_4,
+            )
 
-        val listOfGeneratedCoords = generateNonCollidingCoordinateList(Pair(1000, 1280), 5)
+            colorsArray.shuffle()
 
-
-        mutableScreenShapesLiveData.value = shapes
-    }
+            return colorsArray.first()
+        }
 
     fun handleDrop(coordinates: Pair<Int, Int>) {
         if (isTargetGetHit(coordinates)) {
@@ -76,7 +91,11 @@ class GameViewModel : ViewModel() {
 
     private fun moveMatchingShapeToInitialPos() {
         val shapeToMatch = shapeToMatchLiveData.value!!
-        mutableShapeToMatchLiveData.value = Shape(initialShapeToMatchCoordinates, shapeToMatch.typeResource, shapeToMatch.colorResource)
+        mutableShapeToMatchLiveData.value = Shape(
+            initialShapeToMatchCoordinates,
+            shapeToMatch.typeResource,
+            shapeToMatch.colorResource
+        )
     }
 
     private fun isTargetGetHit(targetCoordinates: Pair<Int, Int>): Boolean {
@@ -101,7 +120,8 @@ class GameViewModel : ViewModel() {
         return false
     }
 
-    fun restartGame() {
+    fun restartGame(screenWidthAndHeight: Pair<Int, Int>) {
+        startGame(screenWidthAndHeight)
         mutableScoreLiveData.value = 0
     }
 }

@@ -8,8 +8,10 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,7 +31,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        gameViewModel.startGame()
+        gameViewModel.startGame(screenWidthAndHeight)
         startObservingLiveData()
         initListeners()
     }
@@ -42,6 +44,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         gameViewModel.shapeToMatchLiveData.observe(
             viewLifecycleOwner,
             { updateShapeToMatch(it) }
+        )
+
+        gameViewModel.screenShapesLiveData.observe(
+            viewLifecycleOwner,
+            { updateShapesOnScreen(it) }
         )
     }
 
@@ -62,7 +69,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun initListeners() {
-        restartGameButton.setOnClickListener { gameViewModel.restartGame() }
+        restartGameButton.setOnClickListener { gameViewModel.restartGame(screenWidthAndHeight) }
 
         dragImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)
@@ -106,30 +113,37 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         containerView.setOnDragListener(dragListen)
     }
 
-    private fun generateShapesOnScreen(shapes: List<Shape>) {
-
+    private fun updateShapesOnScreen(shapes: List<Shape>) {
         clearScreenShapes()
+
 
         for (shape in shapes) {
             val imageView = ImageView(requireContext())
+            imageView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             imageView.apply {
                 setImage(requireContext(), shape.typeResource)
 
-                ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(shape.colorResource));
 
+                ImageViewCompat.setImageTintList(
+                    this,
+                    ColorStateList.valueOf(getColor(requireContext(), shape.colorResource))
+                )
                 id = View.generateViewId();
                 addedViewIds.add(id)
-                containerView.addView(this)
 
                 layoutParams.height = shapeHeight;
                 layoutParams.width = shapeWidth;
-                this.requestLayout();
+                requestLayout();
 
-               /* generateNewShapeCoords(getScreenWidthAndHeight(), shapes).apply {
+                shape.shapeCenter.apply {
                     x = first.toFloat()
                     y = second.toFloat()
-                }*/
+                }
             }
+            containerView.addView(imageView)
             setViewConstraints(imageView)
         }
     }
@@ -162,25 +176,21 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
-    private fun getScreenWidthAndHeight(): Pair<Int, Int> {
-        val displayMetrics = DisplayMetrics()
-        requireActivity().apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                display?.getRealMetrics(displayMetrics)
-            } else {
-                windowManager!!.defaultDisplay.getMetrics(displayMetrics)
+    private val screenWidthAndHeight: Pair<Int, Int>
+        get() {
+            val displayMetrics = DisplayMetrics()
+            requireActivity().apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    display?.getRealMetrics(displayMetrics)
+                } else {
+                    windowManager!!.defaultDisplay.getMetrics(displayMetrics)
+                }
+            }
+
+            displayMetrics.apply {
+                return Pair(widthPixels, heightPixels)
             }
         }
-
-        displayMetrics.apply {
-            return Pair(widthPixels, heightPixels)
-        }
-    }
-
-    companion object {
-
-        const val permissibleHitFaultInPixels = 50
-    }
 }
 
 
