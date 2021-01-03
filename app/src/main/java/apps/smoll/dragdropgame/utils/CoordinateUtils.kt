@@ -4,9 +4,9 @@ import apps.smoll.dragdropgame.*
 import java.util.*
 
 
-fun generateNonCollidingCoordinateList(widthAndHeight: Pair<Int, Int>, neededAmount: Int): List<Pair<Int, Int>> {
+fun generateNonCollidingCoordinateList(widthAndHeight: Pair<Int, Int>, amountToGenerate: Int): List<Pair<Int, Int>> {
     val listOfCoords = mutableListOf<Pair<Int, Int>>()
-    repeat(neededAmount) {
+    repeat(amountToGenerate) {
         listOfCoords.add(generateNewShapeCoords(widthAndHeight, listOfCoords))
     }
     return listOfCoords

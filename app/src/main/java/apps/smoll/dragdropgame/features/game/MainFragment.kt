@@ -125,10 +125,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 layoutParams.width = shapeWidth;
                 this.requestLayout();
 
-                generateNewShapeCoords(getScreenWidthAndHeight(), shapes).apply {
+               /* generateNewShapeCoords(getScreenWidthAndHeight(), shapes).apply {
                     x = first.toFloat()
                     y = second.toFloat()
-                }
+                }*/
             }
             setViewConstraints(imageView)
         }
