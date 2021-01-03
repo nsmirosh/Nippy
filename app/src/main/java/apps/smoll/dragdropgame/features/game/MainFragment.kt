@@ -46,7 +46,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun updateShapeToMatch(shape: Shape) {
-        shape.coordinates.apply {
+        shape.shapeCenter.apply {
             dragImageView.x = first.toFloat()
             dragImageView.y = second.toFloat()
         }
@@ -125,7 +125,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 layoutParams.width = shapeWidth;
                 this.requestLayout();
 
-                determineCoordinatesForNewShape(getScreenWidthAndHeight(), shapes).apply {
+                generateNewShapeCoords(getScreenWidthAndHeight(), shapes).apply {
                     x = first.toFloat()
                     y = second.toFloat()
                 }

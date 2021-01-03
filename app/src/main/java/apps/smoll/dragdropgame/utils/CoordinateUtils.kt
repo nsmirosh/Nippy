@@ -1,53 +1,64 @@
 package apps.smoll.dragdropgame.utils
 
-import apps.smoll.dragdropgame.Shape
-import apps.smoll.dragdropgame.shapeHeight
-import apps.smoll.dragdropgame.shapeWidth
+import apps.smoll.dragdropgame.*
 import java.util.*
 
-fun determineCoordinatesForNewShape(
+
+fun generateNonCollidingCoordinateList(widthAndHeight: Pair<Int, Int>, neededAmount: Int): List<Pair<Int, Int>> {
+    val listOfCoords = mutableListOf<Pair<Int, Int>>()
+    repeat(neededAmount) {
+        listOfCoords.add(generateNewShapeCoords(widthAndHeight, listOfCoords))
+    }
+    return listOfCoords
+}
+
+
+fun generateNewShapeCoords(
     widthAndHeight: Pair<Int, Int>,
-    shapes: List<Shape>
+    shapeCoordinatesList: List<Pair<Int, Int>>
 ): Pair<Int, Int> {
 
     var randomCoords: Pair<Int, Int>
     do {
-        randomCoords = getRandomXYCoords(widthAndHeight)
-        var fittingCoordinatesFound = false
-        for (shape in shapes) {
-            if (getDistanceBetweenTwoPoints(randomCoords, shape.coordinates) > 150) {
-                fittingCoordinatesFound = true
+        var shouldContinueLooking = false
+        randomCoords = getRandomXYCoordsIn(widthAndHeight)
+        for (shapeCoordinates in shapeCoordinatesList) {
+            if (willShapesCollide(randomCoords, shapeCoordinates)) {
+                shouldContinueLooking = true
                 break
             }
         }
-    } while (!fittingCoordinatesFound)
+    } while (shouldContinueLooking)
     return randomCoords
 }
 
-fun getRandomXYCoords(widthAndHeight: Pair<Int, Int>): Pair<Int, Int> {
 
+fun willShapesCollide(
+    firstShapeCoords: Pair<Int, Int>,
+    secondShapeCoords: Pair<Int, Int>
+): Boolean {
+    return getDistanceBetween(firstShapeCoords, secondShapeCoords) < shapeWidth
+}
 
-    val lowerWidthBound = shapeWidth / 2
-    val upperWidthBound = widthAndHeight.second - shapeWidth / 2
+fun getRandomXYCoordsIn(widthAndHeight: Pair<Int, Int>): Pair<Int, Int> {
 
-    var randomX = 0
-    do {
-        randomX = Random().nextInt(upperWidthBound)
-    } while (randomX < lowerWidthBound)
+    val upperWidthBound = widthAndHeight.first - halfShapeWidth
 
-    val lowerHeightBound = shapeHeight / 2
-    val upperHeightBound = widthAndHeight.first - shapeHeight / 2
+    var randomX = Random().nextInt(upperWidthBound)
+    if (randomX < halfShapeWidth) {
+        randomX = halfShapeWidth
+    }
 
-    var randomY = 0
-    do {
-        randomY = Random().nextInt(upperHeightBound)
-    } while (randomY < lowerHeightBound)
+    val upperHeightBound = widthAndHeight.second - halfShapeHeight
 
-
+    var randomY = Random().nextInt(upperHeightBound)
+    if (randomY < halfShapeHeight) {
+        randomY = halfShapeHeight
+    }
     return Pair(randomX, randomY)
 }
 
-fun getDistanceBetweenTwoPoints(
+fun getDistanceBetween(
     firstPoint: Pair<Int, Int>,
     secondPoint: Pair<Int, Int>
 ): Double {

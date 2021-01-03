@@ -9,6 +9,7 @@ import apps.smoll.dragdropgame.features.Level
 import apps.smoll.dragdropgame.features.game.MainFragment.Companion.permissibleHitFaultInPixels
 import apps.smoll.dragdropgame.shapeHeight
 import apps.smoll.dragdropgame.shapeWidth
+import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
 
 
 class GameViewModel : ViewModel() {
@@ -58,6 +59,10 @@ class GameViewModel : ViewModel() {
             Shape(Pair(0, 0), (it.first), it.second)
         }
 
+
+        val listOfGeneratedCoords = generateNonCollidingCoordinateList(Pair(1000, 1280), 5)
+
+
         mutableScreenShapesLiveData.value = shapes
     }
 
@@ -77,8 +82,8 @@ class GameViewModel : ViewModel() {
     private fun isTargetGetHit(targetCoordinates: Pair<Int, Int>): Boolean {
         for (shapeOnScreen in screenShapesLiveData.value!!.iterator()) {
             shapeOnScreen.apply {
-                val shapeOnScreenXCenter = this.coordinates.first + shapeWidth / 2
-                val shapeOnScreenYCenter = this.coordinates.second + shapeHeight / 2
+                val shapeOnScreenXCenter = this.shapeCenter.first + shapeWidth / 2
+                val shapeOnScreenYCenter = this.shapeCenter.second + shapeHeight / 2
                 val permissibleXFaultRange =
                     shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
                 val permissibleYFaultRange =
