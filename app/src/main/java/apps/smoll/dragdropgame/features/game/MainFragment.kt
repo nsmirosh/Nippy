@@ -52,12 +52,16 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         )
         gameViewModel.timeLeftLiveData.observe(
             viewLifecycleOwner,
-            { updateTimer(it) }
+            { updateTimerText(it) }
         )
     }
 
-    private fun updateTimer(secondsLeft: Int) {
-        timeLeftTextView.text = getString(R.string.time_left, secondsLeft)
+    private fun updateTimerText(secondsLeft: String) {
+        timeLeftTextView.text = secondsLeft
+    }
+
+    private fun updateScoreText(score: String) {
+        scoreTextView.text = score
     }
 
     private fun updateShapeToMatch(shape: Shape) {
@@ -70,10 +74,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             requireContext(),
             shape.typeResource
         )
-    }
-
-    private fun updateScoreText(score: Int) {
-        scoreTextView.text = getString(R.string.score, score)
     }
 
     private fun initListeners() {

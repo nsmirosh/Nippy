@@ -23,7 +23,7 @@ class CoordinateUtilsTest {
     @Test
     fun getDistanceBetweenTwoPoints_withValidParams_returnValidDistance() {
         val distance = getDistanceBetween(Pair(100, 100), Pair(200, 200))
-        assertEquals(141, `is`(distance.toInt()))
+        assertThat(141, `is`(distance.toInt()))
     }
 
     @Test

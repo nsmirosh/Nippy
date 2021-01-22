@@ -1,14 +1,13 @@
 package apps.smoll.dragdropgame.features.game
 
+import android.app.Application
 import android.os.CountDownTimer
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import apps.smoll.dragdropgame.R
-import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.features.Level
-import apps.smoll.dragdropgame.shapeHeight
-import apps.smoll.dragdropgame.shapeWidth
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
 import timber.log.Timber
 
@@ -19,7 +18,7 @@ const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
 
-class GameViewModel : ViewModel() {
+class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mutableScreenShapesLiveData: MutableLiveData<List<Shape>> = MutableLiveData()
     val screenShapesLiveData: LiveData<List<Shape>> get() = mutableScreenShapesLiveData
@@ -30,15 +29,17 @@ class GameViewModel : ViewModel() {
     private val mutableLevelLiveData: MutableLiveData<List<Level>> = MutableLiveData()
     val levelLiveData: LiveData<List<Level>> get() = mutableLevelLiveData
 
-    private val mutableScoreLiveData: MutableLiveData<Int> = MutableLiveData()
-    val scoreLiveData: LiveData<Int> get() = mutableScoreLiveData
+    private val mutableScoreLiveData: MutableLiveData<String> = MutableLiveData()
+    val scoreLiveData: LiveData<String> get() = mutableScoreLiveData
 
-    private val mutableTimeLeftLiveData: MutableLiveData<Int> = MutableLiveData()
-    val timeLeftLiveData: LiveData<Int> get() = mutableTimeLeftLiveData
+    private val mutableTimeLeftLiveData: MutableLiveData<String> = MutableLiveData()
+    val timeLeftLiveData: LiveData<String> get() = mutableTimeLeftLiveData
 
     val initialShapeToMatchCoordinates = Pair(500, 500)
 
     lateinit var timer: CountDownTimer
+
+    var score = 0
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
         buildShapes(screenWidthAndHeight)
@@ -46,16 +47,23 @@ class GameViewModel : ViewModel() {
     }
 
     fun startTimer() {
-        timer = object: CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
-            override fun onTick(millisUntilFinished: Long) {
-                mutableTimeLeftLiveData.value =
-                    (millisUntilFinished / intervalInMilliseconds).toInt()
-            }
+        if (this::timer.isInitialized) {
+            return
+        }
+        timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
+            override fun onTick(millisUntilFinished: Long) = onTimerTick(millisUntilFinished)
 
             override fun onFinish() {
                 Timber.d("onFinish!")
             }
         }.start()
+    }
+
+    private fun onTimerTick(millisUntilFinished: Long) {
+        val secondsLeft = (millisUntilFinished / intervalInMilliseconds).toInt()
+        val secondsLeftString =
+            getApplication<GameApplication>().getString(R.string.time_left, secondsLeft)
+        mutableTimeLeftLiveData.value = secondsLeftString
     }
 
     private fun buildShapes(screenWidthAndHeight: Pair<Int, Int>) {
@@ -74,15 +82,19 @@ class GameViewModel : ViewModel() {
             R.drawable.ic_circle
         )
 
-
-        generateNonCollidingCoordinateList(Pair(screenWidthAndHeight.first - 200, screenWidthAndHeight.second - 400), 4)
+        generateNonCollidingCoordinateList(
+            Pair(
+                screenWidthAndHeight.first - 200,
+                screenWidthAndHeight.second - 400
+            ), 4
+        )
             .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
             .toMutableList()
             .apply {
 
-            mutableScreenShapesLiveData.value = this
-            buildMatchingShape(this)
-        }
+                mutableScreenShapesLiveData.value = this
+                buildMatchingShape(this)
+            }
     }
 
 
@@ -90,14 +102,18 @@ class GameViewModel : ViewModel() {
         shapesThatWillBeOnScreen.shuffle()
 
         val shapeToMatch =
-            Shape(Pair(500, 500), shapesThatWillBeOnScreen.first().typeResource, shapesThatWillBeOnScreen.first().colorResource)
+            Shape(
+                Pair(500, 500),
+                shapesThatWillBeOnScreen.first().typeResource,
+                shapesThatWillBeOnScreen.first().colorResource
+            )
         mutableShapeToMatchLiveData.value = shapeToMatch
     }
 
     fun handleDrop(coordinates: Pair<Int, Int>) {
         if (isTargetGetHit(coordinates)) {
-            var previousScore: Int = scoreLiveData.value ?: 0
-            mutableScoreLiveData.value = ++previousScore
+            val scoreString = getApplication<GameApplication>().getString(R.string.score, ++score)
+            mutableScoreLiveData.value = scoreString
         }
         moveMatchingShapeToInitialPos()
     }
@@ -134,8 +150,13 @@ class GameViewModel : ViewModel() {
     }
 
     fun restartGame(screenWidthAndHeight: Pair<Int, Int>) {
-        timer.cancel()
+        timer.apply {
+            cancel()
+            start()
+        }
         startGame(screenWidthAndHeight)
-        mutableScoreLiveData.value = 0
+        score = 0
+        val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
+        mutableScoreLiveData.value = scoreString
     }
 }
