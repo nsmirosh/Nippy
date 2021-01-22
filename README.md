@@ -11,20 +11,37 @@
 
 ## The app will showcase:
 
-1. Clean architecture
-2. MVVM
-3. Kotlin coroutines + Firestore
-4. Kotlin collections
+- Clean architecture
+- MVVM
+- Kotlin coroutines + Room
+- Kotlin collections
 
 
 ## tasks
 
-### 1. Get the app working with the first screen
+### 1. Get the app working with the first screen and the first level
   - [x] Write up a rough draft for the app
-  - [ ] Write up tests for building shapes on screen
-  - [ ] Change the logic so that where the shapes are built is dynamic based on the screen
+  - [ ] Position the "matching" shape at the bottom of the screen
+  - [ ] Change the logic so that the position of the shapes to match are according to the screen size and don't overlap other elements
+  - [ ] Implement a dialog that will pop up that will ask the user if they want to restart or go to the main menu
+  - [ ] Write up tests for the logic above
 
-### 2. Finish the rest of the 20 levels
+### 2. Build a main menu
+  - [ ] Display the user's current highscore and the level they are at right now
+  - [ ] Add the button and logic for starting a new game
+  - [ ] Add the button and logic for continuing where the user left off
+  - [ ] Write up unit and UI test for cases above
+
+### 3. Finish the rest of the 20 levels
   - [ ] find more shapes and add them so it will be sufficient for 20 levels
+  - [ ] add the logic that will take the user to the next level on completion
+  - [ ] Write up tests for the logic above
 
-### 3. Release it
+### 4. Add Local Storage
+  - [ ] Add Room to the project
+  - [ ] Implement storing the level at which the user is at right now
+  - [ ] Implement storing the highscore
+  - [ ] Write test for storage functionality
+
+### 5. Release version 1
+  - [ ] release the app on google play
