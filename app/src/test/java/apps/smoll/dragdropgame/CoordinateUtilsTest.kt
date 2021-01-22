@@ -1,6 +1,7 @@
 package apps.smoll.dragdropgame
 
 import apps.smoll.dragdropgame.utils.*
+import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.*
 import org.junit.Test
 import kotlin.random.Random
@@ -22,7 +23,7 @@ class CoordinateUtilsTest {
     @Test
     fun getDistanceBetweenTwoPoints_withValidParams_returnValidDistance() {
         val distance = getDistanceBetween(Pair(100, 100), Pair(200, 200))
-        assertEquals(141, distance.toInt())
+        assertEquals(141, `is`(distance.toInt()))
     }
 
     @Test
