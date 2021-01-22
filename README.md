@@ -19,6 +19,5 @@
 
 ## roadmap
 - [x] Write up a rough draft for the app
-- [] Write up tests for creating and sorting shapes
-- [] create the rest of the stuff
-- [ ] Contact the media
+- [ ] Write up tests for creating and sorting shapes
+- [ ] create the rest of the stuff
