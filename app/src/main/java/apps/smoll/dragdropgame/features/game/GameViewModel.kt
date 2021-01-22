@@ -5,7 +5,6 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.features.Level
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
@@ -97,7 +96,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             }
     }
 
-
     private fun buildMatchingShape(shapesThatWillBeOnScreen: MutableList<Shape>) {
         shapesThatWillBeOnScreen.shuffle()
 
@@ -111,10 +109,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun handleDrop(coordinates: Pair<Int, Int>) {
-        if (isTargetGetHit(coordinates)) {
-            val scoreString = getApplication<GameApplication>().getString(R.string.score, ++score)
-            mutableScoreLiveData.value = scoreString
+        getShapeThatIsHit(coordinates).apply {
+            if (this != null) {
+                score++
+                updateScore()
+                mutableScreenShapesLiveData.value =
+                    screenShapesLiveData.value?.filter { it.typeResource != this.typeResource }
+            }
         }
+
         moveMatchingShapeToInitialPos()
     }
 
@@ -127,26 +130,24 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private fun isTargetGetHit(targetCoordinates: Pair<Int, Int>): Boolean {
-        for (shapeOnScreen in screenShapesLiveData.value!!.iterator()) {
-            shapeOnScreen.apply {
-                val shapeOnScreenXCenter = this.shapeCenter.first + shapeWidth / 2
-                val shapeOnScreenYCenter = this.shapeCenter.second + shapeHeight / 2
-                val permissibleXFaultRange =
-                    shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
-                val permissibleYFaultRange =
-                    shapeOnScreenYCenter - permissibleHitFaultInPixels..shapeOnScreenYCenter + permissibleHitFaultInPixels
+    private fun getShapeThatIsHit(targetCoordinates: Pair<Int, Int>): Shape? {
+        screenShapesLiveData.value?.forEach {
+            val shapeOnScreenXCenter = it.shapeCenter.first + shapeWidth / 2
+            val shapeOnScreenYCenter = it.shapeCenter.second + shapeHeight / 2
+            val permissibleXFaultRange =
+                shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
+            val permissibleYFaultRange =
+                shapeOnScreenYCenter - permissibleHitFaultInPixels..shapeOnScreenYCenter + permissibleHitFaultInPixels
 
-                val isXHit =
-                    targetCoordinates.first in permissibleXFaultRange
-                val isYHit =
-                    targetCoordinates.second in permissibleYFaultRange
+            val isXHit =
+                targetCoordinates.first in permissibleXFaultRange
+            val isYHit =
+                targetCoordinates.second in permissibleYFaultRange
 
-                val shapeMatch = shapeToMatchLiveData.value!!.typeResource == typeResource
-                if (isXHit && isYHit && shapeMatch) return true
-            }
+            val shapeMatch = shapeToMatchLiveData.value!!.typeResource == it.typeResource
+            if (isXHit && isYHit && shapeMatch) return it
         }
-        return false
+        return null
     }
 
     fun restartGame(screenWidthAndHeight: Pair<Int, Int>) {
@@ -156,6 +157,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
         startGame(screenWidthAndHeight)
         score = 0
+        updateScore()
+    }
+
+    private fun updateScore() {
         val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
         mutableScoreLiveData.value = scoreString
     }
