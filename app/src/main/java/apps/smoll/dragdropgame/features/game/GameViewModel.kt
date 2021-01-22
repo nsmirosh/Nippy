@@ -38,15 +38,18 @@ class GameViewModel : ViewModel() {
 
     val initialShapeToMatchCoordinates = Pair(500, 500)
 
+    lateinit var timer: CountDownTimer
+
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
         buildShapes(screenWidthAndHeight)
         startTimer()
     }
 
     fun startTimer() {
-        object: CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
+        timer = object: CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
             override fun onTick(millisUntilFinished: Long) {
-                mutableTimeLeftLiveData.value = (millisUntilFinished / intervalInMilliseconds).toInt()
+                mutableTimeLeftLiveData.value =
+                    (millisUntilFinished / intervalInMilliseconds).toInt()
             }
 
             override fun onFinish() {
@@ -56,48 +59,39 @@ class GameViewModel : ViewModel() {
     }
 
     private fun buildShapes(screenWidthAndHeight: Pair<Int, Int>) {
-        val list = mutableListOf<Shape>()
-        generateNonCollidingCoordinateList(screenWidthAndHeight, 4).apply {
-            forEach {
-                list.add(Shape(it, randomShapeResource, randomColorResource))
-            }
+
+        val colorsArray = arrayOf(
+            R.color.color_1,
+            R.color.color_2,
+            R.color.color_3,
+            R.color.color_4,
+        )
+
+        val imageShapeArray = arrayOf(
+            R.drawable.ic_square,
+            R.drawable.ic_hexagonal,
+            R.drawable.ic_star,
+            R.drawable.ic_circle
+        )
+
+        generateNonCollidingCoordinateList(screenWidthAndHeight, 4)
+            .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
+            .toMutableList()
+            .apply {
+
+            mutableScreenShapesLiveData.value = this
+            buildMatchingShape(this)
         }
-
-        mutableScreenShapesLiveData.value = list
-
-        list.shuffle()
-        val shapeToMatch =
-            Shape(Pair(500, 500), list.first().typeResource, list.first().colorResource)
-        mutableShapeToMatchLiveData.value = shapeToMatch
     }
 
-    private val randomShapeResource: Int
-        get() {
-            val imageShapeArray = arrayOf(
-                R.drawable.ic_square,
-                R.drawable.ic_hexagonal,
-                R.drawable.ic_star,
-                R.drawable.ic_circle
-            )
 
-            imageShapeArray.shuffle()
+    private fun buildMatchingShape(shapesThatWillBeOnScreen: MutableList<Shape>) {
+        shapesThatWillBeOnScreen.shuffle()
 
-            return imageShapeArray.first()
-        }
-
-    private val randomColorResource: Int
-        get() {
-            val colorsArray = arrayOf(
-                R.color.color_1,
-                R.color.color_2,
-                R.color.color_3,
-                R.color.color_4,
-            )
-
-            colorsArray.shuffle()
-
-            return colorsArray.first()
-        }
+        val shapeToMatch =
+            Shape(Pair(500, 500), shapesThatWillBeOnScreen.first().typeResource, shapesThatWillBeOnScreen.first().colorResource)
+        mutableShapeToMatchLiveData.value = shapeToMatch
+    }
 
     fun handleDrop(coordinates: Pair<Int, Int>) {
         if (isTargetGetHit(coordinates)) {
@@ -139,6 +133,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun restartGame(screenWidthAndHeight: Pair<Int, Int>) {
+        timer.cancel()
         startGame(screenWidthAndHeight)
         mutableScoreLiveData.value = 0
     }
