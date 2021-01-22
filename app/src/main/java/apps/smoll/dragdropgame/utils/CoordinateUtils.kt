@@ -21,10 +21,10 @@ fun generateNewShapeCoords(
     do {
         var shouldContinueLooking = false
         randomCoords = getRandomXYCoordsIn(widthAndHeight)
-        for (shapeCoordinates in shapeCoordinatesList) {
-            if (willShapesCollide(randomCoords, shapeCoordinates)) {
+        shapeCoordinatesList.forEach {
+            if (willShapesCollide(randomCoords, it)) {
                 shouldContinueLooking = true
-                break
+                return@forEach
             }
         }
     } while (shouldContinueLooking)

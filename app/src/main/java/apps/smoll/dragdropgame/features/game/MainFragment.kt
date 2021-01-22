@@ -50,6 +50,15 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             viewLifecycleOwner,
             { updateShapesOnScreen(it) }
         )
+
+        gameViewModel.timeLeftLiveData.observe(
+            viewLifecycleOwner,
+            { updateTimer(it) }
+        )
+    }
+
+    private fun updateTimer(secondsLeft: Int) {
+        timeLeftTextView.text = " time left = $secondsLeft"
     }
 
     private fun updateShapeToMatch(shape: Shape) {

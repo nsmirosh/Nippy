@@ -1,5 +1,6 @@
 package apps.smoll.dragdropgame.features.game
 
+import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,9 +10,13 @@ import apps.smoll.dragdropgame.features.Level
 import apps.smoll.dragdropgame.shapeHeight
 import apps.smoll.dragdropgame.shapeWidth
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
+import timber.log.Timber
 
 
 const val permissibleHitFaultInPixels = 50
+
+const val timeLeftInMilliseconds = 20000L
+const val intervalInMilliseconds = 1000L
 
 
 class GameViewModel : ViewModel() {
@@ -28,29 +33,42 @@ class GameViewModel : ViewModel() {
     private val mutableScoreLiveData: MutableLiveData<Int> = MutableLiveData()
     val scoreLiveData: LiveData<Int> get() = mutableScoreLiveData
 
+    private val mutableTimeLeftLiveData: MutableLiveData<Int> = MutableLiveData()
+    val timeLeftLiveData: LiveData<Int> get() = mutableTimeLeftLiveData
+
     val initialShapeToMatchCoordinates = Pair(500, 500)
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
-        buildMatchingShape()
-        buildShapesToMatch(screenWidthAndHeight)
+        buildShapes(screenWidthAndHeight)
+        startTimer()
     }
 
-    private fun buildMatchingShape() {
-        mutableShapeToMatchLiveData.value = Shape(
-            initialShapeToMatchCoordinates,
-            randomShapeResource,
-            randomColorResource
-        )
+    fun startTimer() {
+        object: CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
+            override fun onTick(millisUntilFinished: Long) {
+                mutableTimeLeftLiveData.value = (millisUntilFinished / intervalInMilliseconds).toInt()
+            }
+
+            override fun onFinish() {
+                Timber.d("onFinish!")
+            }
+        }.start()
     }
 
-    private fun buildShapesToMatch(screenWidthAndHeight: Pair<Int, Int>) {
+    private fun buildShapes(screenWidthAndHeight: Pair<Int, Int>) {
         val list = mutableListOf<Shape>()
-        generateNonCollidingCoordinateList(screenWidthAndHeight, 5).apply {
+        generateNonCollidingCoordinateList(screenWidthAndHeight, 4).apply {
             forEach {
                 list.add(Shape(it, randomShapeResource, randomColorResource))
             }
         }
+
         mutableScreenShapesLiveData.value = list
+
+        list.shuffle()
+        val shapeToMatch =
+            Shape(Pair(500, 500), list.first().typeResource, list.first().colorResource)
+        mutableShapeToMatchLiveData.value = shapeToMatch
     }
 
     private val randomShapeResource: Int
