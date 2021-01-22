@@ -74,7 +74,8 @@ class GameViewModel : ViewModel() {
             R.drawable.ic_circle
         )
 
-        generateNonCollidingCoordinateList(screenWidthAndHeight, 4)
+
+        generateNonCollidingCoordinateList(Pair(screenWidthAndHeight.first - 200, screenWidthAndHeight.second - 400), 4)
             .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
             .toMutableList()
             .apply {
