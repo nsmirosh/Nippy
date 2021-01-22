@@ -19,12 +19,12 @@
 
 ## tasks
 
-###1. Get the app working with the first screen
+### 1. Get the app working with the first screen
   - [x] Write up a rough draft for the app
   - [ ] Write up tests for building shapes on screen
   - [ ] Change the logic so that where the shapes are built is dynamic based on the screen
 
-###2. Finish the rest of the 20 levels
+### 2. Finish the rest of the 20 levels
   - [ ] find more shapes and add them so it will be sufficient for 20 levels
 
-###3. Release it
+### 3. Release it
