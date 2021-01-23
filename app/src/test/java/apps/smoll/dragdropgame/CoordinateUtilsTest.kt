@@ -7,15 +7,18 @@ import org.junit.Test
 import kotlin.random.Random
 
 
+const val shapeSize = 150
+const val halfShapeSize = 75
+
 class CoordinateUtilsTest {
 
     @Test
     fun getRandomXYCoordinates_withValidParameters_isWithinProperRange() {
         for (value in 200..2000 step 50) {
-            val coords = getRandomXYCoordsIn(Pair(value, value))
-            val xRange = halfShapeWidth..value - halfShapeWidth
+            val coords = getRandomXYCoordsIn(Pair(value, value), shapeSize)
+            val xRange = halfShapeSize..value - halfShapeSize
             assertTrue(coords.first in xRange)
-            val yRange = halfShapeHeight..value - halfShapeHeight
+            val yRange = halfShapeSize..value - halfShapeSize
             assertTrue(coords.second in yRange)
         }
     }
@@ -33,13 +36,13 @@ class CoordinateUtilsTest {
         val screenHeight = 1200
 
         repeat(5) {
-            var randomX = Random.nextInt(screenWidth - halfShapeWidth)
-            if (randomX < halfShapeWidth) {
-                randomX = halfShapeWidth
+            var randomX = Random.nextInt(screenWidth - halfShapeSize)
+            if (randomX < halfShapeSize) {
+                randomX = halfShapeSize
             }
-            var randomY = Random.nextInt(screenHeight - halfShapeHeight)
-            if (randomY < halfShapeHeight) {
-                randomY = halfShapeHeight
+            var randomY = Random.nextInt(screenHeight - halfShapeSize)
+            if (randomY < halfShapeSize) {
+                randomY = halfShapeSize
             }
             centersOfShapes.add(Pair(randomX, randomY))
         }
@@ -54,7 +57,7 @@ class CoordinateUtilsTest {
 
         val newShapeCoords = generateNewShapeCoords(Pair(screenWidth, screenHeight), shapeList)
         for (shapeCenter in centersOfShapes) {
-            assertTrue(getDistanceBetween(shapeCenter, newShapeCoords) > shapeWidth)
+            assertTrue(getDistanceBetween(shapeCenter, newShapeCoords) > shapeSize)
         }
     }
 
@@ -62,13 +65,14 @@ class CoordinateUtilsTest {
     fun generateNonCollidingCoordinateList_withValidParams_returnsValidCoordinates() {
         val screenWidth = 1000
         val screenHeight = 1200
-        val generatedCoordinates = generateNonCollidingCoordinateList(Pair(screenWidth, screenHeight), 5)
+        val generatedCoordinates =
+            generateNonCollidingCoordinateList(Pair(screenWidth, screenHeight), 5)
 
         for (coordinates in generatedCoordinates) {
             generatedCoordinates.toMutableList().apply {
                 remove(coordinates)
                 for (coordsToCompareWith in this) {
-                    assertTrue(getDistanceBetween(coordsToCompareWith, coordinates) > shapeWidth)
+                    assertTrue(getDistanceBetween(coordsToCompareWith, coordinates) > shapeSize)
                 }
             }
 

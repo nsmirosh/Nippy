@@ -17,6 +17,10 @@ const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
 
+const val screenHeightRatio = 16
+const val screenWidthRatio = 9
+
+
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mutableScreenShapesLiveData: MutableLiveData<List<Shape>> = MutableLiveData()
@@ -37,7 +41,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val initialShapeToMatchCoordinates = Pair(500, 500)
 
     lateinit var timer: CountDownTimer
-
+    var shapeSize = 0
     var score = 0
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
@@ -67,6 +71,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun buildShapes(screenWidthAndHeight: Pair<Int, Int>) {
 
+        initShapeSizes(screenWidthAndHeight)
+
         val colorsArray = arrayOf(
             R.color.color_1,
             R.color.color_2,
@@ -81,19 +87,26 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             R.drawable.ic_circle
         )
 
+
         generateNonCollidingCoordinateList(
             Pair(
                 screenWidthAndHeight.first - 200,
                 screenWidthAndHeight.second - 400
             ), 4
         )
-            .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
+            .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index], shapeSize) }
             .toMutableList()
             .apply {
 
                 mutableScreenShapesLiveData.value = this
                 buildMatchingShape(this)
             }
+    }
+
+    private fun initShapeSizes(screenWidthAndHeight: Pair<Int, Int>) {
+        val width = screenWidthAndHeight.first
+        val height = screenWidthAndHeight.second
+        shapeSize = if (width < height) width / screenWidthRatio else width / screenHeightRatio
     }
 
     private fun buildMatchingShape(shapesThatWillBeOnScreen: MutableList<Shape>) {
@@ -132,8 +145,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun getShapeThatIsHit(targetCoordinates: Pair<Int, Int>): Shape? {
         screenShapesLiveData.value?.forEach {
-            val shapeOnScreenXCenter = it.shapeCenter.first + shapeWidth / 2
-            val shapeOnScreenYCenter = it.shapeCenter.second + shapeHeight / 2
+            val shapeOnScreenXCenter = it.shapeCenter.first + shapeSize / 2
+            val shapeOnScreenYCenter = it.shapeCenter.second + shapeSize / 2
             val permissibleXFaultRange =
                 shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
             val permissibleYFaultRange =

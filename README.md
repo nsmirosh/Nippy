@@ -22,7 +22,7 @@
 ### 1. Get the app working with the first screen and the first level
   - [x] Write up a rough draft for the app
   - [ ] Position the "matching" shape at the bottom of the screen
-  - [ ] Write test for the logic above
+  - [ ] Make sure that the sizes of the elements are relative to the screen size
   - [ ] Change the logic so that the position of the shapes to match are according to the screen size and don't overlap other elements or go out of bounds
   - [ ] Implement a dialog that will pop up that will ask the user if they want to restart or go to the main menu
   - [ ] Write up tests for the logic above

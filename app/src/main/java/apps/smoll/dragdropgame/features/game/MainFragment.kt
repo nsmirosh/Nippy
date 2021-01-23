@@ -17,8 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
-import apps.smoll.dragdropgame.shapeHeight
-import apps.smoll.dragdropgame.shapeWidth
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.android.synthetic.main.fragment_main.*
 
@@ -124,7 +122,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun updateShapesOnScreen(shapes: List<Shape>) {
         clearScreenShapes()
 
-
         for (shape in shapes) {
             val imageView = ImageView(requireContext())
             imageView.layoutParams = ViewGroup.LayoutParams(
@@ -141,9 +138,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 )
                 id = View.generateViewId();
                 addedViewIds.add(id)
-
-                layoutParams.height = shapeHeight;
-                layoutParams.width = shapeWidth;
+                layoutParams.height = shape.shapeSize;
+                layoutParams.width = shape.shapeSize;
                 requestLayout();
 
                 shape.shapeCenter.apply {
