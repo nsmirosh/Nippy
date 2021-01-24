@@ -72,7 +72,7 @@ class CoordinateUtilsTest {
         val screenWidth = 1000
         val screenHeight = 1200
         val generatedCoordinates =
-            generateNonCollidingCoordinateList(Pair(screenWidth, screenHeight), 5)
+            generateNonCollidingCoordinateList(Pair(screenWidth, screenHeight), 5).toMutableList()
 
         for (coordinates in generatedCoordinates) {
             generatedCoordinates.toMutableList().apply {
@@ -85,7 +85,5 @@ class CoordinateUtilsTest {
                 }
             }
         }
-
-
     }
 }

@@ -24,23 +24,28 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val mutableShapeToMatchLiveData: MutableLiveData<Shape> = MutableLiveData()
     val shapeToMatchLiveData: LiveData<Shape> get() = mutableShapeToMatchLiveData
 
-    private val mutableLevelLiveData: MutableLiveData<List<Level>> = MutableLiveData()
-    val levelLiveData: LiveData<List<Level>> get() = mutableLevelLiveData
-
     private val mutableScoreLiveData: MutableLiveData<String> = MutableLiveData()
     val scoreLiveData: LiveData<String> get() = mutableScoreLiveData
 
     private val mutableTimeLeftLiveData: MutableLiveData<String> = MutableLiveData()
     val timeLeftLiveData: LiveData<String> get() = mutableTimeLeftLiveData
 
-    val initialShapeToMatchCoordinates = Pair(500, 500)
+    val addedViewIds = mutableSetOf<Int>()
+
+    lateinit var matchingShapeCoords: Pair<Int, Int>
 
     lateinit var timer: CountDownTimer
     var shapeSize = 0
     var score = 0
+    var sWidth = 0
+    var sHeight = 0
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
-        buildShapes(screenWidthAndHeight)
+        screenWidthAndHeight.apply {
+            sWidth = first
+            sHeight = second
+        }
+        buildShapes()
         startTimer()
     }
 
@@ -64,7 +69,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         mutableTimeLeftLiveData.value = secondsLeftString
     }
 
-    private fun buildShapes(screenWidthAndHeight: Pair<Int, Int>) {
+    private fun buildShapes() {
 
         val colorsArray = arrayOf(
             R.color.color_1,
@@ -80,28 +85,36 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             R.drawable.ic_circle
         )
 
+        //TODO fix this later - this might not work for small screens because the shape is fixed right now  i.e. 150px
+        val widthBound = (sWidth * 0.8).toInt()
+        val heightBound = (sHeight * 0.8).toInt()
 
         generateNonCollidingCoordinateList(
             Pair(
-                screenWidthAndHeight.first - 200,
-                screenWidthAndHeight.second - 400
+                widthBound,
+                heightBound
             ), 4
         )
-            .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index], shapeSize) }
+            .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
             .toMutableList()
             .apply {
-
-                mutableScreenShapesLiveData.value = this
                 buildMatchingShape(this)
+                mutableScreenShapesLiveData.value = this
             }
     }
 
     private fun buildMatchingShape(shapesThatWillBeOnScreen: MutableList<Shape>) {
+
+        val xPos = (sWidth / 2) - shapeSize
+        val yPos = (sHeight * 0.8).toInt()
+
+        matchingShapeCoords = Pair(xPos, yPos)
+
         shapesThatWillBeOnScreen.shuffle()
 
         val shapeToMatch =
             Shape(
-                Pair(500, 500),
+                matchingShapeCoords,
                 shapesThatWillBeOnScreen.first().typeResource,
                 shapesThatWillBeOnScreen.first().colorResource
             )
@@ -124,7 +137,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun moveMatchingShapeToInitialPos() {
         val shapeToMatch = shapeToMatchLiveData.value!!
         mutableShapeToMatchLiveData.value = Shape(
-            initialShapeToMatchCoordinates,
+            matchingShapeCoords,
             shapeToMatch.typeResource,
             shapeToMatch.colorResource
         )
@@ -144,7 +157,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             val isYHit =
                 targetCoordinates.second in permissibleYFaultRange
 
-            val shapeMatch = shapeToMatchLiveData.value!!.typeResource == it.typeResource
+            val shapeMatch = shapeToMatchLiveData.value?.typeResource == it.typeResource
             if (isXHit && isYHit && shapeMatch) return it
         }
         return null

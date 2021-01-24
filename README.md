@@ -23,7 +23,7 @@
   - [x] Write up a rough draft for the app
   - [ ] Position the "matching" shape at the bottom of the screen
   - [ ] Change the logic so that the position of the shapes to match are according to the screen size and don't overlap other elements or go out of bounds
-  - [ ] Implement a dialog that will pop up that will ask the user if they want to restart or go to the main menu
+  - [ ] Implement a dialog that will pop up that will ask the user if they want to restart or go to the main menu and remove the restart button
   - [ ] Write up tests for the logic above
 
 ### 2. Build a main menu

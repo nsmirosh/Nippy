@@ -5,12 +5,12 @@ import java.util.*
 
 
 fun generateNonCollidingCoordinateList(
-    widthAndHeight: Pair<Int, Int>,
+    widthHeightBounds: Pair<Int, Int>,
     amountToGenerate: Int
 ): List<Pair<Int, Int>> {
     val listOfCoords = mutableListOf<Pair<Int, Int>>()
     repeat(amountToGenerate) {
-        listOfCoords.add(generateNewShapeCoords(widthAndHeight, listOfCoords))
+        listOfCoords.add(generateNewShapeCoords(widthHeightBounds, listOfCoords))
     }
     return listOfCoords
 }
