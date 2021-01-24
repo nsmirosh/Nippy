@@ -59,13 +59,16 @@ class CoordinateUtilsTest {
 
             val newShapeCoords = generateNewShapeCoords(widthHeight, shapeList)
             for (shapeCenter in centersOfShapes) {
-                assertThat(getDistanceBetween(shapeCenter, newShapeCoords).toInt(), greaterThan(shapeSize))
+                assertThat(
+                    getDistanceBetween(shapeCenter, newShapeCoords).toInt(),
+                    greaterThan(shapeSize)
+                )
             }
         }
     }
 
     @Test
-    fun generateNonCollidingCoordinateList_withValidParams_returnsValidCoordinates() {
+    fun generateNonCollidingCoordinateList_withValidParams_returnsNonCollidingCoordinates() {
         val screenWidth = 1000
         val screenHeight = 1200
         val generatedCoordinates =
@@ -75,10 +78,14 @@ class CoordinateUtilsTest {
             generatedCoordinates.toMutableList().apply {
                 remove(coordinates)
                 for (coordsToCompareWith in this) {
-                    assertTrue(getDistanceBetween(coordsToCompareWith, coordinates) > shapeSize)
+                    assertThat(
+                        getDistanceBetween(coordsToCompareWith, coordinates).toInt(),
+                        greaterThan(shapeSize)
+                    )
                 }
             }
-
         }
+
+
     }
 }
