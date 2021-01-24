@@ -16,11 +16,6 @@ const val permissibleHitFaultInPixels = 50
 const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
-
-const val screenHeightRatio = 16
-const val screenWidthRatio = 9
-
-
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mutableScreenShapesLiveData: MutableLiveData<List<Shape>> = MutableLiveData()
@@ -71,8 +66,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun buildShapes(screenWidthAndHeight: Pair<Int, Int>) {
 
-        initShapeSizes(screenWidthAndHeight)
-
         val colorsArray = arrayOf(
             R.color.color_1,
             R.color.color_2,
@@ -101,12 +94,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 mutableScreenShapesLiveData.value = this
                 buildMatchingShape(this)
             }
-    }
-
-    private fun initShapeSizes(screenWidthAndHeight: Pair<Int, Int>) {
-        val width = screenWidthAndHeight.first
-        val height = screenWidthAndHeight.second
-        shapeSize = if (width < height) width / screenWidthRatio else width / screenHeightRatio
     }
 
     private fun buildMatchingShape(shapesThatWillBeOnScreen: MutableList<Shape>) {

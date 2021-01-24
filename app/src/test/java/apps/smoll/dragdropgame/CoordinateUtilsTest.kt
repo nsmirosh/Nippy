@@ -2,23 +2,25 @@ package apps.smoll.dragdropgame
 
 import apps.smoll.dragdropgame.utils.*
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.Matchers.greaterThan
 import org.junit.Assert.*
 import org.junit.Test
 import kotlin.random.Random
 
 
-const val shapeSize = 150
-const val halfShapeSize = 75
+val screenDensities =
+    setOf(Pair(480, 800), Pair(1720, 1280), Pair(1440, 2560), Pair(1080, 1920))
 
 class CoordinateUtilsTest {
 
     @Test
     fun getRandomXYCoordinates_withValidParameters_isWithinProperRange() {
-        for (value in 200..2000 step 50) {
-            val coords = getRandomXYCoordsIn(Pair(value, value), shapeSize)
-            val xRange = halfShapeSize..value - halfShapeSize
+
+        screenDensities.forEach { widthHeight ->
+            val coords = getRandomXYCoordsIn(widthHeight)
+            val xRange = halfShapeSize..widthHeight.first - halfShapeSize
             assertTrue(coords.first in xRange)
-            val yRange = halfShapeSize..value - halfShapeSize
+            val yRange = halfShapeSize..widthHeight.second - halfShapeSize
             assertTrue(coords.second in yRange)
         }
     }
@@ -30,34 +32,35 @@ class CoordinateUtilsTest {
     }
 
     @Test
-    fun generateNewShapeCoords_withValidParams_returnsValidCoordinates() {
-        val centersOfShapes = mutableSetOf<Pair<Int, Int>>()
-        val screenWidth = 1000
-        val screenHeight = 1200
+    fun generateNewShapeCoords_withAlreadyPresentShapes_returnsValidCoordinatesForNewShape() {
 
-        repeat(5) {
-            var randomX = Random.nextInt(screenWidth - halfShapeSize)
-            if (randomX < halfShapeSize) {
-                randomX = halfShapeSize
+        val amountOfShapesGeneratedBeforeHand = 5
+
+        screenDensities.forEach { widthHeight ->
+
+            val centersOfShapes = mutableSetOf<Pair<Int, Int>>()
+            repeat(amountOfShapesGeneratedBeforeHand) {
+                var randomX = Random.nextInt(widthHeight.first - halfShapeSize)
+                if (randomX < halfShapeSize) {
+                    randomX = halfShapeSize
+                }
+                var randomY = Random.nextInt(widthHeight.second - halfShapeSize)
+                if (randomY < halfShapeSize) {
+                    randomY = halfShapeSize
+                }
+                centersOfShapes.add(Pair(randomX, randomY))
             }
-            var randomY = Random.nextInt(screenHeight - halfShapeSize)
-            if (randomY < halfShapeSize) {
-                randomY = halfShapeSize
+
+            val shapeList = mutableListOf<Pair<Int, Int>>()
+
+            centersOfShapes.forEach {
+                shapeList.add(it)
             }
-            centersOfShapes.add(Pair(randomX, randomY))
-        }
 
-        val shapeList = mutableListOf<Pair<Int, Int>>()
-
-        shapeList.apply {
-            for (coordinates in centersOfShapes) {
-                shapeList.add(coordinates)
+            val newShapeCoords = generateNewShapeCoords(widthHeight, shapeList)
+            for (shapeCenter in centersOfShapes) {
+                assertThat(getDistanceBetween(shapeCenter, newShapeCoords).toInt(), greaterThan(shapeSize))
             }
-        }
-
-        val newShapeCoords = generateNewShapeCoords(Pair(screenWidth, screenHeight), shapeList)
-        for (shapeCenter in centersOfShapes) {
-            assertTrue(getDistanceBetween(shapeCenter, newShapeCoords) > shapeSize)
         }
     }
 

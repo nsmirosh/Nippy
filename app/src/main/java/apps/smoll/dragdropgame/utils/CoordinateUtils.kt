@@ -1,8 +1,6 @@
 package apps.smoll.dragdropgame.utils
 
 import apps.smoll.dragdropgame.*
-import apps.smoll.dragdropgame.features.game.screenHeightRatio
-import apps.smoll.dragdropgame.features.game.screenWidthRatio
 import java.util.*
 
 
@@ -17,21 +15,16 @@ fun generateNonCollidingCoordinateList(
     return listOfCoords
 }
 
-fun getShapeSize(screenWidthAndHeight: Pair<Int, Int>) = with(screenWidthAndHeight) {
-    if (this.first < this.second) this.first / screenWidthRatio else this.second / screenHeightRatio
-}
-
 fun generateNewShapeCoords(
     widthAndHeight: Pair<Int, Int>,
     shapeCoordinatesList: List<Pair<Int, Int>>
 ): Pair<Int, Int> {
-    val shapeSize = getShapeSize(widthAndHeight)
     var randomCoords: Pair<Int, Int>
     do {
         var shouldContinueLooking = false
-        randomCoords = getRandomXYCoordsIn(widthAndHeight, shapeSize)
+        randomCoords = getRandomXYCoordsIn(widthAndHeight)
         shapeCoordinatesList.forEach {
-            if (willShapesCollide(randomCoords, it, shapeSize)) {
+            if (willShapesCollide(randomCoords, it)) {
                 shouldContinueLooking = true
                 return@forEach
             }
@@ -42,13 +35,12 @@ fun generateNewShapeCoords(
 
 fun willShapesCollide(
     firstShapeCoords: Pair<Int, Int>,
-    secondShapeCoords: Pair<Int, Int>,
-    shapeSize: Int
+    secondShapeCoords: Pair<Int, Int>
 ): Boolean {
     return getDistanceBetween(firstShapeCoords, secondShapeCoords) < shapeSize
 }
 
-fun getRandomXYCoordsIn(widthAndHeight: Pair<Int, Int>, shapeSize: Int): Pair<Int, Int> {
+fun getRandomXYCoordsIn(widthAndHeight: Pair<Int, Int>): Pair<Int, Int> {
 
     val upperWidthBound = widthAndHeight.first - shapeSize
 
