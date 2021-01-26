@@ -45,6 +45,9 @@ fun ImageView.setShape(context: Context, shape: Shape) {
         y = second.toFloat()
     }
 
+    layoutParams.height = shapeSize
+    layoutParams.width = shapeSize
+
 
 }
 
