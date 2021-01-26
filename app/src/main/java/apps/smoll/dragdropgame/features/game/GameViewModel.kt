@@ -6,7 +6,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
-import apps.smoll.dragdropgame.features.Level
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
 import timber.log.Timber
 
@@ -31,8 +30,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val timeLeftLiveData: LiveData<String> get() = mutableTimeLeftLiveData
 
     val addedViewIds = mutableSetOf<Int>()
-
-    lateinit var matchingShapeCoords: Pair<Int, Int>
 
     lateinit var timer: CountDownTimer
     var shapeSize = 0
@@ -98,42 +95,40 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
             .toMutableList()
             .apply {
-                buildMatchingShape(this)
                 mutableScreenShapesLiveData.value = this
+                buildMatchingShape(this.random())
             }
     }
 
-    private fun buildMatchingShape(shapesThatWillBeOnScreen: MutableList<Shape>) {
+    private fun buildMatchingShape(shapeToCopy: Shape) {
 
         val xPos = (sWidth / 2) - shapeSize
         val yPos = (sHeight * 0.8).toInt()
 
-        matchingShapeCoords = Pair(xPos, yPos)
-
-        shapesThatWillBeOnScreen.shuffle()
-
         val shapeToMatch =
             Shape(
-                matchingShapeCoords,
-                shapesThatWillBeOnScreen.first().typeResource,
-                shapesThatWillBeOnScreen.first().colorResource
+                Pair(xPos, yPos),
+                shapeToCopy.typeResource,
+                shapeToCopy.colorResource
             )
         mutableShapeToMatchLiveData.value = shapeToMatch
     }
 
-    fun handleDrop(coordinates: Pair<Int, Int>) {
+    fun handleMatchingShapeDrop(coordinates: Pair<Int, Int>) {
         getShapeThatIsHit(coordinates).apply {
             if (this != null) {
                 score++
                 updateScore()
-                mutableScreenShapesLiveData.value =
-                    screenShapesLiveData.value?.filter { it.typeResource != this.typeResource }
+                removeShapeThatWasHit(this)
             }
         }
-
-        moveMatchingShapeToInitialPos()
     }
 
+    private fun removeShapeThatWasHit(shapeThatWasHit: Shape) {
+        mutableScreenShapesLiveData.value =
+            screenShapesLiveData.value?.filter { it.typeResource != shapeThatWasHit.typeResource }
+    }
+/*
     private fun moveMatchingShapeToInitialPos() {
         val shapeToMatch = shapeToMatchLiveData.value!!
         mutableShapeToMatchLiveData.value = Shape(
@@ -141,7 +136,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             shapeToMatch.typeResource,
             shapeToMatch.colorResource
         )
-    }
+    }*/
 
     private fun getShapeThatIsHit(targetCoordinates: Pair<Int, Int>): Shape? {
         screenShapesLiveData.value?.forEach {

@@ -2,22 +2,17 @@ package apps.smoll.dragdropgame.features.game
 
 import android.content.ClipData
 import android.content.ClipDescription
-import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat.getColor
-import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
-import apps.smoll.dragdropgame.shapeSize
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import timber.log.Timber
@@ -64,34 +59,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private fun updateShapeToMatch(shape: Shape) =
         dragImageView.apply {
-            with(shape.shapeCenter) {
-                x = this.first.toFloat()
-                y = this.second.toFloat()
-            }
-            visible()
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            setImage(requireContext(), shape.typeResource)
-
-            ImageViewCompat.setImageTintList(
-                this,
-                ColorStateList.valueOf(getColor(requireContext(), shape.colorResource))
-            )
-            id = View.generateViewId()
-            gameViewModel.addedViewIds.add(id)
-            layoutParams.height = shapeSize;
-            layoutParams.width = shapeSize;
-            requestLayout()
-
-            shape.shapeCenter.apply {
-                x = first.toFloat()
-                y = second.toFloat()
-            }
-
-            containerView.addView(this)
-            setViewConstraints(this)
+            setShape(requireContext(), shape)
         }
 
 
@@ -127,7 +95,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
                 DragEvent.ACTION_DROP -> {
-                    gameViewModel.handleDrop(Pair(event.x.toInt(), event.y.toInt()))
+                    gameViewModel.handleMatchingShapeDrop(Pair(event.x.toInt(), event.y.toInt()))
                     v.invalidate()
                     true
                 }
@@ -145,27 +113,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         for (shape in shapes) {
             ImageView(requireContext()).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                setImage(requireContext(), shape.typeResource)
-
-                ImageViewCompat.setImageTintList(
-                    this,
-                    ColorStateList.valueOf(getColor(requireContext(), shape.colorResource))
-                )
+                setShape(requireContext(), shape)
                 id = View.generateViewId()
                 gameViewModel.addedViewIds.add(id)
-                layoutParams.height = shapeSize;
-                layoutParams.width = shapeSize;
                 requestLayout()
-
-                shape.shapeCenter.apply {
-                    x = first.toFloat()
-                    y = second.toFloat()
-                }
-
                 containerView.addView(this)
                 setViewConstraints(this)
             }
