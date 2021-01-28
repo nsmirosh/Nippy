@@ -21,9 +21,10 @@
 
 ### 1. Get the app working with the first screen and the first level
   - [x] Write up a rough draft for the app
-  - [ ] Position the "matching" shape at the bottom of the screen
-  - [ ] Centralize everything on one branch
-  - [ ] Change the logic so that the position of the shapes to match are according to the screen size and don't overlap other elements or go out of bounds
+  - [x] Position the "matching" shape at the bottom of the screen
+  - [x] Centralize everything on one branch
+  - [ ] Implement the logic for the matching shape to be left where it is after a drop if it didn't hit anything
+  - [ ] Implement the shape to reappear at the bottom based on the shapes that are left on the screen once a match happens.
   - [ ] Implement a dialog that will pop up that will ask the user if they want to restart or go to the main menu and remove the restart button
   - [ ] Write up tests for the logic above
 

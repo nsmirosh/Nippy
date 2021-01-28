@@ -14,6 +14,11 @@
     <color name="color_3">#81B7D2</color>
     <color name="color_4">#4D5198</color>
 
+
+
+    <color name="shape_to_match_color">#FF0000</color>
+
+
     <array name="shape_colors">
         <item>@color/color_1</item>
         <item>@color/color_2</item>

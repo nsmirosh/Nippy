@@ -59,6 +59,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private fun updateShapeToMatch(shape: Shape) =
         dragImageView.apply {
+            visible()
             setShape(requireContext(), shape)
         }
 

@@ -41,7 +41,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             sWidth = first
             sHeight = second
         }
-        buildShapes()
+        buildInitialShapes()
         startTimer()
     }
 
@@ -65,7 +65,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         mutableTimeLeftLiveData.value = secondsLeftString
     }
 
-    private fun buildShapes() {
+    private fun buildInitialShapes() {
 
         val colorsArray = arrayOf(
             R.color.color_1,
@@ -95,32 +95,48 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             .toMutableList()
             .apply {
                 mutableScreenShapesLiveData.value = this
-                buildMatchingShape(this.random())
+                buildMatchingShape()
             }
     }
 
-    private fun buildMatchingShape(shapeToCopy: Shape) {
+    private fun buildMatchingShape() {
+
+       val oneOfTheShapesOnScreen = screenShapesLiveData.value!!.random()
 
         val xPos = (sWidth / 2) - shapeSize
         val yPos = (sHeight * 0.7).toInt()
 
-        val shapeToMatch =
-            Shape(
-                Pair(xPos, yPos),
-                shapeToCopy.typeResource,
-                shapeToCopy.colorResource
+        val shapeToMatch = oneOfTheShapesOnScreen.copy(
+                shapeCenter = Pair(xPos, yPos),
+                colorResource = R.color.shape_to_match_color
             )
+
         mutableShapeToMatchLiveData.value = shapeToMatch
     }
 
-    fun handleMatchingShapeDrop(coordinates: Pair<Int, Int>) {
-        getShapeThatIsHit(coordinates).apply {
+    fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
+        getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
-                score++
-                updateScore()
-                removeShapeThatWasHit(this)
+                onShapeHit(this)
+            }
+            else {
+                updateMatchingShapePos(dropEventCoordinates)
             }
         }
+    }
+
+    private fun onShapeHit(shape: Shape) {
+        removeShapeThatWasHit(shape)
+        score++
+        updateScore()
+        buildMatchingShape()
+    }
+
+    private fun updateMatchingShapePos(coordinates: Pair<Int, Int>) {
+        val shapeToMatch = shapeToMatchLiveData.value!!
+        val coordsAdjustedForLayoutOnScreen =
+            Pair(coordinates.first - halfShapeSize, coordinates.second - halfShapeSize)
+        mutableShapeToMatchLiveData.value = shapeToMatch.copy(coordsAdjustedForLayoutOnScreen)
     }
 
     private fun removeShapeThatWasHit(shapeThatWasHit: Shape) {
@@ -139,8 +155,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun getShapeThatIsHit(targetCoordinates: Pair<Int, Int>): Shape? {
         screenShapesLiveData.value?.forEach {
-            val shapeOnScreenXCenter = it.shapeCenter.first + shapeSize / 2
-            val shapeOnScreenYCenter = it.shapeCenter.second + shapeSize / 2
+            val shapeOnScreenXCenter = it.shapeCenter.first + halfShapeSize
+            val shapeOnScreenYCenter = it.shapeCenter.second + halfShapeSize
             val permissibleXFaultRange =
                 shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
             val permissibleYFaultRange =
