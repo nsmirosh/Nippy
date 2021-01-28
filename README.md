@@ -30,9 +30,9 @@
   - [ ] Write up tests for the logic and calculations involved above
 
 ### 2. Finish the rest of the 20 levels
-    - [ ] find more shapes and add them so it will be sufficient for 20 levels
-    - [ ] add the logic that will take the user to the next level on completion
-    - [ ] Write up tests for the logic above
+  - [ ] find more shapes and add them so it will be sufficient for 20 levels
+  - [ ] add the logic that will take the user to the next level on completion
+  - [ ] Write up tests for the logic above
 
 ### 3. Build a main menu
   - [ ] Display the user's current highscore and the level they are at right now
