@@ -15,15 +15,9 @@ import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.shapeSize
 import kotlinx.android.synthetic.main.activity_main.*
 
-
-fun ImageView.settleInPosition(pair: Pair<Float, Float>) {
-    apply {
-        x = pair.first - width / 2
-        y = pair.second - height / 2
-    }
-}
-
 fun ImageView.setShape(context: Context, shape: Shape) {
+
+    visible()
     layoutParams =  ConstraintLayout.LayoutParams(   shapeSize,
         shapeSize)
     setImageDrawable(

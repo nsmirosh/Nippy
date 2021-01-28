@@ -23,21 +23,22 @@
   - [x] Write up a rough draft for the app
   - [x] Position the "matching" shape at the bottom of the screen
   - [x] Centralize everything on one branch
-  - [ ] Implement the logic for the matching shape to be left where it is after a drop if it didn't hit anything
-  - [ ] Implement the shape to reappear at the bottom based on the shapes that are left on the screen once a match happens.
-  - [ ] Implement a dialog that will pop up that will ask the user if they want to restart or go to the main menu and remove the restart button
-  - [ ] Write up tests for the logic above
+  - [x] Implement the logic for the matching shape to be left where it is after a drop if it didn't hit anything
+  - [x] Implement the shape to reappear at the bottom based on the shapes that are left on the screen once a match happens.
+  - [x] Restart the game once all shapes were matched
+  - [ ] Implement a dialog that will pop up that will ask the user if they want to  go to the main menu or go on to the next level and remove the restart button
+  - [ ] Write up tests for the logic and calculations involved above
 
-### 2. Build a main menu
+### 2. Finish the rest of the 20 levels
+    - [ ] find more shapes and add them so it will be sufficient for 20 levels
+    - [ ] add the logic that will take the user to the next level on completion
+    - [ ] Write up tests for the logic above
+
+### 3. Build a main menu
   - [ ] Display the user's current highscore and the level they are at right now
   - [ ] Add the button and logic for starting a new game
   - [ ] Add the button and logic for continuing where the user left off
   - [ ] Write up unit and UI test for cases above
-
-### 3. Finish the rest of the 20 levels
-  - [ ] find more shapes and add them so it will be sufficient for 20 levels
-  - [ ] add the logic that will take the user to the next level on completion
-  - [ ] Write up tests for the logic above
 
 ### 4. Add Local Storage
   - [ ] Add Room to the project
