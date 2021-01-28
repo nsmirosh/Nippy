@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
@@ -23,10 +24,8 @@ fun ImageView.settleInPosition(pair: Pair<Float, Float>) {
 }
 
 fun ImageView.setShape(context: Context, shape: Shape) {
-    layoutParams = ViewGroup.LayoutParams(
-        WRAP_CONTENT,
-        WRAP_CONTENT
-    )
+    layoutParams =  ConstraintLayout.LayoutParams(   shapeSize,
+        shapeSize)
     setImageDrawable(
         ContextCompat.getDrawable(
             context,
@@ -39,16 +38,10 @@ fun ImageView.setShape(context: Context, shape: Shape) {
         ColorStateList.valueOf(ContextCompat.getColor(context, shape.colorResource))
     )
 
-
     shape.shapeCenter.apply {
         x = first.toFloat()
         y = second.toFloat()
     }
-
-    layoutParams.height = shapeSize
-    layoutParams.width = shapeSize
-
-
 }
 
 fun View.invisible() {

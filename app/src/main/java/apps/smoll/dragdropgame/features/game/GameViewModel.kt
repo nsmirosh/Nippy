@@ -32,7 +32,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     val addedViewIds = mutableSetOf<Int>()
 
     lateinit var timer: CountDownTimer
-    var shapeSize = 0
     var score = 0
     var sWidth = 0
     var sHeight = 0
@@ -103,7 +102,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun buildMatchingShape(shapeToCopy: Shape) {
 
         val xPos = (sWidth / 2) - shapeSize
-        val yPos = (sHeight * 0.8).toInt()
+        val yPos = (sHeight * 0.7).toInt()
 
         val shapeToMatch =
             Shape(

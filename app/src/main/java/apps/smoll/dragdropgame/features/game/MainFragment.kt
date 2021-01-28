@@ -118,7 +118,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 gameViewModel.addedViewIds.add(id)
                 requestLayout()
                 containerView.addView(this)
-                setViewConstraints(this)
             }
         }
     }
@@ -131,21 +130,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     removeView(findViewById(it))
                 }
             }
-        }
-    }
-
-
-    private fun setViewConstraints(view: View) {
-        val constraintSet = ConstraintSet()
-        constraintSet.apply {
-            clone(containerView)
-            connect(
-                view.getId(),
-                ConstraintSet.TOP,
-                containerView.getId(),
-                ConstraintSet.TOP
-            )
-            applyTo(containerView)
         }
     }
 
