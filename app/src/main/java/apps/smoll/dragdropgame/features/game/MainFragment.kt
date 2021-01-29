@@ -8,7 +8,6 @@ import android.util.DisplayMetrics
 import android.view.DragEvent
 import android.view.View
 import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import apps.smoll.dragdropgame.R
@@ -47,6 +46,17 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             viewLifecycleOwner,
             { updateTimerText(it) }
         )
+
+        gameViewModel.levelLiveData.observe(
+            viewLifecycleOwner,
+            { onLevelUpgrade(it) }
+        )
+    }
+
+    private fun onLevelUpgrade(levelText: String) {
+        levelTextView.text = levelText
+        mainMenuButton.visible()
+        nextLevelButton.visible()
     }
 
     private fun updateTimerText(secondsLeft: String) {
@@ -63,7 +73,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
 
     private fun initListeners() {
-        restartGameButton.setOnClickListener { gameViewModel.restartGame(screenWidthAndHeight) }
+        mainMenuButton.setOnClickListener { gameViewModel.restartGame(screenWidthAndHeight) }
+        nextLevelButton.setOnClickListener { gameViewModel.startGame(screenWidthAndHeight) }
 
         dragImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)

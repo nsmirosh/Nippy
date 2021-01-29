@@ -2,7 +2,12 @@
     <string name="app_name">DragDropGame</string>
     <string name="restart">Restart</string>
 
-    <string name="score">Your score: %d</string>
+    <string name="score">Score: %d</string>
+    <string name="level">Level: %d</string>
     <string name="time_left">Time left: %d</string>
+
+    <string name="main_menu">Main Menu</string>
+    <string name="next_level">Next Level</string>
+
 
 </resources>

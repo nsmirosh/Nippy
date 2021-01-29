@@ -29,12 +29,16 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val mutableTimeLeftLiveData: MutableLiveData<String> = MutableLiveData()
     val timeLeftLiveData: LiveData<String> get() = mutableTimeLeftLiveData
 
+    private val mutableLevelLiveData: MutableLiveData<String> = MutableLiveData()
+    val levelLiveData: LiveData<String> get() = mutableLevelLiveData
+
     val addedViewIds = mutableSetOf<Int>()
 
     lateinit var timer: CountDownTimer
     var score = 0
     var sWidth = 0
     var sHeight = 0
+    var level = 1
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
         screenWidthAndHeight.apply {
@@ -89,7 +93,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             Pair(
                 widthBound,
                 heightBound
-            ), 4
+            ), level
         )
             .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
             .toMutableList()
@@ -101,15 +105,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun buildMatchingShape() {
 
-       val oneOfTheShapesOnScreen = screenShapesLiveData.value!!.random()
+        val oneOfTheShapesOnScreen = screenShapesLiveData.value!!.random()
 
         val xPos = (sWidth / 2) - shapeSize
         val yPos = (sHeight * 0.7).toInt()
 
         val shapeToMatch = oneOfTheShapesOnScreen.copy(
-                shapeCenter = Pair(xPos, yPos),
-                colorResource = R.color.shape_to_match_color
-            )
+            shapeCenter = Pair(xPos, yPos),
+            colorResource = R.color.shape_to_match_color
+        )
 
         mutableShapeToMatchLiveData.value = shapeToMatch
     }
@@ -118,25 +122,25 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
                 onShapeHit(this)
-            }
-            else {
+            } else {
                 updateMatchingShapePos(dropEventCoordinates)
             }
         }
     }
 
     private fun onShapeHit(shape: Shape) {
-        val shapesLeftOnScreen = screenShapesLiveData.value!!.size
-        if (shapesLeftOnScreen > 1) {
+        if (shouldGoToNextLevel()) {
+            level++
+            updateLevel()
+        } else {
             removeShapeThatWasHit(shape)
             score++
             updateScore()
             buildMatchingShape()
         }
-        else {
-            restartGame(Pair(sWidth, sHeight))
-        }
     }
+
+    private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.size == 1
 
     private fun updateMatchingShapePos(coordinates: Pair<Int, Int>) {
         val shapeToMatch = shapeToMatchLiveData.value!!
@@ -175,13 +179,19 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             cancel()
             start()
         }
-        startGame(screenWidthAndHeight)
         score = 0
+        level = 1
+        startGame(screenWidthAndHeight)
         updateScore()
     }
 
     private fun updateScore() {
         val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
         mutableScoreLiveData.value = scoreString
+    }
+
+    private fun updateLevel() {
+        val levelString = getApplication<GameApplication>().getString(R.string.level, level)
+        mutableLevelLiveData.value = levelString
     }
 }

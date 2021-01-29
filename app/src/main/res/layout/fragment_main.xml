@@ -12,10 +12,19 @@
         android:layout_width="wrap_content"
         app:layout_constraintStart_toStartOf="@id/containerView"
         app:layout_constraintTop_toTopOf="@id/containerView"
-
         android:textSize="20sp"
         android:textColor="@color/black"
-        tools:text="0"
+        tools:text="Score: 25"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/levelTextView"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/containerView"
+        app:layout_constraintTop_toBottomOf="@id/scoreTextView"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        tools:text="Level: 3"
         android:layout_height="wrap_content"/>
 
     <TextView
@@ -34,18 +43,30 @@
         android:layout_height="150px"
         android:src="@drawable/ic_circle"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/restartGameButton"
+        app:layout_constraintBottom_toTopOf="@id/mainMenuButton"
         app:layout_constraintEnd_toEndOf="@id/containerView"
         app:layout_constraintStart_toStartOf="@id/containerView" />
 
     <Button
-        android:id="@+id/restartGameButton"
+        android:id="@+id/mainMenuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="@string/restart"
+        android:text="@string/main_menu"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/containerView"
         app:layout_constraintBottom_toBottomOf="@id/containerView"
         app:layout_constraintEnd_toEndOf="@id/containerView"
         app:layout_constraintStart_toStartOf="@id/containerView" />
 
+    <Button
+        android:id="@+id/nextLevelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/next_level"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/mainMenuButton"
+        app:layout_constraintEnd_toEndOf="@id/containerView"
+        app:layout_constraintStart_toStartOf="@id/containerView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

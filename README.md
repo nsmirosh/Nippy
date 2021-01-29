@@ -19,15 +19,17 @@
 
 ## tasks
 
-### 1. Get the app working with the first screen and the first level
+### 1. Get the app working with the first screen and the first few levels
   - [x] Write up a rough draft for the app
   - [x] Position the "matching" shape at the bottom of the screen
   - [x] Centralize everything on one branch
   - [x] Implement the logic for the matching shape to be left where it is after a drop if it didn't hit anything
   - [x] Implement the shape to reappear at the bottom based on the shapes that are left on the screen once a match happens.
   - [x] Restart the game once all shapes were matched
-  - [ ] Implement a dialog that will pop up that will ask the user if they want to  go to the main menu or go on to the next level and remove the restart button
+  - [ ] Implement the concept of a Level and advancing to the first 4 levels
+  - [ ] Implement buttons that will show after the completion of a Level (Main menu and next level)
   - [ ] Write up tests for the logic and calculations involved above
+  - [ ] Apply clean architecture principles + MVVM
 
 ### 2. Finish the rest of the 20 levels
   - [ ] find more shapes and add them so it will be sufficient for 20 levels
