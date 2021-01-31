@@ -119,8 +119,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
         getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
-                onShapeHit()
                 removeShapeThatWasHit(this)
+                onShapeHit()
             } else {
                 updateMatchingShapePosOnScreen(dropEventCoordinates)
             }
@@ -141,7 +141,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         updateAllText()
     }
 
-    private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.size == 1
+    private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.size == 0
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
         val shapeToMatch = shapeToMatchLiveData.value!!
