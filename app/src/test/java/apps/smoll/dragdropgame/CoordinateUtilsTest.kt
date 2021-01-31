@@ -3,6 +3,7 @@ package apps.smoll.dragdropgame
 import apps.smoll.dragdropgame.utils.*
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Matchers.greaterThan
+import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.Assert.*
 import org.junit.Test
 import kotlin.random.Random
@@ -61,7 +62,7 @@ class CoordinateUtilsTest {
             for (shapeCenter in centersOfShapes) {
                 assertThat(
                     getDistanceBetween(shapeCenter, newShapeCoords).toInt(),
-                    greaterThan(shapeSize)
+                    greaterThanOrEqualTo(shapeSize)
                 )
             }
         }
@@ -80,7 +81,7 @@ class CoordinateUtilsTest {
                 for (coordsToCompareWith in this) {
                     assertThat(
                         getDistanceBetween(coordsToCompareWith, coordinates).toInt(),
-                        greaterThan(shapeSize)
+                        greaterThanOrEqualTo(shapeSize)
                     )
                 }
             }

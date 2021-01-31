@@ -55,8 +55,16 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private fun onLevelUpgrade(levelText: String) {
         levelTextView.text = levelText
+        showInterLevelOptions()
+    }
+    private fun showInterLevelOptions() {
         mainMenuButton.visible()
         nextLevelButton.visible()
+    }
+
+    private fun hideInterLevelOptions() {
+        mainMenuButton.gone()
+        nextLevelButton.gone()
     }
 
     private fun updateTimerText(secondsLeft: String) {
@@ -73,8 +81,14 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
 
     private fun initListeners() {
-        mainMenuButton.setOnClickListener { gameViewModel.restartGame(screenWidthAndHeight) }
-        nextLevelButton.setOnClickListener { gameViewModel.startGame(screenWidthAndHeight) }
+        mainMenuButton.setOnClickListener {
+            hideInterLevelOptions()
+            gameViewModel.restartGame(screenWidthAndHeight)
+        }
+        nextLevelButton.setOnClickListener {
+            hideInterLevelOptions()
+            gameViewModel.startGame(screenWidthAndHeight)
+        }
 
         dragImageView.setOnLongClickListener { v: View ->
             val item = ClipData.Item(v.tag as? CharSequence)

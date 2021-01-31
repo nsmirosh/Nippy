@@ -6,8 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
+import apps.smoll.dragdropgame.utils.buildShapesWithRandomColorsAndShapeTypes
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
-import timber.log.Timber
 
 
 const val permissibleHitFaultInPixels = 50
@@ -36,12 +36,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     lateinit var timer: CountDownTimer
     var score = 0
+    var currentLevelScore = 0
     var sWidth = 0
     var sHeight = 0
     var level = 1
+    var timeLeftInSeconds = 0
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
-        screenWidthAndHeight.apply {
+
+        with(screenWidthAndHeight) {
             sWidth = first
             sHeight = second
         }
@@ -51,57 +54,52 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun startTimer() {
         if (this::timer.isInitialized) {
-            return
+            timer.cancel()
         }
         timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
             override fun onTick(millisUntilFinished: Long) = onTimerTick(millisUntilFinished)
 
-            override fun onFinish() {
-                Timber.d("onFinish!")
-            }
+            /*
+            We cancel the timer only in once case: In case the user finished the level successfully.
+              So in case it did complete - we know for sure the player failed.
+             */
+            override fun onFinish() = onPlayerFail()
+
         }.start()
     }
 
+    private fun onPlayerFail() {
+        score -= currentLevelScore
+        currentLevelScore = 0
+        updateScoreText()
+    }
+
     private fun onTimerTick(millisUntilFinished: Long) {
-        val secondsLeft = (millisUntilFinished / intervalInMilliseconds).toInt()
-        val secondsLeftString =
-            getApplication<GameApplication>().getString(R.string.time_left, secondsLeft)
-        mutableTimeLeftLiveData.value = secondsLeftString
+        timeLeftInSeconds = (millisUntilFinished / intervalInMilliseconds).toInt()
+        updateTimerText()
     }
 
     private fun buildInitialShapes() {
-
-        val colorsArray = arrayOf(
-            R.color.color_1,
-            R.color.color_2,
-            R.color.color_3,
-            R.color.color_4,
-        )
-
-        val imageShapeArray = arrayOf(
-            R.drawable.ic_square,
-            R.drawable.ic_hexagonal,
-            R.drawable.ic_star,
-            R.drawable.ic_circle
-        )
-
-        //TODO fix this later - this might not work for small screens because the shape is fixed right now  i.e. 150px
-        val widthBound = (sWidth * 0.8).toInt()
-        val heightBound = (sHeight * 0.8).toInt()
-
-        generateNonCollidingCoordinateList(
-            Pair(
-                widthBound,
-                heightBound
-            ), level
-        )
-            .mapIndexed { index, shape -> Shape(shape, imageShapeArray[index], colorsArray[index]) }
-            .toMutableList()
+        val coordsList = generateCoordinatesForShapesOnScreen()
+        buildShapesWithRandomColorsAndShapeTypes(coordsList)
             .apply {
                 mutableScreenShapesLiveData.value = this
                 buildMatchingShape()
             }
     }
+
+    private fun generateCoordinatesForShapesOnScreen(): List<Pair<Int, Int>> {
+        val widthBound = (sWidth * 0.8).toInt()
+        val heightBound = (sHeight * 0.8).toInt()
+
+        return generateNonCollidingCoordinateList(
+            Pair(
+                widthBound,
+                heightBound
+            ), level
+        )
+    }
+
 
     private fun buildMatchingShape() {
 
@@ -121,28 +119,31 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
         getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
-                onShapeHit(this)
+                onShapeHit()
+                removeShapeThatWasHit(this)
             } else {
-                updateMatchingShapePos(dropEventCoordinates)
+                updateMatchingShapePosOnScreen(dropEventCoordinates)
             }
         }
     }
 
-    private fun onShapeHit(shape: Shape) {
+    private fun onShapeHit() {
         if (shouldGoToNextLevel()) {
             level++
-            updateLevel()
+            timer.cancel()
+            timeLeftInSeconds = 0
+            upgradeLevel()
         } else {
-            removeShapeThatWasHit(shape)
-            score++
-            updateScore()
+            currentLevelScore++
             buildMatchingShape()
         }
+        score++
+        updateAllText()
     }
 
     private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.size == 1
 
-    private fun updateMatchingShapePos(coordinates: Pair<Int, Int>) {
+    private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
         val shapeToMatch = shapeToMatchLiveData.value!!
         val coordsAdjustedForLayoutOnScreen =
             Pair(coordinates.first - halfShapeSize, coordinates.second - halfShapeSize)
@@ -182,16 +183,27 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         score = 0
         level = 1
         startGame(screenWidthAndHeight)
-        updateScore()
+        updateAllText()
     }
 
-    private fun updateScore() {
+    private fun updateAllText() {
+        updateScoreText()
+        updateTimerText()
+    }
+
+    private fun updateScoreText() {
         val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
         mutableScoreLiveData.value = scoreString
     }
 
-    private fun updateLevel() {
+    private fun upgradeLevel() {
         val levelString = getApplication<GameApplication>().getString(R.string.level, level)
         mutableLevelLiveData.value = levelString
+    }
+
+    private fun updateTimerText() {
+        val secondsLeftString =
+            getApplication<GameApplication>().getString(R.string.time_left, timeLeftInSeconds)
+        mutableTimeLeftLiveData.value = secondsLeftString
     }
 }
