@@ -51,12 +51,18 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             viewLifecycleOwner,
             { onLevelUpgrade(it) }
         )
+
+        gameViewModel.levelFailLiveData.observe(
+            viewLifecycleOwner,
+            { showInterLevelOptions() }
+        )
     }
 
     private fun onLevelUpgrade(levelText: String) {
         levelTextView.text = levelText
         showInterLevelOptions()
     }
+
     private fun showInterLevelOptions() {
         mainMenuButton.visible()
         nextLevelButton.visible()
@@ -75,10 +81,19 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         scoreTextView.text = score
     }
 
-    private fun updateShapeToMatch(shape: Shape) =
-        dragImageView.apply {
-            setShape(requireContext(), shape)
+    private fun updateShapeToMatch(shape: Shape?)  {
+        if (shape != null) {
+            dragImageView.apply {
+                setShape(requireContext(), shape)
+            }
         }
+        else {
+            dragImageView.gone()
+        }
+    }
+
+
+
 
     private fun initListeners() {
         mainMenuButton.setOnClickListener {

@@ -12,7 +12,7 @@ import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
 
 const val permissibleHitFaultInPixels = 50
 
-const val timeLeftInMilliseconds = 20000L
+const val timeLeftInMilliseconds = 5000L
 const val intervalInMilliseconds = 1000L
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,15 +32,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val mutableLevelLiveData: MutableLiveData<String> = MutableLiveData()
     val levelLiveData: LiveData<String> get() = mutableLevelLiveData
 
+    private val mutableLevelFailLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val levelFailLiveData: LiveData<Boolean> get() = mutableLevelFailLiveData
+
     val addedViewIds = mutableSetOf<Int>()
 
     lateinit var timer: CountDownTimer
-    var score = 0
-    var currentLevelScore = 0
-    var sWidth = 0
-    var sHeight = 0
-    var level = 1
-    var timeLeftInSeconds = 0
+    private var score = 0
+    private var currentLevelScore = 0
+    private var sWidth = 0
+    private var sHeight = 0
+    private var level = 1
+    private var timeLeftInSeconds = 0
 
     fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
 
@@ -72,6 +75,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         score -= currentLevelScore
         currentLevelScore = 0
         updateScoreText()
+        mutableLevelFailLiveData.value = true
+        mutableScreenShapesLiveData.value = listOf()
+        mutableShapeToMatchLiveData.value = null
     }
 
     private fun onTimerTick(millisUntilFinished: Long) {
@@ -141,7 +147,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         updateAllText()
     }
 
-    private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.size == 0
+    private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.isEmpty()
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
         val shapeToMatch = shapeToMatchLiveData.value!!
