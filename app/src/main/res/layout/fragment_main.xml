@@ -69,4 +69,15 @@
         app:layout_constraintTop_toBottomOf="@id/mainMenuButton"
         app:layout_constraintEnd_toEndOf="@id/containerView"
         app:layout_constraintStart_toStartOf="@id/containerView" />
+
+    <Button
+        android:id="@+id/retryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/retry"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/mainMenuButton"
+        app:layout_constraintEnd_toEndOf="@id/containerView"
+        app:layout_constraintStart_toStartOf="@id/containerView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

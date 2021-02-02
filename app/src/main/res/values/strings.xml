@@ -8,6 +8,7 @@
 
     <string name="main_menu">Main Menu</string>
     <string name="next_level">Next Level</string>
+    <string name="retry">Retry</string>
 
 
 </resources>

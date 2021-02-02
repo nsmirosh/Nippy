@@ -29,10 +29,21 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun startObservingLiveData() {
-        gameViewModel.scoreLiveData.observe(
+        gameViewModel.scoreTextLiveData.observe(
             viewLifecycleOwner,
-            { updateScoreText(it) }
+            { scoreTextView.text = it }
         )
+
+        gameViewModel.timeLeftTextLiveData.observe(
+            viewLifecycleOwner,
+            { timeLeftTextView.text = it }
+        )
+
+        gameViewModel.levelTextLiveData.observe(
+            viewLifecycleOwner,
+            { levelTextView.text = it }
+        )
+
         gameViewModel.shapeToMatchLiveData.observe(
             viewLifecycleOwner,
             { updateShapeToMatch(it) }
@@ -42,67 +53,60 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             viewLifecycleOwner,
             { updateShapesOnScreen(it) }
         )
-        gameViewModel.timeLeftLiveData.observe(
+
+        gameViewModel.userWonEvent.observe(
             viewLifecycleOwner,
-            { updateTimerText(it) }
+            {
+                it.getContentIfNotHandled()?.let {
+                    onUserWon()
+                }
+            }
         )
 
-        gameViewModel.levelLiveData.observe(
+        gameViewModel.userLostEvent.observe(
             viewLifecycleOwner,
-            { onLevelUpgrade(it) }
-        )
-
-        gameViewModel.levelFailLiveData.observe(
-            viewLifecycleOwner,
-            { showInterLevelOptions() }
+            {
+                it.getContentIfNotHandled()?.let {
+                    onUserLost()
+                }
+            }
         )
     }
 
-    private fun onLevelUpgrade(levelText: String) {
-        levelTextView.text = levelText
-        showInterLevelOptions()
-    }
-
-    private fun showInterLevelOptions() {
+    private fun onUserWon() {
         mainMenuButton.visible()
         nextLevelButton.visible()
     }
 
-    private fun hideInterLevelOptions() {
+    private fun onUserLost() {
+        mainMenuButton.visible()
+        retryButton.visible()
+    }
+
+    private fun hideAllButtons() {
         mainMenuButton.gone()
         nextLevelButton.gone()
+        retryButton.gone()
     }
 
-    private fun updateTimerText(secondsLeft: String) {
-        timeLeftTextView.text = secondsLeft
-    }
-
-    private fun updateScoreText(score: String) {
-        scoreTextView.text = score
-    }
-
-    private fun updateShapeToMatch(shape: Shape?)  {
+    private fun updateShapeToMatch(shape: Shape?) {
         if (shape != null) {
             dragImageView.apply {
                 setShape(requireContext(), shape)
             }
-        }
-        else {
+        } else {
             dragImageView.gone()
         }
     }
 
-
-
-
     private fun initListeners() {
-        mainMenuButton.setOnClickListener {
-            hideInterLevelOptions()
-            gameViewModel.restartGame(screenWidthAndHeight)
-        }
         nextLevelButton.setOnClickListener {
-            hideInterLevelOptions()
+            hideAllButtons()
             gameViewModel.startGame(screenWidthAndHeight)
+        }
+        retryButton.setOnClickListener {
+            hideAllButtons()
+            gameViewModel.restartLevel(screenWidthAndHeight)
         }
 
         dragImageView.setOnLongClickListener { v: View ->

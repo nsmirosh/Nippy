@@ -26,9 +26,10 @@
   - [x] Implement the logic for the matching shape to be left where it is after a drop if it didn't hit anything
   - [x] Implement the shape to reappear at the bottom based on the shapes that are left on the screen once a match happens.
   - [x] Restart the game once all shapes were matched
-  - [ ] Implement the concept of a Level and advancing to the first 4 levels
-  - [ ] Implement buttons that will show after the completion of a Level (Main menu and next level)
-  - [ ] Implement the fail of the user in case the time runs out and add the retry option and the main menu
+  - [x] Implement the concept of a Level and advancing to the first 4 levels
+  - [x] Implement buttons that will show after the completion of a Level (Main menu and next level)
+  - [ ] Implement the fail of the user in case the time runs out
+  - [ ] Add the retry / main menu option after user failure
   - [ ] Write up tests for the logic and calculations involved above
   - [ ] Apply clean architecture principles + MVVM
 

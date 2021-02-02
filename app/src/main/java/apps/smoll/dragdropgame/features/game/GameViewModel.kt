@@ -6,13 +6,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
+import apps.smoll.dragdropgame.utils.Event
 import apps.smoll.dragdropgame.utils.buildShapesWithRandomColorsAndShapeTypes
 import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
 
 
 const val permissibleHitFaultInPixels = 50
 
-const val timeLeftInMilliseconds = 5000L
+const val timeLeftInMilliseconds = 10000L
 const val intervalInMilliseconds = 1000L
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,17 +24,20 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val mutableShapeToMatchLiveData: MutableLiveData<Shape> = MutableLiveData()
     val shapeToMatchLiveData: LiveData<Shape> get() = mutableShapeToMatchLiveData
 
-    private val mutableScoreLiveData: MutableLiveData<String> = MutableLiveData()
-    val scoreLiveData: LiveData<String> get() = mutableScoreLiveData
+    private val mutableScoreTextLiveData: MutableLiveData<String> = MutableLiveData()
+    val scoreTextLiveData: LiveData<String> get() = mutableScoreTextLiveData
 
-    private val mutableTimeLeftLiveData: MutableLiveData<String> = MutableLiveData()
-    val timeLeftLiveData: LiveData<String> get() = mutableTimeLeftLiveData
+    private val mutableTimeLeftTextLiveData: MutableLiveData<String> = MutableLiveData()
+    val timeLeftTextLiveData: LiveData<String> get() = mutableTimeLeftTextLiveData
 
-    private val mutableLevelLiveData: MutableLiveData<String> = MutableLiveData()
-    val levelLiveData: LiveData<String> get() = mutableLevelLiveData
+    private val mutableLevelTextLiveData: MutableLiveData<String> = MutableLiveData()
+    val levelTextLiveData: LiveData<String> get() = mutableLevelTextLiveData
 
-    private val mutableLevelFailLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    val levelFailLiveData: LiveData<Boolean> get() = mutableLevelFailLiveData
+    private val mutableUserLostEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val userLostEvent: LiveData<Event<Boolean>> get() = mutableUserLostEvent
+
+    private val mutableUserWonEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val userWonEvent: LiveData<Event<Boolean>> get() = mutableUserWonEvent
 
     val addedViewIds = mutableSetOf<Int>()
 
@@ -75,7 +79,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         score -= currentLevelScore
         currentLevelScore = 0
         updateScoreText()
-        mutableLevelFailLiveData.value = true
+        mutableUserLostEvent.value = Event(true)
         mutableScreenShapesLiveData.value = listOf()
         mutableShapeToMatchLiveData.value = null
     }
@@ -138,7 +142,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             level++
             timer.cancel()
             timeLeftInSeconds = 0
-            upgradeLevel()
+            upgradeLevelText()
+            mutableUserWonEvent.value = Event(true)
         } else {
             currentLevelScore++
             buildMatchingShape()
@@ -166,9 +171,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             val shapeOnScreenXCenter = it.shapeCenter.first + halfShapeSize
             val shapeOnScreenYCenter = it.shapeCenter.second + halfShapeSize
             val permissibleXFaultRange =
-                shapeOnScreenXCenter - permissibleHitFaultInPixels..shapeOnScreenXCenter + permissibleHitFaultInPixels
+                (shapeOnScreenXCenter - permissibleHitFaultInPixels)..(shapeOnScreenXCenter + permissibleHitFaultInPixels)
             val permissibleYFaultRange =
-                shapeOnScreenYCenter - permissibleHitFaultInPixels..shapeOnScreenYCenter + permissibleHitFaultInPixels
+                (shapeOnScreenYCenter - permissibleHitFaultInPixels)..(shapeOnScreenYCenter + permissibleHitFaultInPixels)
 
             val isXHit =
                 targetCoordinates.first in permissibleXFaultRange
@@ -181,13 +186,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
-    fun restartGame(screenWidthAndHeight: Pair<Int, Int>) {
+    fun restartLevel(screenWidthAndHeight: Pair<Int, Int>) {
         timer.apply {
             cancel()
             start()
         }
-        score = 0
-        level = 1
         startGame(screenWidthAndHeight)
         updateAllText()
     }
@@ -199,17 +202,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun updateScoreText() {
         val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
-        mutableScoreLiveData.value = scoreString
+        mutableScoreTextLiveData.value = scoreString
     }
 
-    private fun upgradeLevel() {
+    private fun upgradeLevelText() {
         val levelString = getApplication<GameApplication>().getString(R.string.level, level)
-        mutableLevelLiveData.value = levelString
+        mutableLevelTextLiveData.value = levelString
     }
 
     private fun updateTimerText() {
         val secondsLeftString =
             getApplication<GameApplication>().getString(R.string.time_left, timeLeftInSeconds)
-        mutableTimeLeftLiveData.value = secondsLeftString
+        mutableTimeLeftTextLiveData.value = secondsLeftString
     }
 }
