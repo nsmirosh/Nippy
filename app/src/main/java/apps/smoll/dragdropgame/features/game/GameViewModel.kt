@@ -18,26 +18,26 @@ const val intervalInMilliseconds = 1000L
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val mutableScreenShapesLiveData: MutableLiveData<List<Shape>> = MutableLiveData()
-    val screenShapesLiveData: LiveData<List<Shape>> get() = mutableScreenShapesLiveData
+    private val _screenShapes: MutableLiveData<List<Shape>> = MutableLiveData()
+    val screenShapes: LiveData<List<Shape>> get() = _screenShapes
 
-    private val mutableShapeToMatchLiveData: MutableLiveData<Shape> = MutableLiveData()
-    val shapeToMatchLiveData: LiveData<Shape> get() = mutableShapeToMatchLiveData
+    private val _shapeToMatch: MutableLiveData<Shape> = MutableLiveData()
+    val shapeToMatch: LiveData<Shape> get() = _shapeToMatch
 
-    private val mutableScoreTextLiveData: MutableLiveData<String> = MutableLiveData()
-    val scoreTextLiveData: LiveData<String> get() = mutableScoreTextLiveData
+    private val _scoreText: MutableLiveData<String> = MutableLiveData()
+    val scoreText: LiveData<String> get() = _scoreText
 
-    private val mutableTimeLeftTextLiveData: MutableLiveData<String> = MutableLiveData()
-    val timeLeftTextLiveData: LiveData<String> get() = mutableTimeLeftTextLiveData
+    private val _timerText: MutableLiveData<String> = MutableLiveData()
+    val timerText: LiveData<String> get() = _timerText
 
-    private val mutableLevelTextLiveData: MutableLiveData<String> = MutableLiveData()
-    val levelTextLiveData: LiveData<String> get() = mutableLevelTextLiveData
+    private val _levelText: MutableLiveData<String> = MutableLiveData()
+    val levelText: LiveData<String> get() = _levelText
 
-    private val mutableUserLostEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
-    val userLostEvent: LiveData<Event<Boolean>> get() = mutableUserLostEvent
+    private val _userLostEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val userLostEvent: LiveData<Event<Boolean>> get() = _userLostEvent
 
-    private val mutableUserWonEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
-    val userWonEvent: LiveData<Event<Boolean>> get() = mutableUserWonEvent
+    private val _userWonEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val userWonEvent: LiveData<Event<Boolean>> get() = _userWonEvent
 
     val addedViewIds = mutableSetOf<Int>()
 
@@ -59,7 +59,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         startTimer()
     }
 
-    fun startTimer() {
+    private fun startTimer() {
         if (this::timer.isInitialized) {
             timer.cancel()
         }
@@ -79,9 +79,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         score -= currentLevelScore
         currentLevelScore = 0
         updateScoreText()
-        mutableUserLostEvent.value = Event(true)
-        mutableScreenShapesLiveData.value = listOf()
-        mutableShapeToMatchLiveData.value = null
+        _userLostEvent.value = Event(true)
+        _screenShapes.value = listOf()
+        _shapeToMatch.value = null
     }
 
     private fun onTimerTick(millisUntilFinished: Long) {
@@ -93,7 +93,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val coordsList = generateCoordinatesForShapesOnScreen()
         buildShapesWithRandomColorsAndShapeTypes(coordsList)
             .apply {
-                mutableScreenShapesLiveData.value = this
+                _screenShapes.value = this
                 buildMatchingShape()
             }
     }
@@ -113,7 +113,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun buildMatchingShape() {
 
-        val oneOfTheShapesOnScreen = screenShapesLiveData.value!!.random()
+        val oneOfTheShapesOnScreen = screenShapes.value!!.random()
 
         val xPos = (sWidth / 2) - shapeSize
         val yPos = (sHeight * 0.7).toInt()
@@ -123,7 +123,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             colorResource = R.color.shape_to_match_color
         )
 
-        mutableShapeToMatchLiveData.value = shapeToMatch
+        _shapeToMatch.value = shapeToMatch
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
@@ -142,8 +142,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             level++
             timer.cancel()
             timeLeftInSeconds = 0
-            upgradeLevelText()
-            mutableUserWonEvent.value = Event(true)
+            _userWonEvent.value = Event(true)
+
         } else {
             currentLevelScore++
             buildMatchingShape()
@@ -152,22 +152,22 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         updateAllText()
     }
 
-    private fun shouldGoToNextLevel() = screenShapesLiveData.value!!.isEmpty()
+    private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
-        val shapeToMatch = shapeToMatchLiveData.value!!
+        val shapeToMatch = shapeToMatch.value!!
         val coordsAdjustedForLayoutOnScreen =
             Pair(coordinates.first - halfShapeSize, coordinates.second - halfShapeSize)
-        mutableShapeToMatchLiveData.value = shapeToMatch.copy(coordsAdjustedForLayoutOnScreen)
+        _shapeToMatch.value = shapeToMatch.copy(coordsAdjustedForLayoutOnScreen)
     }
 
     private fun removeShapeThatWasHit(shapeThatWasHit: Shape) {
-        mutableScreenShapesLiveData.value =
-            screenShapesLiveData.value?.filter { it.typeResource != shapeThatWasHit.typeResource }
+        _screenShapes.value =
+            screenShapes.value?.filter { it.typeResource != shapeThatWasHit.typeResource }
     }
 
     private fun getShapeThatIsHit(targetCoordinates: Pair<Int, Int>): Shape? {
-        screenShapesLiveData.value?.forEach {
+        screenShapes.value?.forEach {
             val shapeOnScreenXCenter = it.shapeCenter.first + halfShapeSize
             val shapeOnScreenYCenter = it.shapeCenter.second + halfShapeSize
             val permissibleXFaultRange =
@@ -180,7 +180,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             val isYHit =
                 targetCoordinates.second in permissibleYFaultRange
 
-            val shapeMatch = shapeToMatchLiveData.value?.typeResource == it.typeResource
+            val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
             if (isXHit && isYHit && shapeMatch) return it
         }
         return null
@@ -198,21 +198,22 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun updateAllText() {
         updateScoreText()
         updateTimerText()
+        upgradeLevelText()
     }
 
     private fun updateScoreText() {
         val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
-        mutableScoreTextLiveData.value = scoreString
+        _scoreText.value = scoreString
     }
 
     private fun upgradeLevelText() {
         val levelString = getApplication<GameApplication>().getString(R.string.level, level)
-        mutableLevelTextLiveData.value = levelString
+        _levelText.value = levelString
     }
 
     private fun updateTimerText() {
         val secondsLeftString =
             getApplication<GameApplication>().getString(R.string.time_left, timeLeftInSeconds)
-        mutableTimeLeftTextLiveData.value = secondsLeftString
+        _timerText.value = secondsLeftString
     }
 }

@@ -29,27 +29,27 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun startObservingLiveData() {
-        gameViewModel.scoreTextLiveData.observe(
+        gameViewModel.scoreText.observe(
             viewLifecycleOwner,
             { scoreTextView.text = it }
         )
 
-        gameViewModel.timeLeftTextLiveData.observe(
+        gameViewModel.timerText.observe(
             viewLifecycleOwner,
             { timeLeftTextView.text = it }
         )
 
-        gameViewModel.levelTextLiveData.observe(
+        gameViewModel.levelText.observe(
             viewLifecycleOwner,
             { levelTextView.text = it }
         )
 
-        gameViewModel.shapeToMatchLiveData.observe(
+        gameViewModel.shapeToMatch.observe(
             viewLifecycleOwner,
             { updateShapeToMatch(it) }
         )
 
-        gameViewModel.screenShapesLiveData.observe(
+        gameViewModel.screenShapes.observe(
             viewLifecycleOwner,
             { updateShapesOnScreen(it) }
         )

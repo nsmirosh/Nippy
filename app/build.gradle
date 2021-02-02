@@ -56,4 +56,9 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // AndroidX Test - JVM testing
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
 }
