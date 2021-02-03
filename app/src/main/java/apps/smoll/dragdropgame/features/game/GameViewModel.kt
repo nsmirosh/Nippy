@@ -162,13 +162,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             screenShapes.value?.filter { it.typeResource != shapeThatWasHit.typeResource }
     }
 
-    private fun getShapeThatIsHit(dropEventCoordinates: Pair<Int, Int>): Shape? {
-        screenShapes.value?.forEach {
+    private fun getShapeThatIsHit(dropEventCoordinates: Pair<Int, Int>) =
+        screenShapes.value?.find {
             val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
-            if (areCoordinatesHit(dropEventCoordinates, it.shapeCenter) && shapeMatch) return it
+            areCoordinatesHit(dropEventCoordinates, it.shapeCenter) && shapeMatch
         }
-        return null
-    }
 
     fun restartLevel(screenWidthAndHeight: Pair<Int, Int>) {
         timer.apply {
