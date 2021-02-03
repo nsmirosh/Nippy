@@ -28,8 +28,11 @@
   - [x] Restart the game once all shapes were matched
   - [x] Implement the concept of a Level and advancing to the first 4 levels
   - [x] Implement buttons that will show after the completion of a Level (Main menu and next level)
-  - [ ] Implement the fail of the user in case the time runs out
-  - [ ] Add the retry / main menu option after user failure
+  - [x] Implement the fail of the user in case the time runs out
+  - [x] Add the retry / main menu option after user failure
+  - [x] Add operator overloading for accessing points
+  - [ ] Remove dependency on shape center in Shape class
+  - [ ] Implement moving the matching shape on touch instead of long press
   - [ ] Write up tests for the logic and calculations involved above
   - [ ] Apply clean architecture principles + MVVM
 

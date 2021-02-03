@@ -1,6 +1,7 @@
 package apps.smoll.dragdropgame.utils
 
 import apps.smoll.dragdropgame.*
+import apps.smoll.dragdropgame.features.game.permissibleHitFaultInPixels
 import java.util.*
 
 
@@ -42,18 +43,18 @@ fun willShapesCollide(
 
 fun getRandomXYCoordsIn(widthAndHeight: Pair<Int, Int>): Pair<Int, Int> {
 
-    val upperWidthBound = widthAndHeight.first - shapeSize
+    val margin = shapeSize
+
+    val (upperWidthBound, upperHeightBound) = widthAndHeight - margin
 
     var randomX = Random().nextInt(upperWidthBound)
-    if (randomX < shapeSize) {
-        randomX = shapeSize
+    if (randomX < margin) {
+        randomX = margin
     }
 
-    val upperHeightBound = widthAndHeight.second - shapeSize
-
     var randomY = Random().nextInt(upperHeightBound)
-    if (randomY < shapeSize) {
-        randomY = shapeSize
+    if (randomY < margin) {
+        randomY = margin
     }
     return Pair(randomX, randomY)
 }
@@ -69,4 +70,31 @@ fun getDistanceBetween(
             2.0
         ) + Math.pow((firstPoint.second - secondPoint.second).toDouble(), 2.0)
     )
+}
+
+
+fun areCoordinatesHit(dropEventCoords: Pair<Int, Int>, shapeOnScreenCoords: Pair<Int, Int>) : Boolean {
+
+    val (shapeXCenter, shapeYCenter) = shapeOnScreenCoords + halfShapeSize
+
+    val permissibleXFaultRange =
+        (shapeXCenter - permissibleHitFaultInPixels)..(shapeXCenter + permissibleHitFaultInPixels)
+    val permissibleYFaultRange =
+        (shapeYCenter - permissibleHitFaultInPixels)..(shapeYCenter + permissibleHitFaultInPixels)
+
+    val isXHit =
+        dropEventCoords.first in permissibleXFaultRange
+    val isYHit =
+        dropEventCoords.second in permissibleYFaultRange
+
+    return isXHit && isYHit
+}
+
+
+operator fun Pair<Int, Int>.minus(toSubstract: Int): Pair<Int, Int> {
+    return Pair(this.first - toSubstract, this.second - toSubstract)
+}
+
+operator fun Pair<Int, Int>.plus(toAdd: Int): Pair<Int, Int> {
+    return Pair(this.first + toAdd, this.second + toAdd)
 }

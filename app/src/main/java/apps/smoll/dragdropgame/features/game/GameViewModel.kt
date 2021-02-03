@@ -6,9 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
-import apps.smoll.dragdropgame.utils.Event
-import apps.smoll.dragdropgame.utils.buildShapesWithRandomColorsAndShapeTypes
-import apps.smoll.dragdropgame.utils.generateNonCollidingCoordinateList
+import apps.smoll.dragdropgame.utils.*
 
 
 const val permissibleHitFaultInPixels = 50
@@ -155,10 +153,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
-        val shapeToMatch = shapeToMatch.value!!
-        val coordsAdjustedForLayoutOnScreen =
-            Pair(coordinates.first - halfShapeSize, coordinates.second - halfShapeSize)
-        _shapeToMatch.value = shapeToMatch.copy(coordsAdjustedForLayoutOnScreen)
+        val coordsToCenterTheShape = coordinates - halfShapeSize
+        _shapeToMatch.value = shapeToMatch.value!!.copy(coordsToCenterTheShape)
     }
 
     private fun removeShapeThatWasHit(shapeThatWasHit: Shape) {
@@ -166,22 +162,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             screenShapes.value?.filter { it.typeResource != shapeThatWasHit.typeResource }
     }
 
-    private fun getShapeThatIsHit(targetCoordinates: Pair<Int, Int>): Shape? {
+    private fun getShapeThatIsHit(dropEventCoordinates: Pair<Int, Int>): Shape? {
         screenShapes.value?.forEach {
-            val shapeOnScreenXCenter = it.shapeCenter.first + halfShapeSize
-            val shapeOnScreenYCenter = it.shapeCenter.second + halfShapeSize
-            val permissibleXFaultRange =
-                (shapeOnScreenXCenter - permissibleHitFaultInPixels)..(shapeOnScreenXCenter + permissibleHitFaultInPixels)
-            val permissibleYFaultRange =
-                (shapeOnScreenYCenter - permissibleHitFaultInPixels)..(shapeOnScreenYCenter + permissibleHitFaultInPixels)
-
-            val isXHit =
-                targetCoordinates.first in permissibleXFaultRange
-            val isYHit =
-                targetCoordinates.second in permissibleYFaultRange
-
             val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
-            if (isXHit && isYHit && shapeMatch) return it
+            if (areCoordinatesHit(dropEventCoordinates, it.shapeCenter) && shapeMatch) return it
         }
         return null
     }
