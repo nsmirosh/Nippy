@@ -88,26 +88,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun buildInitialShapes() {
-        val coordsList = generateCoordinatesForShapesOnScreen()
-        buildShapesWithRandomColorsAndShapeTypes(coordsList)
-            .apply {
-                _screenShapes.value = this
-                buildMatchingShape()
-            }
+        _screenShapes.value = buildShapesWithRandomColorsAndShapeTypes(level, Pair(sWidth, sHeight))
+        buildMatchingShape()
     }
-
-    private fun generateCoordinatesForShapesOnScreen(): List<Pair<Int, Int>> {
-        val widthBound = (sWidth * 0.8).toInt()
-        val heightBound = (sHeight * 0.8).toInt()
-
-        return generateNonCollidingCoordinateList(
-            Pair(
-                widthBound,
-                heightBound
-            ), level
-        )
-    }
-
 
     private fun buildMatchingShape() {
 

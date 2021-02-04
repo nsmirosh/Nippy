@@ -5,6 +5,16 @@ import apps.smoll.dragdropgame.features.game.permissibleHitFaultInPixels
 import java.util.*
 
 
+const val boundsForShapesWidthAndHeight = 0.8
+
+fun generateCoordinatesForShapesOnScreen(
+    amountToGenerate: Int,
+    widthAndHeight: Pair<Int, Int>
+): List<Pair<Int, Int>> =
+    generateNonCollidingCoordinateList(
+        widthAndHeight * boundsForShapesWidthAndHeight, amountToGenerate
+    )
+
 fun generateNonCollidingCoordinateList(
     widthHeightBounds: Pair<Int, Int>,
     amountToGenerate: Int
@@ -73,7 +83,10 @@ fun getDistanceBetween(
 }
 
 
-fun areCoordinatesHit(dropEventCoords: Pair<Int, Int>, shapeOnScreenCoords: Pair<Int, Int>) : Boolean {
+fun areCoordinatesHit(
+    dropEventCoords: Pair<Int, Int>,
+    shapeOnScreenCoords: Pair<Int, Int>
+): Boolean {
 
     val (shapeXCenter, shapeYCenter) = shapeOnScreenCoords + halfShapeSize
 
@@ -97,4 +110,9 @@ operator fun Pair<Int, Int>.minus(toSubstract: Int): Pair<Int, Int> {
 
 operator fun Pair<Int, Int>.plus(toAdd: Int): Pair<Int, Int> {
     return Pair(this.first + toAdd, this.second + toAdd)
+}
+
+
+operator fun Pair<Int, Int>.times(toMultiplyBy: Double): Pair<Int, Int> {
+    return Pair((this.first * toMultiplyBy).toInt(), (this.second * toMultiplyBy).toInt())
 }

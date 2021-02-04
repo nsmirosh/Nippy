@@ -32,7 +32,7 @@
   - [x] Add the retry / main menu option after user failure
   - [x] Add operator overloading for accessing points
   - [ ] Remove dependency on shape center in Shape class
-  - [ ] Implement moving the matching shape on touch instead of long press
+  - [x] Implement moving the matching shape on touch instead of long press
   - [ ] Write up tests for the logic and calculations involved above
   - [ ] Apply clean architecture principles + MVVM
 
@@ -58,3 +58,7 @@
 
 ### Backlog
   - [ ] Make sure that the sizes of the elements are relative to the screen size
+
+###Bugs
+  - [ ] if the drop shape is dropped a little bit to the right of the matching shape - the match doesn't happen
+  - [ ] if the time runs out and the player is still holding the shape - the app will crash

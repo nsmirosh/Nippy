@@ -6,6 +6,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
+import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_DOWN
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
@@ -109,26 +112,34 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             gameViewModel.restartLevel(screenWidthAndHeight)
         }
 
-        dragImageView.setOnLongClickListener { v: View ->
-            val item = ClipData.Item(v.tag as? CharSequence)
-            val dragData = ClipData(
-                v.tag as? CharSequence,
-                arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                item
-            )
+        dragImageView.setOnTouchListener { view, motionEvent ->
 
-            val myShadow = MyDragShadowBuilder(dragImageView)
-            val dragShadow = View.DragShadowBuilder(dragImageView)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                v.startDragAndDrop(dragData, dragShadow, null, 0);
-            } else {
-                v.startDrag(
-                    dragData,
-                    myShadow,
-                    null,
-                    0
-                )
+            when (motionEvent.action) {
+
+                ACTION_DOWN -> {
+                    val item = ClipData.Item(view.tag as? CharSequence)
+                    val dragData = ClipData(
+                        view.tag as? CharSequence,
+                        arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                        item
+                    )
+
+                    val myShadow = MyDragShadowBuilder(dragImageView)
+                    val dragShadow = View.DragShadowBuilder(dragImageView)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        view.startDragAndDrop(dragData, dragShadow, null, 0);
+                    } else {
+                        view.startDrag(
+                            dragData,
+                            myShadow,
+                            null,
+                            0
+                        )
+                    }
+                    view.performClick()
+                }
             }
+            true
         }
 
         val dragListen = View.OnDragListener { v, event ->

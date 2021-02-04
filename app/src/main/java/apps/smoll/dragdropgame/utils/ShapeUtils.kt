@@ -2,16 +2,29 @@ package apps.smoll.dragdropgame.utils
 
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
+import java.util.*
 
 
-fun buildShapesWithRandomColorsAndShapeTypes(listOfCoordinates: List<Pair<Int, Int>>): List<Shape> {
+fun buildShapesWithRandomColorsAndShapeTypes(level: Int, widthAndHeight: Pair<Int, Int>): List<Shape> {
 
-    val shuffledShapes = getShuffledShapeArray()
+    val listOfCoordinates = generateCoordinatesForShapesOnScreen(level, widthAndHeight)
+
+    val shuffledShapes = getShuffledShapeArray().toMutableList()
     val shuffledColors = getShuffledColorsArray()
 
-    return listOfCoordinates.mapIndexed { index, shape ->
+
+   /* return listOfCoordinates.map {
         Shape(
-            shape,
+
+            it,
+            shuffledShapes
+        )
+
+    }*/
+
+    return listOfCoordinates.mapIndexed { index, coords ->
+        Shape(
+            coords,
             shuffledShapes[index],
             shuffledColors[index]
         )
@@ -39,5 +52,9 @@ private fun getShuffledColorsArray(): Array<Int> {
     )
 
     colorsArray.shuffle()
+
+    val stack = Stack<Int>()
+    
+    stack.addAll(colorsArray)
     return colorsArray
 }
