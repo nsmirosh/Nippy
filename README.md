@@ -31,14 +31,14 @@
   - [x] Implement the fail of the user in case the time runs out
   - [x] Add the retry / main menu option after user failure
   - [x] Add operator overloading for accessing points
-  - [ ] Remove dependency on shape center in Shape class
+  - [x] Remove dependency on shape center in Shape class
   - [x] Implement moving the matching shape on touch instead of long press
   - [ ] Write up tests for the logic and calculations involved above
   - [ ] Apply clean architecture principles + MVVM
 
-### 2. Finish the rest of the 20 levels
-  - [ ] find more shapes and add them so it will be sufficient for 20 levels
-  - [ ] add the logic that will take the user to the next level on completion
+### 2. Finish the rest of the 20 levels and add the design
+  - [ ] find a designer that will draw up pretty designs for the game + the shapes
+  - [ ] implement the rest of the 20 levels
   - [ ] Write up tests for the logic above
 
 ### 3. Build a main menu

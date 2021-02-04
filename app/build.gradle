@@ -4,6 +4,9 @@ plugins {
     id 'kotlin-android-extensions'
 }
 
+
+
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.1"
@@ -30,6 +33,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    testOptions.unitTests {
+        includeAndroidResources = true
     }
 }
 
@@ -61,4 +68,6 @@ dependencies {
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
     testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+
 }

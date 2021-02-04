@@ -8,9 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.utils.*
 
-
-const val permissibleHitFaultInPixels = 50
-
 const val timeLeftInMilliseconds = 10000L
 const val intervalInMilliseconds = 1000L
 
@@ -100,7 +97,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val yPos = (sHeight * 0.7).toInt()
 
         val shapeToMatch = oneOfTheShapesOnScreen.copy(
-            shapeCenter = Pair(xPos, yPos),
+            topLeftCoords = Pair(xPos, yPos),
             colorResource = R.color.shape_to_match_color
         )
 
@@ -148,7 +145,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun getShapeThatIsHit(dropEventCoordinates: Pair<Int, Int>) =
         screenShapes.value?.find {
             val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
-            areCoordinatesHit(dropEventCoordinates, it.shapeCenter) && shapeMatch
+            areCoordinatesHit(dropEventCoordinates, it.topLeftCoords) && shapeMatch
         }
 
     fun restartLevel(screenWidthAndHeight: Pair<Int, Int>) {

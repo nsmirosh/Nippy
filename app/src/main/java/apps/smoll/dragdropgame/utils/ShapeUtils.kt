@@ -4,7 +4,6 @@ import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import java.util.*
 
-
 fun buildShapesWithRandomColorsAndShapeTypes(
     level: Int,
     widthAndHeight: Pair<Int, Int>
@@ -36,7 +35,6 @@ private fun getShuffledShapes(): Stack<Int> {
         shuffle()
     }
 }
-
 
 private fun getShuffledColors(): Stack<Int> {
     val colorsArray = arrayOf(

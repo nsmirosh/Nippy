@@ -1,11 +1,12 @@
 package apps.smoll.dragdropgame.utils
 
 import apps.smoll.dragdropgame.*
-import apps.smoll.dragdropgame.features.game.permissibleHitFaultInPixels
 import java.util.*
 
 
 const val boundsForShapesWidthAndHeight = 0.8
+
+const val permissibleHitFaultInPixels = 50
 
 fun generateCoordinatesForShapesOnScreen(
     amountToGenerate: Int,
@@ -111,7 +112,6 @@ operator fun Pair<Int, Int>.minus(toSubstract: Int): Pair<Int, Int> {
 operator fun Pair<Int, Int>.plus(toAdd: Int): Pair<Int, Int> {
     return Pair(this.first + toAdd, this.second + toAdd)
 }
-
 
 operator fun Pair<Int, Int>.times(toMultiplyBy: Double): Pair<Int, Int> {
     return Pair((this.first * toMultiplyBy).toInt(), (this.second * toMultiplyBy).toInt())
