@@ -26,18 +26,31 @@ class GameViewModelTest {
 
         val gameViewModel = GameViewModel(ApplicationProvider.getApplicationContext())
 
-        val observer = Observer<List<Shape>> {}
+        val screenShapesObserver = Observer<List<Shape>> {}
+        val levelTextObserver = Observer<String> {}
+
         try {
 
-            gameViewModel.screenShapes.observeForever(observer)
+            gameViewModel.screenShapes.observeForever(screenShapesObserver)
+            gameViewModel.levelText.observeForever(levelTextObserver)
             gameViewModel.startGame(Pair(1080, 1920))
-            val value = gameViewModel.screenShapes.value
-            assertThat(value, (not(nullValue())))
-            assertThat(value?.size, equalTo(1))
+            val screenShapesValue = gameViewModel.screenShapes.value
+            val levelTextValue = gameViewModel.levelText.value
+
+            assertThat(screenShapesValue, (not(nullValue())))
+            assertThat(screenShapesValue?.size, equalTo(1))
+            assertThat(levelTextValue, equalTo("Level: 1"))
+
+            gameViewModel.handleMatchingShapeDrop(screenShapesValue!![0].topLeftCoords)
+
+            val screenShapesValue = gameViewModel.screenShapes.value
+            val levelTextValue = gameViewModel.levelText.value
+
 
 
         } finally {
-            gameViewModel.screenShapes.removeObserver(observer)
+            gameViewModel.screenShapes.removeObserver(screenShapesObserver)
+            gameViewModel.levelText.removeObserver(levelTextObserver)
         }
     }
 }

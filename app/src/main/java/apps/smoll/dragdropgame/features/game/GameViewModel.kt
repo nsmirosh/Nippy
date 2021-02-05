@@ -7,8 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.utils.*
+import timber.log.Timber
 
-const val timeLeftInMilliseconds = 10000L
+const val timeLeftInMilliseconds = 1000000L
 const val intervalInMilliseconds = 1000L
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
@@ -44,13 +45,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var level = 1
     private var timeLeftInSeconds = 0
 
-    fun startGame(screenWidthAndHeight: Pair<Int, Int>) {
-
-        with(screenWidthAndHeight) {
-            sWidth = first
-            sHeight = second
-        }
+    fun startGame(width: Int, height: Int) {
+        sWidth = width
+        sHeight = height
         buildInitialShapes()
+        updateAllText()
         startTimer()
     }
 
@@ -86,6 +85,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun buildInitialShapes() {
         _screenShapes.value = buildShapesWithRandomColorsAndShapeTypes(level, Pair(sWidth, sHeight))
+        Timber.d("screenShapes.value[0].topLeftCoords = ${_screenShapes.value!![0].topLeftCoords}")
         buildMatchingShape()
     }
 
@@ -105,6 +105,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
+        Timber.d("dropEventCoordinates = $dropEventCoordinates")
+
+        Timber.d("dropEventCoordinates - halfShapeSize = ${dropEventCoordinates - halfShapeSize}")
         getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
                 removeShapeThatWasHit(this)
@@ -153,7 +156,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             cancel()
             start()
         }
-        startGame(screenWidthAndHeight)
+        startGame(screenWidthAndHeight.first, screenWidthAndHeight.second)
         updateAllText()
     }
 

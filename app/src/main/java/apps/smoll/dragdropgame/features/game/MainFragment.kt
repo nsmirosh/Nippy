@@ -6,9 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
-import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_DOWN
-import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
@@ -26,9 +24,13 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        gameViewModel.startGame(screenWidthAndHeight)
         startObservingLiveData()
         initListeners()
+        with(containerView) {
+            post {
+                gameViewModel.startGame(width, height)
+            }
+        }
     }
 
     private fun startObservingLiveData() {
@@ -105,7 +107,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun initListeners() {
         nextLevelButton.setOnClickListener {
             hideAllButtons()
-            gameViewModel.startGame(screenWidthAndHeight)
+
+
+            gameViewModel.startGame(containerView!!.width, containerView!!.height)
+
+//            gameViewModel.startGame(screenWidthAndHeight)
         }
         retryButton.setOnClickListener {
             hideAllButtons()
@@ -149,6 +155,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 }
                 DragEvent.ACTION_DROP -> {
+
+
                     gameViewModel.handleMatchingShapeDrop(Pair(event.x.toInt(), event.y.toInt()))
                     v.invalidate()
                     true
@@ -160,6 +168,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
         }
         containerView.setOnDragListener(dragListen)
+
     }
 
     private fun updateShapesOnScreen(shapes: List<Shape>) {
@@ -173,6 +182,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 requestLayout()
                 containerView.addView(this)
             }
+        }
+
+        containerView!!.post {
+            Timber.d("containerView height after shapes laid out = ${containerView!!.height}")
         }
     }
 

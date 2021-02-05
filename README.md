@@ -60,5 +60,6 @@
   - [ ] Make sure that the sizes of the elements are relative to the screen size
 
 ###Bugs
-  - [ ] if the drop shape is dropped a little bit to the right of the matching shape - the match doesn't happen
+  - [x] if the drop shape is dropped a little bit to the right of the matching shape - the match doesn't happen
+        Reason - screen size measurements and container view measurements are diferent?
   - [ ] if the time runs out and the player is still holding the shape - the app will crash
