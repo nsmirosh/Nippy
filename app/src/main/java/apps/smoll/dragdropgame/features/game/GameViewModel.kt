@@ -32,8 +32,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _userLostEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val userLostEvent: LiveData<Event<Boolean>> get() = _userLostEvent
 
-    private val _userWonEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
-    val userWonEvent: LiveData<Event<Boolean>> get() = _userWonEvent
+    private val _userWonEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val userWonEvent: LiveData<Event<Unit>> get() = _userWonEvent
 
     val addedViewIds = mutableSetOf<Int>()
 
@@ -105,10 +105,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
-        Timber.d("dropEventCoordinates = $dropEventCoordinates")
-
-        Timber.d("dropEventCoordinates - halfShapeSize = ${dropEventCoordinates - halfShapeSize}")
-        getShapeThatIsHit(dropEventCoordinates).apply {
+          getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
                 removeShapeThatWasHit(this)
                 onShapeHit()
@@ -123,7 +120,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             level++
             timer.cancel()
             timeLeftInSeconds = 0
-            _userWonEvent.value = Event(true)
+            _userWonEvent.value = Event(Unit)
 
         } else {
             currentLevelScore++
