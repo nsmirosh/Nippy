@@ -33,8 +33,11 @@
   - [x] Add operator overloading for accessing points
   - [x] Remove dependency on shape center in Shape class
   - [x] Implement moving the matching shape on touch instead of long press
-  - [ ] Write up tests for the logic and calculations involved above
+  - [ ] Implement 90% test coverage for GameViewModel
+  - [ ] Implement 90% test coverage for CoordinateUtils
+  - [ ] Implement 90% test coverage for ShapeUtils
   - [ ] Apply clean architecture principles + MVVM
+  - [ ] Fix the test after applying everything above
 
 ### 2. Finish the rest of the 20 levels and add the design
   - [ ] find a designer that will draw up pretty designs for the game + the shapes
