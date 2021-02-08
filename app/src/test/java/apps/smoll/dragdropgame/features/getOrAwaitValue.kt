@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame.utils
+package apps.smoll.dragdropgame.features
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
