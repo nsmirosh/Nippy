@@ -107,11 +107,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun initListeners() {
         nextLevelButton.setOnClickListener {
             hideAllButtons()
-
-
             gameViewModel.startGame(containerView!!.width, containerView!!.height)
-
-//            gameViewModel.startGame(screenWidthAndHeight)
         }
         retryButton.setOnClickListener {
             hideAllButtons()

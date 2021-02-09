@@ -9,7 +9,7 @@ import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.utils.*
 import timber.log.Timber
 
-const val timeLeftInMilliseconds = 1000000L
+const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {

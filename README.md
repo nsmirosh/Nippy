@@ -33,6 +33,7 @@
   - [x] Add operator overloading for accessing points
   - [x] Remove dependency on shape center in Shape class
   - [x] Implement moving the matching shape on touch instead of long press
+  - [ ] Gather the requirements and post a job to find the the designers that will help design the game
   - [ ] Implement 90% test coverage for GameViewModel
   - [ ] Implement 90% test coverage for CoordinateUtils
   - [ ] Implement 90% test coverage for ShapeUtils
@@ -41,7 +42,8 @@
 
 ### 2. Finish the rest of the 20 levels and add the design
   - [ ] find a designer that will draw up pretty designs for the game + the shapes
-  - [ ] implement the rest of the 20 levels
+  - [ ] Apply the new designs
+  - [ ] implement the rest of the 20-30 levels
   - [ ] Write up tests for the logic above
 
 ### 3. Build a main menu
@@ -62,7 +64,22 @@
 ### Backlog
   - [ ] Make sure that the sizes of the elements are relative to the screen size
 
-###Bugs
+### Bugs
   - [x] if the drop shape is dropped a little bit to the right of the matching shape - the match doesn't happen
         Reason - screen size measurements and container view measurements are diferent?
   - [ ] if the time runs out and the player is still holding the shape - the app will crash
+
+### Design requirements
+
+The project needs to have good designs and I'm not really good at that :) If you're interested in contributing - here are the requirements:
+
+https://docs.google.com/document/d/1SlW6j8Kbb6jbAvJeWjbJW56BbfW0C13Ue8ruTqKM1tw/edit?usp=sharing
+
+
+### Contact
+
+If you're looking to contribute in any way i.e. design, Android, server development or translations
+
+Please contact me via e-mail at nsmirosh@gmail.com or Telegram - @nsmirosh
+
+
