@@ -14,11 +14,11 @@ import androidx.fragment.app.viewModels
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.utils.*
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_game.*
 import timber.log.Timber
 
 
-class MainFragment : Fragment(R.layout.fragment_main) {
+class GameFragment : Fragment(R.layout.fragment_game) {
 
     val gameViewModel: GameViewModel by viewModels()
 

@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 
@@ -54,6 +55,7 @@ dependencies {
     //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+
 
     //Logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
