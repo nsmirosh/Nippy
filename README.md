@@ -48,8 +48,9 @@
 
 ### 3. Build a main menu
   - [ ] Display the user's current highscore and the level they are at right now
-  - [ ] Add the button and logic for starting a new game
-  - [ ] Add the button and logic for continuing where the user left off
+  - [ ] Add the button and logic for starting a new game and add the logic for starting the new game there
+  - [ ] Add the button and logic for continuing where the user left off (competely implemented when local storage will be added)
+  - [ ] Add the score and level (competely implemented when local storage will be added)
   - [ ] Write up unit and UI test for cases above
 
 ### 4. Add Local Storage
@@ -81,5 +82,4 @@ https://docs.google.com/document/d/1SlW6j8Kbb6jbAvJeWjbJW56BbfW0C13Ue8ruTqKM1tw/
 If you're looking to contribute in any way i.e. design, Android, server development or translations
 
 Please contact me via e-mail at nsmirosh@gmail.com or Telegram - @nsmirosh
-
 

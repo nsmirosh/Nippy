@@ -11,4 +11,7 @@
     <string name="retry">Retry</string>
 
 
+    <string name="main_menu_start_new_game">Start new game</string>
+    <string name="main_menu_resume_game">Resume where you left off</string>
+
 </resources>
