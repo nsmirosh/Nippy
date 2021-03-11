@@ -47,8 +47,8 @@
   - [ ] Write up tests for the logic above
 
 ### 3. Build a main menu
-  - [ ] Display the user's current highscore and the level they are at right now
-  - [ ] Add the button and logic for starting a new game and add the logic for starting the new game there
+  - [ ] Display the user's current highscore and the level they are at right now (competely implemented when local storage will be added)
+  - [x] Add the button and logic for starting a new game and add the logic for starting the new game there
   - [ ] Add the button and logic for continuing where the user left off (competely implemented when local storage will be added)
   - [ ] Add the score and level (competely implemented when local storage will be added)
   - [ ] Write up unit and UI test for cases above
