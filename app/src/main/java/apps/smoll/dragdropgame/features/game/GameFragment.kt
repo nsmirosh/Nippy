@@ -11,8 +11,10 @@ import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.features.menu.MenuFragmentDirections
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.android.synthetic.main.fragment_game.*
 import timber.log.Timber
@@ -112,6 +114,12 @@ class GameFragment : Fragment(R.layout.fragment_game) {
         retryButton.setOnClickListener {
             hideAllButtons()
             gameViewModel.restartLevel(screenWidthAndHeight)
+        }
+
+
+        mainMenuButton.setOnClickListener {
+            view?.findNavController()
+                ?.navigate(GameFragmentDirections.actionGameFragmentToMenuFragment())
         }
 
         dragImageView.setOnTouchListener { view, motionEvent ->

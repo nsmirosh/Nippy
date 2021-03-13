@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/menuFragment">
 
     <fragment
         android:id="@+id/menuFragment"
         android:name="apps.smoll.dragdropgame.features.menu.MenuFragment"
-        android:label="MenuFragment" >
+        android:label="MenuFragment">
         <action
-            android:id="@+id/action_menuFragment_To_mainFragment"
+            android:id="@+id/action_menuFragment_To_gameFragment"
             app:destination="@id/gameFragment" />
     </fragment>
-
 
     <fragment
         android:id="@+id/gameFragment"
         android:name="apps.smoll.dragdropgame.features.game.GameFragment"
-        android:label="MainFragment" />
+        android:label="MainFragment">
+        <action
+            android:id="@+id/action_gameFragment_To_menuFragment"
+            app:destination="@id/menuFragment" />
+    </fragment>
 </navigation>
