@@ -6,8 +6,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.*
+import apps.smoll.dragdropgame.database.GameStatsDao
+import apps.smoll.dragdropgame.database.GameStatsDatabase
 import apps.smoll.dragdropgame.utils.*
 import timber.log.Timber
+import javax.sql.CommonDataSource
 
 const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
@@ -37,6 +40,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     val addedViewIds = mutableSetOf<Int>()
 
+    lateinit var dataSource: GameStatsDao
+
     lateinit var timer: CountDownTimer
     private var score = 0
     private var currentLevelScore = 0
@@ -44,6 +49,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var sHeight = 0
     private var level = 1
     private var timeLeftInSeconds = 0
+
+
+    init {
+        dataSource = GameStatsDatabase.getInstance(application).gameStatsDao
+    }
 
     fun startGame(width: Int, height: Int) {
         sWidth = width
