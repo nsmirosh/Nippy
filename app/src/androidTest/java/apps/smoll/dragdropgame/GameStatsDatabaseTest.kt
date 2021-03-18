@@ -42,10 +42,10 @@ class GameStatsDatabaseTest {
     @Throws(Exception::class)
     fun insertAndGetLevelStats() {
         val levelStats = LevelStats()
-        levelStats.amountOfShapesMatched = 3
+        levelStats.levelNo = 3
         gameStatsDao.insert(levelStats)
         val actualLevelStats = gameStatsDao.getAllStats()
-        Assert.assertEquals(3, actualLevelStats[0].amountOfShapesMatched)
+        Assert.assertEquals(3, actualLevelStats[0].levelNo)
     }
 
     @Test

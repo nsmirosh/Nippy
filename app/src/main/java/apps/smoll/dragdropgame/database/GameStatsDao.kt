@@ -9,17 +9,14 @@ import androidx.room.Update
 interface GameStatsDao {
 
     @Insert
-    fun insert(levelStats: LevelStats)
+    suspend fun insert(levelStats: LevelStats)
 
     @Update
-    fun update(levelStats: LevelStats)
-
+    suspend fun update(levelStats: LevelStats)
 
     @Query("SELECT * FROM level_stats_table")
-    fun getAllStats() : List<LevelStats>
-
+    suspend fun getAllStats() : List<LevelStats>
 
     @Query("DELETE FROM level_stats_table")
-    fun clear()
-
+    suspend fun clear()
 }

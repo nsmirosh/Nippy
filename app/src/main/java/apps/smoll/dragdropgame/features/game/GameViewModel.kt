@@ -5,10 +5,13 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.database.GameStatsDao
 import apps.smoll.dragdropgame.database.GameStatsDatabase
+import apps.smoll.dragdropgame.database.LevelStats
 import apps.smoll.dragdropgame.utils.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.sql.CommonDataSource
 
@@ -40,7 +43,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     val addedViewIds = mutableSetOf<Int>()
 
-    lateinit var dataSource: GameStatsDao
+    val dataSource: GameStatsDao
 
     lateinit var timer: CountDownTimer
     private var score = 0
@@ -115,7 +118,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
-          getShapeThatIsHit(dropEventCoordinates).apply {
+        getShapeThatIsHit(dropEventCoordinates).apply {
             if (this != null) {
                 removeShapeThatWasHit(this)
                 onShapeHit()
@@ -128,6 +131,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun onShapeHit() {
         if (shouldGoToNextLevel()) {
             level++
+
+            viewModelScope.launch {
+                dataSource.insert(LevelStats(durationMilli = System.currentTimeMillis()))
+            }
             timer.cancel()
             timeLeftInSeconds = 0
             _userWonEvent.value = Event(Unit)

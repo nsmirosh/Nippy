@@ -9,11 +9,11 @@ data class LevelStats(
     @PrimaryKey(autoGenerate = true)
     var levelLogId: Long = 0L,
 
-    @ColumnInfo(name = "start_time_milli")
-    val startTimeMilli: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "date_completed_millis")
+    val dateCompletedMillis: Long = System.currentTimeMillis(),
 
     @ColumnInfo(name = "duration_milli")
-    val durationMilli: Long = startTimeMilli,
+    val durationMilli: Long = dateCompletedMillis,
 
-    @ColumnInfo(name = "amount_of_shapes_matched")
-    var amountOfShapesMatched: Int = -1)
+    @ColumnInfo(name = "level_no")
+    var levelNo: Int = -1)
