@@ -45,6 +45,18 @@ class GameStatsDatabaseTest {
         levelStats.amountOfShapesMatched = 3
         gameStatsDao.insert(levelStats)
         val actualLevelStats = gameStatsDao.getAllStats()
-        Assert.assertEquals(5, actualLevelStats[0].amountOfShapesMatched)
+        Assert.assertEquals(3, actualLevelStats[0].amountOfShapesMatched)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun databaseIsCleared() {
+        val levelStats = LevelStats()
+        gameStatsDao.insert(levelStats)
+        val statsInDao = gameStatsDao.getAllStats()
+        Assert.assertEquals(1, statsInDao.size)
+        gameStatsDao.clear()
+        val emptyStatsInDao = gameStatsDao.getAllStats()
+        Assert.assertEquals(0, emptyStatsInDao.size)
     }
 }
