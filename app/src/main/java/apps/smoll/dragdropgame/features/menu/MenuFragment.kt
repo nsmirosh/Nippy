@@ -15,5 +15,13 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
         startNewGameButton.setOnClickListener {
             view.findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToGameFragment())
         }
+
+        startNewGameButton.setOnClickListener {
+            view.findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToGameFragment())
+        }
+
+        statsButton.setOnClickListener {
+
+        }
     }
 }

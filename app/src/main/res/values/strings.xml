@@ -12,6 +12,10 @@
 
 
     <string name="main_menu_start_new_game">Start new game</string>
+    <string name="main_menu_stats">Stats</string>
     <string name="main_menu_resume_game">Resume where you left off</string>
+
+
+    <string name="stats_your_highscores">Your highscores: </string>
 
 </resources>

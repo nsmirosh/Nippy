@@ -21,4 +21,14 @@
             android:id="@+id/action_gameFragment_To_menuFragment"
             app:destination="@id/menuFragment" />
     </fragment>
+
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="apps.smoll.dragdropgame.features.game.GameFragment"
+        android:label="MainFragment">
+        <action
+            android:id="@+id/action_gameFragment_To_menuFragment"
+            app:destination="@id/menuFragment" />
+    </fragment>
 </navigation>

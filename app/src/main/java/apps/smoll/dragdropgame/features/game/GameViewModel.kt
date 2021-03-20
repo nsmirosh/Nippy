@@ -13,7 +13,6 @@ import apps.smoll.dragdropgame.database.LevelStats
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.sql.CommonDataSource
 
 const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
@@ -52,6 +51,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var sHeight = 0
     private var level = 1
     private var timeLeftInSeconds = 0
+    var levelStartTime: Long = 0
 
 
     init {
@@ -61,6 +61,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun startGame(width: Int, height: Int) {
         sWidth = width
         sHeight = height
+        levelStartTime = System.currentTimeMillis()
         buildInitialShapes()
         updateAllText()
         startTimer()
@@ -133,7 +134,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             level++
 
             viewModelScope.launch {
-                dataSource.insert(LevelStats(durationMilli = System.currentTimeMillis()))
+                insertLevelDataIntoDb()
             }
             timer.cancel()
             timeLeftInSeconds = 0
@@ -145,6 +146,16 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
         score++
         updateAllText()
+    }
+
+    private suspend fun insertLevelDataIntoDb() {
+        val currentTime = System.currentTimeMillis()
+        val levelStats = LevelStats(
+            dateCompletedMillis = currentTime,
+            durationMilli = currentTime - levelStartTime,
+            levelNo = level
+        )
+        dataSource.insert(levelStats)
     }
 
     private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()
