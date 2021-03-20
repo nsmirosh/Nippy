@@ -21,7 +21,7 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
         }
 
         statsButton.setOnClickListener {
-
+            view.findNavController().navigate(MenuFragmentDirections.actionGameFragmentToStatsFragment())
         }
     }
 }
