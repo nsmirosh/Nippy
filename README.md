@@ -59,7 +59,12 @@
   - [ ] Implement storing the highscore
   - [ ] Write test for storage functionality
 
-### 5. Release version 1
+### 5. Build a server
+  - [ ] Implement saving each level data via coroutines
+  - [ ] Implement authorization
+  - [ ] Implement a highscore among various players
+
+### 6. Release version 1
   - [ ] release the app on google play
 
 ### Backlog

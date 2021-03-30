@@ -17,6 +17,4 @@ class StatsViewModel(application: Application) : AndroidViewModel(application)  
         dataSource = GameStatsDatabase.getInstance(application).gameStatsDao
         statsList = dataSource.getAllStats()
     }
-
-
 }

@@ -1,5 +1,6 @@
 package apps.smoll.dragdropgame.features.stats
 
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.database.LevelStats
 
-class StatsAdapter(private val dataSet: List<LevelStats>) :
+class StatsAdapter(dataSet: List<LevelStats>) :
     RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
+
+    private val sortedDataSet: List<LevelStats> = dataSet.sortedByDescending { it.dateCompletedMillis }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val dateCompleted: TextView = view.findViewById(R.id.dateCompleted)
@@ -25,15 +28,22 @@ class StatsAdapter(private val dataSet: List<LevelStats>) :
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        
-        val levelStats = dataSet[position]
+
+        val levelStats = sortedDataSet[position]
+
+        val now = System.currentTimeMillis()
+        val date = DateUtils.getRelativeTimeSpanString(
+            levelStats.dateCompletedMillis,
+            now,
+            DateUtils.DAY_IN_MILLIS
+        )
 
         with(viewHolder) {
-            dateCompleted.text = levelStats.dateCompletedMillis.toString()
+            dateCompleted.text = date
             levelNo.text = levelStats.levelNo.toString()
             timeToComplete.text = levelStats.durationMilli.toString()
         }
     }
 
-    override fun getItemCount() = dataSet.size
+    override fun getItemCount() = sortedDataSet.size
 }
