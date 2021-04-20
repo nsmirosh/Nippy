@@ -31,8 +31,8 @@ task clean(type: Delete) {
 
 ext {
     hamcrestVersion = "1.3"
-    navVersion = "2.3.4"
-    fragmentVersion = "1.2.5"
+    navVersion = "2.3.5"
+    fragmentVersion = "1.3.2"
     androidXVersion = '1.0.0'
     androidXTestCoreVersion = '1.3.0'
     androidXTestExtKotlinRunnerVersion = '1.1.2'
