@@ -11,6 +11,8 @@ import apps.smoll.dragdropgame.database.GameStatsDao
 import apps.smoll.dragdropgame.database.GameStatsDatabase
 import apps.smoll.dragdropgame.database.LevelStats
 import apps.smoll.dragdropgame.utils.*
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -130,7 +132,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun onShapeHit() {
+
+        writeToFireStore()
         if (shouldGoToNextLevel()) {
+
+
             level++
 
             viewModelScope.launch {
@@ -156,6 +162,28 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             levelNo = level
         )
         dataSource.insert(levelStats)
+    }
+
+
+    private fun writeToFireStore() {
+
+        val db = Firebase.firestore
+// Create a new user with a first and last name
+        val user = hashMapOf(
+            "first" to "Ada",
+            "last" to "Lovelace",
+            "born" to 1815
+        )
+
+        db.collection("users")
+            .add(user)
+            .addOnSuccessListener { documentReference ->
+                Timber.d("DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Timber.e("Error adding document = ${e.localizedMessage}")
+
+            }
     }
 
     private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()
