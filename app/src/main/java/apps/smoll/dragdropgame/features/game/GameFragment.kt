@@ -56,33 +56,37 @@ class GameFragment : Fragment() {
     }
 
     private fun startObservingLiveData() {
-        gameViewModel.shapeToMatch.observe(
-            viewLifecycleOwner,
-            { updateShapeToMatch(it) }
-        )
 
-        gameViewModel.screenShapes.observe(
-            viewLifecycleOwner,
-            { updateShapesOnScreen(it) }
-        )
 
-        gameViewModel.userWonEvent.observe(
-            viewLifecycleOwner,
-            {
-                it.getContentIfNotHandled()?.let {
-                    onUserWon()
+        with (gameViewModel) {
+            shapeToMatch.observe(
+                viewLifecycleOwner,
+                { updateShapeToMatch(it) }
+            )
+
+            screenShapes.observe(
+                viewLifecycleOwner,
+                { updateShapesOnScreen(it) }
+            )
+
+            userWonEvent.observe(
+                viewLifecycleOwner,
+                {
+                    it.getContentIfNotHandled()?.let {
+                        onUserWon()
+                    }
                 }
-            }
-        )
+            )
 
-        gameViewModel.userLostEvent.observe(
-            viewLifecycleOwner,
-            {
-                it.getContentIfNotHandled()?.let {
-                    onUserLost()
+            userLostEvent.observe(
+                viewLifecycleOwner,
+                {
+                    it.getContentIfNotHandled()?.let {
+                        onUserLost()
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     private fun onUserWon() {
