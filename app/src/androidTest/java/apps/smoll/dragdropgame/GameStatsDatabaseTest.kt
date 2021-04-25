@@ -3,9 +3,9 @@ package apps.smoll.dragdropgame
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import apps.smoll.dragdropgame.database.GameStatsDao
-import apps.smoll.dragdropgame.database.GameStatsDatabase
-import apps.smoll.dragdropgame.database.LevelStats
+import apps.smoll.dragdropgame.repository.GameStatsDao
+import apps.smoll.dragdropgame.repository.GameStatsDatabase
+import apps.smoll.dragdropgame.repository.LevelStats
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before

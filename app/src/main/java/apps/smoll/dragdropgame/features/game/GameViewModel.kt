@@ -5,19 +5,19 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.*
-import apps.smoll.dragdropgame.database.GameStatsDao
-import apps.smoll.dragdropgame.database.GameStatsDatabase
-import apps.smoll.dragdropgame.database.LevelStats
+import apps.smoll.dragdropgame.repository.FirebaseRepo
+import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
+import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
+
+const val statsPath = "stats"
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -42,9 +42,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _userWonEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val userWonEvent: LiveData<Event<Unit>> get() = _userWonEvent
 
+    val firebaseRepo : FirebaseRepo = FirebaseRepoImpl()
+
     val addedViewIds = mutableSetOf<Int>()
 
-    val dataSource: GameStatsDao
 
     lateinit var timer: CountDownTimer
     private var score = 0
@@ -55,10 +56,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var timeLeftInSeconds = 0
     var levelStartTime: Long = 0
 
-
-    init {
-        dataSource = GameStatsDatabase.getInstance(application).gameStatsDao
-    }
 
     fun startGame(width: Int, height: Int) {
         sWidth = width
@@ -132,20 +129,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun onShapeHit() {
-
-        writeToFireStore()
         if (shouldGoToNextLevel()) {
-
-
-            level++
-
-            viewModelScope.launch {
-                insertLevelDataIntoDb()
-            }
-            timer.cancel()
-            timeLeftInSeconds = 0
-            _userWonEvent.value = Event(Unit)
-
+            proceedToNextLevel()
         } else {
             currentLevelScore++
             buildMatchingShape()
@@ -154,36 +139,26 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         updateAllText()
     }
 
-    private suspend fun insertLevelDataIntoDb() {
-        val currentTime = System.currentTimeMillis()
-        val levelStats = LevelStats(
-            dateCompletedMillis = currentTime,
-            durationMilli = currentTime - levelStartTime,
-            levelNo = level
-        )
-        dataSource.insert(levelStats)
+    private fun proceedToNextLevel() {
+        level++
+        writeLevelDataToFirestore()
+        timer.cancel()
+        timeLeftInSeconds = 0
+        _userWonEvent.value = Event(Unit)
     }
 
+    private fun writeLevelDataToFirestore() {
 
-    private fun writeToFireStore() {
+        val currentMillis = System.currentTimeMillis()
 
-        val db = Firebase.firestore
-// Create a new user with a first and last name
-        val user = hashMapOf(
-            "first" to "Ada",
-            "last" to "Lovelace",
-            "born" to 1815
+        val stats = LevelStats(
+            currentMillis,
+            currentMillis - levelStartTime,
+            currentLevelScore,
+            level,
         )
 
-        db.collection("users")
-            .add(user)
-            .addOnSuccessListener { documentReference ->
-                Timber.d("DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Timber.e("Error adding document = ${e.localizedMessage}")
-
-            }
+       firebaseRepo.writeLevelStats(stats)
     }
 
     private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()

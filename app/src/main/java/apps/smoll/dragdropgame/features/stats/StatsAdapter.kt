@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import apps.smoll.dragdropgame.R
-import apps.smoll.dragdropgame.database.LevelStats
+import apps.smoll.dragdropgame.repository.LevelStats
 
 class StatsAdapter(dataSet: List<LevelStats>) :
     RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
@@ -40,7 +40,7 @@ class StatsAdapter(dataSet: List<LevelStats>) :
 
         with(viewHolder) {
             dateCompleted.text = date
-            levelNo.text = levelStats.levelNo.toString()
+            levelNo.text = levelStats.level.toString()
             timeToComplete.text = levelStats.durationMilli.toString()
         }
     }

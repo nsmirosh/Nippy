@@ -18,9 +18,7 @@ import androidx.navigation.findNavController
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.databinding.FragmentGameBinding
-import apps.smoll.dragdropgame.features.menu.MenuFragmentDirections
 import apps.smoll.dragdropgame.utils.*
-import kotlinx.android.synthetic.main.fragment_game.*
 import timber.log.Timber
 
 
@@ -48,7 +46,7 @@ class GameFragment : Fragment() {
 
         startObservingLiveData()
         initListeners()
-        with(containerView) {
+        with(binding.containerView) {
             post {
                 gameViewModel.startGame(width, height)
             }
@@ -56,7 +54,6 @@ class GameFragment : Fragment() {
     }
 
     private fun startObservingLiveData() {
-
 
         with (gameViewModel) {
             shapeToMatch.observe(
@@ -90,97 +87,110 @@ class GameFragment : Fragment() {
     }
 
     private fun onUserWon() {
-        mainMenuButton.visible()
-        nextLevelButton.visible()
+        with (binding) {
+            mainMenuButton.visible()
+            nextLevelButton.visible()
+        }
     }
 
     private fun onUserLost() {
+        with (binding) {
         mainMenuButton.visible()
         retryButton.visible()
+        }
     }
 
     private fun hideAllButtons() {
-        mainMenuButton.gone()
-        nextLevelButton.gone()
-        retryButton.gone()
+        with (binding) {
+            mainMenuButton.gone()
+            nextLevelButton.gone()
+            retryButton.gone()
+        }
     }
 
+
     private fun updateShapeToMatch(shape: Shape?) {
-        if (shape != null) {
-            dragImageView.apply {
-                setShape(requireContext(), shape)
+        with (binding) {
+            if (shape != null) {
+                dragImageView.apply {
+                    setShape(requireContext(), shape)
+                }
+            } else {
+                dragImageView.gone()
             }
-        } else {
-            dragImageView.gone()
         }
     }
 
     private fun initListeners() {
-        nextLevelButton.setOnClickListener {
-            hideAllButtons()
-            gameViewModel.startGame(containerView!!.width, containerView!!.height)
-        }
-        retryButton.setOnClickListener {
-            hideAllButtons()
-            gameViewModel.restartLevel(screenWidthAndHeight)
-        }
+
+        with (binding) {
+            nextLevelButton.setOnClickListener {
+                hideAllButtons()
+                gameViewModel.startGame(containerView.width, containerView.height)
+            }
+            retryButton.setOnClickListener {
+                hideAllButtons()
+                gameViewModel.restartLevel(screenWidthAndHeight)
+            }
 
 
-        mainMenuButton.setOnClickListener {
-            view?.findNavController()
-                ?.navigate(GameFragmentDirections.actionGameFragmentToMenuFragment())
-        }
+            mainMenuButton.setOnClickListener {
+                view?.findNavController()
+                    ?.navigate(GameFragmentDirections.actionGameFragmentToMenuFragment())
+            }
 
-        dragImageView.setOnTouchListener { view, motionEvent ->
+            dragImageView.setOnTouchListener { view, motionEvent ->
 
-            when (motionEvent.action) {
+                when (motionEvent.action) {
 
-                ACTION_DOWN -> {
-                    val item = ClipData.Item(view.tag as? CharSequence)
-                    val dragData = ClipData(
-                        view.tag as? CharSequence,
-                        arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                        item
-                    )
-
-                    val myShadow = MyDragShadowBuilder(dragImageView)
-                    val dragShadow = View.DragShadowBuilder(dragImageView)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        view.startDragAndDrop(dragData, dragShadow, null, 0);
-                    } else {
-                        view.startDrag(
-                            dragData,
-                            myShadow,
-                            null,
-                            0
+                    ACTION_DOWN -> {
+                        val item = ClipData.Item(view.tag as? CharSequence)
+                        val dragData = ClipData(
+                            view.tag as? CharSequence,
+                            arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                            item
                         )
+
+                        val myShadow = MyDragShadowBuilder(dragImageView)
+                        val dragShadow = View.DragShadowBuilder(dragImageView)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            view.startDragAndDrop(dragData, dragShadow, null, 0);
+                        } else {
+                            view.startDrag(
+                                dragData,
+                                myShadow,
+                                null,
+                                0
+                            )
+                        }
+                        view.performClick()
                     }
-                    view.performClick()
+                }
+                true
+            }
+
+            val dragListen = View.OnDragListener { v, event ->
+                when (event.action) {
+                    DragEvent.ACTION_DRAG_STARTED -> {
+                        dragImageView.invisible()
+                        event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                    }
+                    DragEvent.ACTION_DROP -> {
+
+
+                        gameViewModel.handleMatchingShapeDrop(Pair(event.x.toInt(), event.y.toInt()))
+                        v.invalidate()
+                        true
+                    }
+                    else -> {
+                        // An unknown action type was received.
+                        false
+                    }
                 }
             }
-            true
+            containerView.setOnDragListener(dragListen)
         }
 
-        val dragListen = View.OnDragListener { v, event ->
-            when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> {
-                    dragImageView.invisible()
-                    event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
-                }
-                DragEvent.ACTION_DROP -> {
-
-
-                    gameViewModel.handleMatchingShapeDrop(Pair(event.x.toInt(), event.y.toInt()))
-                    v.invalidate()
-                    true
-                }
-                else -> {
-                    // An unknown action type was received.
-                    false
-                }
-            }
-        }
-        containerView.setOnDragListener(dragListen)
 
     }
 
@@ -193,21 +203,23 @@ class GameFragment : Fragment() {
                 id = View.generateViewId()
                 gameViewModel.addedViewIds.add(id)
                 requestLayout()
-                containerView.addView(this)
+                binding.containerView.addView(this)
             }
         }
 
-        containerView!!.post {
-            Timber.d("containerView height after shapes laid out = ${containerView!!.height}")
+        binding.containerView.post {
+            Timber.d("containerView height after shapes laid out = ${binding.containerView.height}")
         }
     }
 
     private fun clearPreviouslyConstructedShapes() {
         gameViewModel.addedViewIds.apply {
             forEach {
-                containerView.apply {
-                    Timber.d("Removing view with id: $it")
-                    removeView(findViewById(it))
+                with(binding) {
+                    containerView.apply {
+                        Timber.d("Removing view with id: $it")
+                        removeView(findViewById(it))
+                    }
                 }
             }
         }
