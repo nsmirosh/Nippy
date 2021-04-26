@@ -24,9 +24,8 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     val levelStats: LiveData<List<LevelStats>> get() = _levelStats
 
     fun init() {
-//        _levelStats.value = firebaseRepo.getAllLevelStats()
         viewModelScope.launch {
-            _levelStats.value = firebaseRepo.getAllLevelStats1()
+            _levelStats.value = firebaseRepo.getAllLevelStats()
         }
     }
 }

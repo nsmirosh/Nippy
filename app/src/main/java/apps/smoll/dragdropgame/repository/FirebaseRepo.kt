@@ -4,8 +4,8 @@ interface FirebaseRepo {
 
     fun writeLevelStats(stats: LevelStats)
 
-    fun getAllLevelStats() : List<LevelStats>?
+    suspend fun writeLevelStats1(stats: LevelStats): Boolean
 
-    suspend fun getAllLevelStats1()
+    suspend fun getAllLevelStats()
             : List<LevelStats>?
 }

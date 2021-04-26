@@ -5,13 +5,14 @@ import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.*
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.*
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+
 import timber.log.Timber
 
 const val timeLeftInMilliseconds = 20000L
@@ -158,7 +159,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             level,
         )
 
-       firebaseRepo.writeLevelStats(stats)
+        viewModelScope.launch {
+            firebaseRepo.writeLevelStats1(stats)
+        }
     }
 
     private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()
