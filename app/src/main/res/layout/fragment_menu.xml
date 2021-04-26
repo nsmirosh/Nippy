@@ -1,58 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/containerView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/currentHighScoreTextView"
-        android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/containerView"
-        app:layout_constraintTop_toTopOf="@id/containerView"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        tools:text="Score: 25"
-        android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/currentLevelTextView"
-        android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/containerView"
-        app:layout_constraintTop_toBottomOf="@id/currentHighScoreTextView"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        tools:text="Level: 3"
-        android:layout_height="wrap_content"/>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Button
-        android:id="@+id/resumeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/main_menu_resume_game"
-        app:layout_constraintTop_toBottomOf="@id/currentLevelTextView"
-        app:layout_constraintEnd_toEndOf="@id/containerView"
-        app:layout_constraintStart_toStartOf="@id/containerView" />
+    <data>
 
-    <Button
-        android:id="@+id/startNewGameButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/main_menu_start_new_game"
-        app:layout_constraintTop_toBottomOf="@id/resumeButton"
-        app:layout_constraintEnd_toEndOf="@id/containerView"
-        app:layout_constraintStart_toStartOf="@id/containerView" />
+        <variable
+            name="viewmodel"
+            type="apps.smoll.dragdropgame.features.menu.MenuViewModel" />
+    </data>
 
-    <Button
-        android:id="@+id/statsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/main_menu_stats"
-        app:layout_constraintTop_toBottomOf="@id/startNewGameButton"
-        app:layout_constraintEnd_toEndOf="@id/containerView"
-        app:layout_constraintStart_toStartOf="@id/containerView" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/containerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/currentHighScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:text="@{String.valueOf(viewmodel.lastCompletedLevel.level)}"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toTopOf="@id/containerView"
+            tools:text="Score: 25" />
+
+        <TextView
+            android:id="@+id/currentLevelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/currentHighScoreTextView"
+            tools:text="Level: 3" />
+
+        <Button
+            android:id="@+id/resumeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/main_menu_resume_game"
+            app:layout_constraintEnd_toEndOf="@id/containerView"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/currentLevelTextView" />
+
+        <Button
+            android:id="@+id/startNewGameButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/main_menu_start_new_game"
+            app:layout_constraintEnd_toEndOf="@id/containerView"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/resumeButton" />
+
+        <Button
+            android:id="@+id/statsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/main_menu_stats"
+            app:layout_constraintEnd_toEndOf="@id/containerView"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/startNewGameButton" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

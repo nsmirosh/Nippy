@@ -160,7 +160,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         )
 
         viewModelScope.launch {
-            firebaseRepo.writeLevelStats1(stats)
+            firebaseRepo.writeLevelStats(stats)
         }
     }
 

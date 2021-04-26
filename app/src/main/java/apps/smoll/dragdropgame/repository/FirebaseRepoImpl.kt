@@ -1,6 +1,7 @@
 package apps.smoll.dragdropgame.repository
 
 import apps.smoll.dragdropgame.features.game.statsPath
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -10,26 +11,14 @@ class FirebaseRepoImpl : FirebaseRepo {
 
     private val firestore = Firebase.firestore
 
-    override fun writeLevelStats(stats: LevelStats) {
-        firestore.collection(statsPath)
-            .add(stats)
-            .addOnSuccessListener { documentReference ->
-                Timber.d("DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Timber.e("Error adding document = ${e.localizedMessage}")
-            }
-    }
-
-
-    override suspend fun writeLevelStats1(stats: LevelStats): Boolean = try {
-        val data = firestore
+    override suspend fun writeLevelStats(stats: LevelStats): Boolean = try {
+        firestore
             .collection(statsPath)
             .add(stats)
             .await()
-         true
+        true
     } catch (e: Exception) {
-         false
+        false
     }
 
 
@@ -47,4 +36,17 @@ class FirebaseRepoImpl : FirebaseRepo {
     }
 
 
+    override suspend fun getLastLevel(): LevelStats? = try {
+        val data = firestore
+            .collection(statsPath)
+            .orderBy("dateCompletedMillis", Query.Direction.DESCENDING)
+            .limit(1)
+            .get()
+            .await()
+
+        data.documents[0].toObject(LevelStats::class.java)
+
+    } catch (e: Exception) {
+        null
+    }
 }
