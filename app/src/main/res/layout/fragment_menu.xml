@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
             name="viewmodel"
             type="apps.smoll.dragdropgame.features.menu.MenuViewModel" />
@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:text="@{String.valueOf(viewmodel.lastCompletedLevel.level)}"
+            android:visibility="@{viewmodel.lastCompletedLevel.level != 0 ? View.VISIBLE : View.GONE}"
+            android:text="@{String.format(@string/menu_current_score, viewmodel.lastCompletedLevel.score)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="Score: 25" />
@@ -34,6 +35,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
+            android:visibility="@{viewmodel.lastCompletedLevel.level != 0 ? View.VISIBLE : View.GONE}"
+            android:text="@{String.format(@string/menu_current_level, viewmodel.lastCompletedLevel.level)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/currentHighScoreTextView"
             tools:text="Level: 3" />
@@ -44,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/main_menu_resume_game"
+            android:visibility="@{viewmodel.lastCompletedLevel.level != 0 ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/currentLevelTextView" />
