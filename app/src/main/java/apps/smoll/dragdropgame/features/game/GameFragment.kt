@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.databinding.FragmentGameBinding
@@ -25,6 +26,8 @@ import timber.log.Timber
 class GameFragment : Fragment() {
 
     val gameViewModel: GameViewModel by viewModels()
+
+    val args: GameFragmentArgs by navArgs()
 
     lateinit var binding: FragmentGameBinding
 
@@ -43,6 +46,10 @@ class GameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+//        args.levelStats ?:
+
 
         startObservingLiveData()
         initListeners()

@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.MenuView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import apps.smoll.dragdropgame.R
-import apps.smoll.dragdropgame.databinding.FragmentGameBinding
 import apps.smoll.dragdropgame.databinding.FragmentMenuBinding
-import kotlinx.android.synthetic.main.fragment_menu.*
 
 class MenuFragment : Fragment() {
 
@@ -36,17 +33,18 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.init()
+        with (binding) {
+            startNewGameButton.setOnClickListener {
+                view.findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToGameFragment())
+            }
 
-        startNewGameButton.setOnClickListener {
-            view.findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToGameFragment())
-        }
+            resumeButton.setOnClickListener {
+                view.findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToGameFragment(viewModel.lastCompletedLevel.value))
+            }
 
-        startNewGameButton.setOnClickListener {
-            view.findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToGameFragment())
-        }
-
-        statsButton.setOnClickListener {
-            view.findNavController().navigate(MenuFragmentDirections.actionGameFragmentToStatsFragment())
+            statsButton.setOnClickListener {
+                view.findNavController().navigate(MenuFragmentDirections.actionGameFragmentToStatsFragment())
+            }
         }
     }
 }

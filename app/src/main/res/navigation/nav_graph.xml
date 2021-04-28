@@ -20,10 +20,17 @@
     <fragment
         android:id="@+id/gameFragment"
         android:name="apps.smoll.dragdropgame.features.game.GameFragment"
-        android:label="MainFragment">
+        android:label="GameFragment">
+
         <action
             android:id="@+id/action_gameFragment_To_menuFragment"
             app:destination="@id/menuFragment" />
+
+        <argument
+            android:name="levelStats"
+            android:defaultValue="@null"
+            app:argType="apps.smoll.dragdropgame.repository.LevelStats"
+            app:nullable="true" />
     </fragment>
 
 

@@ -34,8 +34,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _timerText: MutableLiveData<String> = MutableLiveData()
     val timerText: LiveData<String> get() = _timerText
 
-    private val _levelText: MutableLiveData<String> = MutableLiveData()
-    val levelText: LiveData<String> get() = _levelText
+    private val _currentLevel: MutableLiveData<Int> = MutableLiveData(1)
+    val currentLevel: LiveData<Int> get() = _currentLevel
 
     private val _userLostEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val userLostEvent: LiveData<Event<Boolean>> get() = _userLostEvent
@@ -43,29 +43,33 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _userWonEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val userWonEvent: LiveData<Event<Unit>> get() = _userWonEvent
 
-    val firebaseRepo : FirebaseRepo = FirebaseRepoImpl()
+    val firebaseRepo: FirebaseRepo = FirebaseRepoImpl()
 
     val addedViewIds = mutableSetOf<Int>()
 
-
     lateinit var timer: CountDownTimer
-    private var score = 0
-    private var currentLevelScore = 0
+    private var totalScore = 0
+    private var levelScore = 0
     private var sWidth = 0
     private var sHeight = 0
-    private var level = 1
     private var timeLeftInSeconds = 0
     var levelStartTime: Long = 0
 
-
-    fun startGame(width: Int, height: Int) {
+    fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
         sWidth = width
         sHeight = height
+        previousLevelStats?.let { initWithPreviousLevelStats(it) }
         levelStartTime = System.currentTimeMillis()
         buildInitialShapes()
         updateAllText()
         startTimer()
     }
+
+    private fun initWithPreviousLevelStats(previousLevelStats: LevelStats)  {
+        _currentLevel.value = ++previousLevelStats.level
+        totalScore = previousLevelStats.totalScore
+    }
+
 
     private fun startTimer() {
         if (this::timer.isInitialized) {
@@ -84,8 +88,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun onPlayerFail() {
-        score -= currentLevelScore
-        currentLevelScore = 0
+        totalScore -= levelScore
+        levelScore = 0
         updateScoreText()
         _userLostEvent.value = Event(true)
         _screenShapes.value = listOf()
@@ -98,7 +102,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun buildInitialShapes() {
-        _screenShapes.value = buildShapesWithRandomColorsAndShapeTypes(level, Pair(sWidth, sHeight))
+        _screenShapes.value = buildShapesWithRandomColorsAndShapeTypes(currentLevel.value!!, Pair(sWidth, sHeight))
         Timber.d("screenShapes.value[0].topLeftCoords = ${_screenShapes.value!![0].topLeftCoords}")
         buildMatchingShape()
     }
@@ -133,15 +137,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (shouldGoToNextLevel()) {
             proceedToNextLevel()
         } else {
-            currentLevelScore++
+            levelScore++
             buildMatchingShape()
         }
-        score++
+        totalScore++
         updateAllText()
     }
 
     private fun proceedToNextLevel() {
-        level++
+        _currentLevel.value = _currentLevel.value!!.inc()
         writeLevelDataToFirestore()
         timer.cancel()
         timeLeftInSeconds = 0
@@ -155,8 +159,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val stats = LevelStats(
             currentMillis,
             currentMillis - levelStartTime,
-            currentLevelScore,
-            level,
+            totalScore,
+            levelScore,
+            currentLevel.value!!,
         )
 
         viewModelScope.launch {
@@ -194,17 +199,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private fun updateAllText() {
         updateScoreText()
         updateTimerText()
-        upgradeLevelText()
     }
 
     private fun updateScoreText() {
-        val scoreString = getApplication<GameApplication>().getString(R.string.score, score)
+        val scoreString = getApplication<GameApplication>().getString(R.string.score, totalScore)
         _scoreText.value = scoreString
-    }
-
-    private fun upgradeLevelText() {
-        val levelString = getApplication<GameApplication>().getString(R.string.level, level)
-        _levelText.value = levelString
     }
 
     private fun updateTimerText() {

@@ -32,7 +32,7 @@ class GameViewModelTest {
         with (gameViewModel) {
             startGame(1080, 1920)
             val screenShapesValue = screenShapes.getOrAwaitValue()
-            val levelTextValue = levelText.getOrAwaitValue()
+            val levelTextValue = currentLevel.getOrAwaitValue()
 
             assertThat(screenShapesValue, (not(nullValue())))
             assertThat(screenShapesValue.size, equalTo(1))
