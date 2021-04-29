@@ -1,5 +1,6 @@
 package apps.smoll.dragdropgame.repository
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -7,9 +8,9 @@ import kotlinx.coroutines.tasks.await
 
 const val statsPath = "stats"
 
-class FirebaseRepoImpl : FirebaseRepo {
+class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.firestore) : FirebaseRepo {
 
-    private val firestore = Firebase.firestore
+//    private val firestore = Firebase.firestore
 
 
     override suspend fun writeLevelStats(stats: LevelStats): Boolean = try {

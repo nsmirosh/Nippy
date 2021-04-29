@@ -21,13 +21,16 @@ import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.databinding.FragmentGameBinding
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.utils.*
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
 
 class GameFragment : Fragment() {
 
     val gameViewModel: GameViewModel by viewModels {
-        GameViewModelFactory(this@GameFragment.requireActivity().application, FirebaseRepoImpl())
+        GameViewModelFactory(this@GameFragment.requireActivity().application, FirebaseRepoImpl(
+            Firebase.firestore))
     }
 
     val args: GameFragmentArgs by navArgs()

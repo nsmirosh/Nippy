@@ -6,14 +6,20 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import apps.smoll.dragdropgame.features.getOrAwaitValue
 import apps.smoll.dragdropgame.halfShapeSize
+import apps.smoll.dragdropgame.repository.FirebaseRepo
+import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.utils.minus
 import apps.smoll.dragdropgame.utils.permissibleHitFaultInPixels
 import apps.smoll.dragdropgame.utils.plus
+import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FirebaseFirestore
 import org.hamcrest.Matchers.*
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito
 import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
@@ -22,11 +28,15 @@ class GameViewModelTest {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-/*
+
+
+
     @Test
     fun startGame_buildsShapesAndDisplaysInitialData() {
 
-        val gameViewModel = GameViewModel(ApplicationProvider.getApplicationContext())
+        val mockFirestore = Mockito.mock(FirebaseFirestore::class.java)
+
+        val gameViewModel = GameViewModel(ApplicationProvider.getApplicationContext(), FirebaseRepoImpl(mockFirestore))
 
 
         with (gameViewModel) {
@@ -36,11 +46,11 @@ class GameViewModelTest {
 
             assertThat(screenShapesValue, (not(nullValue())))
             assertThat(screenShapesValue.size, equalTo(1))
-            assertThat(levelTextValue, equalTo("Level: 1"))
+            assertThat(levelTextValue, equalTo(1))
         }
 
     }
-
+/*
     @Test
     fun handleDrop_removesShapeOnHit() {
 
