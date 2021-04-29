@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:text="@{viewmodel.timerText}"
+            app:text="@{String.format(@string/time_left, viewmodel.secondsLeft)}"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="time left: 9 seconds" />

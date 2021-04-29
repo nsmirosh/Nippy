@@ -30,8 +30,8 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     private val _scoreText: MutableLiveData<String> = MutableLiveData()
     val scoreText: LiveData<String> get() = _scoreText
 
-    private val _timerText: MutableLiveData<String> = MutableLiveData()
-    val timerText: LiveData<String> get() = _timerText
+    private val _secondsLeft: MutableLiveData<Int> = MutableLiveData()
+    val secondsLeft: LiveData<Int> get() = _secondsLeft
 
     private val _currentLevel: MutableLiveData<Int> = MutableLiveData(1)
     val currentLevel: LiveData<Int> get() = _currentLevel
@@ -42,8 +42,6 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     private val _userWonEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val userWonEvent: LiveData<Event<Unit>> get() = _userWonEvent
 
-//    val firebaseRepo: FirebaseRepo = FirebaseRepoImpl()
-
     val addedViewIds = mutableSetOf<Int>()
 
     lateinit var timer: CountDownTimer
@@ -51,7 +49,7 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     private var levelScore = 0
     private var sWidth = 0
     private var sHeight = 0
-    private var timeLeftInSeconds = 0
+//    private var timeLeftInSeconds = 0
     var levelStartTime: Long = 0
 
     fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
@@ -75,7 +73,9 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
             timer.cancel()
         }
         timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
-            override fun onTick(millisUntilFinished: Long) = onTimerTick(millisUntilFinished)
+            override fun onTick(millisUntilFinished: Long)  {
+                _secondsLeft.value = (millisUntilFinished / intervalInMilliseconds).toInt()
+            }
 
             /*
             We cancel the timer only in once case: In case the user finished the level successfully.
@@ -93,11 +93,6 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
         _userLostEvent.value = Event(true)
         _screenShapes.value = listOf()
         _shapeToMatch.value = null
-    }
-
-    private fun onTimerTick(millisUntilFinished: Long) {
-        timeLeftInSeconds = (millisUntilFinished / intervalInMilliseconds).toInt()
-        updateTimerText()
     }
 
     private fun buildInitialShapes() {
@@ -145,7 +140,7 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
         _currentLevel.value = _currentLevel.value!!.inc()
         writeLevelDataToFirestore()
         timer.cancel()
-        timeLeftInSeconds = 0
+        _secondsLeft.value = 0
         _userWonEvent.value = Event(Unit)
     }
 
@@ -195,17 +190,17 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
 
     private fun updateAllText() {
         updateScoreText()
-        updateTimerText()
+//        updateTimerText()
     }
 
     private fun updateScoreText() {
         val scoreString = getApplication<GameApplication>().getString(R.string.score, totalScore)
         _scoreText.value = scoreString
     }
-
+/*
     private fun updateTimerText() {
         val secondsLeftString =
             getApplication<GameApplication>().getString(R.string.time_left, timeLeftInSeconds)
         _timerText.value = secondsLeftString
-    }
+    }*/
 }
