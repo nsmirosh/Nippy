@@ -1,25 +1,27 @@
 package apps.smoll.dragdropgame.features.game
 
-import android.app.Application
 import android.os.CountDownTimer
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import apps.smoll.dragdropgame.*
+import apps.smoll.dragdropgame.R
+import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.repository.FirebaseRepo
-import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.utils.*
+import apps.smoll.dragdropgame.shapeSize
+import apps.smoll.dragdropgame.utils.Event
+import apps.smoll.dragdropgame.utils.areCoordinatesHit
+import apps.smoll.dragdropgame.utils.buildShapesWithRandomColorsAndShapeTypes
+import apps.smoll.dragdropgame.utils.minus
 import kotlinx.coroutines.launch
-
-import timber.log.Timber
 
 const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
 
-class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : AndroidViewModel(application) {
+class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
 
     private val _screenShapes: MutableLiveData<List<Shape>> = MutableLiveData()
     val screenShapes: LiveData<List<Shape>> get() = _screenShapes
@@ -27,10 +29,10 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     private val _shapeToMatch: MutableLiveData<Shape> = MutableLiveData()
     val shapeToMatch: LiveData<Shape> get() = _shapeToMatch
 
-    private val _scoreText: MutableLiveData<String> = MutableLiveData()
-    val scoreText: LiveData<String> get() = _scoreText
+    private val _totalScore: MutableLiveData<Int> = MutableLiveData(0)
+    val totalScore: LiveData<Int> get() = _totalScore
 
-    private val _secondsLeft: MutableLiveData<Int> = MutableLiveData()
+    private val _secondsLeft: MutableLiveData<Int> = MutableLiveData(20)
     val secondsLeft: LiveData<Int> get() = _secondsLeft
 
     private val _currentLevel: MutableLiveData<Int> = MutableLiveData(1)
@@ -45,11 +47,10 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     val addedViewIds = mutableSetOf<Int>()
 
     lateinit var timer: CountDownTimer
-    private var totalScore = 0
+
     private var levelScore = 0
     private var sWidth = 0
     private var sHeight = 0
-//    private var timeLeftInSeconds = 0
     var levelStartTime: Long = 0
 
     fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
@@ -59,21 +60,21 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
         previousLevelStats?.let { initWithPreviousLevelStats(it) }
         buildInitialShapes()
         buildMatchingShape()
-        updateAllText()
         startTimer()
     }
 
-    private fun initWithPreviousLevelStats(previousLevelStats: LevelStats)  {
-        _currentLevel.value = previousLevelStats.level
-        totalScore = previousLevelStats.totalScore
-    }
+    private fun initWithPreviousLevelStats(previousLevelStats: LevelStats) =
+        with(previousLevelStats) {
+            _currentLevel.value = level
+            _totalScore.value = totalScore
+        }
 
     private fun startTimer() {
         if (this::timer.isInitialized) {
             timer.cancel()
         }
         timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
-            override fun onTick(millisUntilFinished: Long)  {
+            override fun onTick(millisUntilFinished: Long) {
                 _secondsLeft.value = (millisUntilFinished / intervalInMilliseconds).toInt()
             }
 
@@ -87,16 +88,16 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     }
 
     private fun onPlayerFail() {
-        totalScore -= levelScore
+        _totalScore.value = totalScore.value!! - levelScore
         levelScore = 0
-        updateScoreText()
         _userLostEvent.value = Event(true)
         _screenShapes.value = listOf()
         _shapeToMatch.value = null
     }
 
     private fun buildInitialShapes() {
-        _screenShapes.value = buildShapesWithRandomColorsAndShapeTypes(currentLevel.value!!, Pair(sWidth, sHeight))
+        _screenShapes.value =
+            buildShapesWithRandomColorsAndShapeTypes(currentLevel.value!!, Pair(sWidth, sHeight))
     }
 
     private fun buildMatchingShape() {
@@ -126,18 +127,17 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
     }
 
     private fun onShapeHit() {
-        if (shouldGoToNextLevel()) {
+        if (screenShapes.value!!.isEmpty()) {
             proceedToNextLevel()
         } else {
             levelScore++
             buildMatchingShape()
         }
-        totalScore++
-        updateAllText()
+        _totalScore.value = totalScore.value?.inc()
     }
 
     private fun proceedToNextLevel() {
-        _currentLevel.value = _currentLevel.value!!.inc()
+        _currentLevel.value = _currentLevel.value?.inc()
         writeLevelDataToFirestore()
         timer.cancel()
         _secondsLeft.value = 0
@@ -151,7 +151,7 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
         val stats = LevelStats(
             currentMillis,
             currentMillis - levelStartTime,
-            totalScore,
+            totalScore.value!!,
             levelScore,
             currentLevel.value!!,
         )
@@ -160,8 +160,6 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
             firebaseRepo.writeLevelStats(stats)
         }
     }
-
-    private fun shouldGoToNextLevel() = screenShapes.value!!.isEmpty()
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
         val coordsToCenterTheShape = coordinates - halfShapeSize
@@ -185,22 +183,5 @@ class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : 
             start()
         }
         startGame(screenWidthAndHeight.first, screenWidthAndHeight.second)
-        updateAllText()
     }
-
-    private fun updateAllText() {
-        updateScoreText()
-//        updateTimerText()
-    }
-
-    private fun updateScoreText() {
-        val scoreString = getApplication<GameApplication>().getString(R.string.score, totalScore)
-        _scoreText.value = scoreString
-    }
-/*
-    private fun updateTimerText() {
-        val secondsLeftString =
-            getApplication<GameApplication>().getString(R.string.time_left, timeLeftInSeconds)
-        _timerText.value = secondsLeftString
-    }*/
 }

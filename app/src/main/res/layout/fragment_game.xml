@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
             name="viewmodel"
             type="apps.smoll.dragdropgame.features.game.GameViewModel" />
@@ -22,7 +21,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:text="@{viewmodel.scoreText}"
+            app:text="@{String.format(@string/score, viewmodel.totalScore)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="Score: 25" />

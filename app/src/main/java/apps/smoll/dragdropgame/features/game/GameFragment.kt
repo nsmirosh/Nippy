@@ -25,12 +25,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
-
 class GameFragment : Fragment() {
 
     val gameViewModel: GameViewModel by viewModels {
-        GameViewModelFactory(this@GameFragment.requireActivity().application, FirebaseRepoImpl(
-            Firebase.firestore))
+        GameViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
     }
 
     val args: GameFragmentArgs by navArgs()
@@ -64,7 +62,7 @@ class GameFragment : Fragment() {
 
     private fun startObservingLiveData() {
 
-        with (gameViewModel) {
+        with(gameViewModel) {
             shapeToMatch.observe(
                 viewLifecycleOwner,
                 { updateShapeToMatch(it) }
@@ -96,21 +94,21 @@ class GameFragment : Fragment() {
     }
 
     private fun onUserWon() {
-        with (binding) {
+        with(binding) {
             mainMenuButton.visible()
             nextLevelButton.visible()
         }
     }
 
     private fun onUserLost() {
-        with (binding) {
-        mainMenuButton.visible()
-        retryButton.visible()
+        with(binding) {
+            mainMenuButton.visible()
+            retryButton.visible()
         }
     }
 
     private fun hideAllButtons() {
-        with (binding) {
+        with(binding) {
             mainMenuButton.gone()
             nextLevelButton.gone()
             retryButton.gone()
@@ -119,7 +117,7 @@ class GameFragment : Fragment() {
 
 
     private fun updateShapeToMatch(shape: Shape?) {
-        with (binding) {
+        with(binding) {
             if (shape != null) {
                 dragImageView.apply {
                     setShape(requireContext(), shape)
@@ -132,7 +130,7 @@ class GameFragment : Fragment() {
 
     private fun initListeners() {
 
-        with (binding) {
+        with(binding) {
             nextLevelButton.setOnClickListener {
                 hideAllButtons()
                 gameViewModel.startGame(containerView.width, containerView.height)
@@ -187,7 +185,12 @@ class GameFragment : Fragment() {
                     DragEvent.ACTION_DROP -> {
 
 
-                        gameViewModel.handleMatchingShapeDrop(Pair(event.x.toInt(), event.y.toInt()))
+                        gameViewModel.handleMatchingShapeDrop(
+                            Pair(
+                                event.x.toInt(),
+                                event.y.toInt()
+                            )
+                        )
                         v.invalidate()
                         true
                     }
