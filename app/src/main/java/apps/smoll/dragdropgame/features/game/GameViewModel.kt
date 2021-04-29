@@ -18,9 +18,8 @@ import timber.log.Timber
 const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
-const val statsPath = "stats"
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(application: Application, val firebaseRepo: FirebaseRepo) : AndroidViewModel(application) {
 
     private val _screenShapes: MutableLiveData<List<Shape>> = MutableLiveData()
     val screenShapes: LiveData<List<Shape>> get() = _screenShapes
@@ -43,7 +42,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _userWonEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val userWonEvent: LiveData<Event<Unit>> get() = _userWonEvent
 
-    val firebaseRepo: FirebaseRepo = FirebaseRepoImpl()
+//    val firebaseRepo: FirebaseRepo = FirebaseRepoImpl()
 
     val addedViewIds = mutableSetOf<Int>()
 
@@ -58,18 +57,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
         sWidth = width
         sHeight = height
-        previousLevelStats?.let { initWithPreviousLevelStats(it) }
         levelStartTime = System.currentTimeMillis()
+        previousLevelStats?.let { initWithPreviousLevelStats(it) }
         buildInitialShapes()
+        buildMatchingShape()
         updateAllText()
         startTimer()
     }
 
     private fun initWithPreviousLevelStats(previousLevelStats: LevelStats)  {
-        _currentLevel.value = ++previousLevelStats.level
+        _currentLevel.value = previousLevelStats.level
         totalScore = previousLevelStats.totalScore
     }
-
 
     private fun startTimer() {
         if (this::timer.isInitialized) {
@@ -103,8 +102,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun buildInitialShapes() {
         _screenShapes.value = buildShapesWithRandomColorsAndShapeTypes(currentLevel.value!!, Pair(sWidth, sHeight))
-        Timber.d("screenShapes.value[0].topLeftCoords = ${_screenShapes.value!![0].topLeftCoords}")
-        buildMatchingShape()
     }
 
     private fun buildMatchingShape() {

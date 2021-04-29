@@ -19,13 +19,16 @@ import androidx.navigation.fragment.navArgs
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.databinding.FragmentGameBinding
+import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.utils.*
 import timber.log.Timber
 
 
 class GameFragment : Fragment() {
 
-    val gameViewModel: GameViewModel by viewModels()
+    val gameViewModel: GameViewModel by viewModels {
+        GameViewModelFactory(this@GameFragment.requireActivity().application, FirebaseRepoImpl())
+    }
 
     val args: GameFragmentArgs by navArgs()
 
@@ -47,15 +50,11 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-//        args.levelStats ?:
-
-
         startObservingLiveData()
         initListeners()
         with(binding.containerView) {
             post {
-                gameViewModel.startGame(width, height)
+                gameViewModel.startGame(width, height, args.levelStats)
             }
         }
     }
