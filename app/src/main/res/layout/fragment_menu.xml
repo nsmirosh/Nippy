@@ -24,7 +24,7 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:visibility="@{viewmodel.lastCompletedLevel.level != 0 ? View.VISIBLE : View.GONE}"
-            android:text="@{String.format(@string/menu_current_score, viewmodel.lastCompletedLevel.levelScore)}"
+            android:text="@{String.format(@string/menu_current_score, viewmodel.lastCompletedLevel.totalScore)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="Score: 25" />

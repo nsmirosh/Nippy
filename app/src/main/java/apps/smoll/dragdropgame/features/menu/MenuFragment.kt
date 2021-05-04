@@ -10,10 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.FragmentMenuBinding
+import apps.smoll.dragdropgame.features.game.GameViewModelFactory
+import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class MenuFragment : Fragment() {
 
-    val viewModel: MenuViewModel by viewModels()
+    val viewModel: MenuViewModel by viewModels {
+        MenuViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
+    }
 
     lateinit var binding: FragmentMenuBinding
 

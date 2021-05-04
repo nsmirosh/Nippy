@@ -43,8 +43,6 @@ class MenuViewModelTest {
             onBlocking { getLastLevel() }.doReturn(LevelStats(totalScore = 50))
         }
 
-//        Mockito.`when`(mockFirestore.getLastLevel()).thenReturn(LevelStats())
-
         with (menuViewModel) {
             init()
             val lastLevel = lastCompletedLevel.getOrAwaitValue()
