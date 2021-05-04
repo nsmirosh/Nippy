@@ -127,13 +127,13 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
     }
 
     private fun onShapeHit() {
+        _totalScore.value = totalScore.value?.inc()
         if (screenShapes.value!!.isEmpty()) {
             proceedToNextLevel()
         } else {
             levelScore++
             buildMatchingShape()
         }
-        _totalScore.value = totalScore.value?.inc()
     }
 
     private fun proceedToNextLevel() {

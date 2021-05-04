@@ -2,27 +2,27 @@ package apps.smoll.dragdropgame.features.game
 
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import apps.smoll.dragdropgame.features.getOrAwaitValue
 import apps.smoll.dragdropgame.halfShapeSize
-import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.minus
 import apps.smoll.dragdropgame.utils.permissibleHitFaultInPixels
 import apps.smoll.dragdropgame.utils.plus
-import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.*
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
+import org.mockito.kotlin.*
 import org.robolectric.annotation.Config
+
 
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [Build.VERSION_CODES.O_MR1])
@@ -74,7 +74,7 @@ class GameViewModelTest {
 
 
     @Test
-    fun handleDrop_movesTheMatchingShapeToNewCoords() {
+    fun handleMatchingShapeDrop_movesTheMatchingShapeToNewCoords() {
 
         with(gameViewModel) {
             startGame(1080, 1920)
@@ -92,6 +92,33 @@ class GameViewModelTest {
 
             //the matching shape is adjusted by halfShapeSize because it needs to be centered on screen
             assertThat(matchingShape.topLeftCoords, equalTo(dropCoords - halfShapeSize))
+        }
+    }
+
+
+    @Test
+    fun handleMatchingShapeDrop_withShapeBeingHit_writesTheDataToFirestore() {
+
+
+        val repo = Mockito.mock(FirebaseRepoImpl::class.java)
+        val gameViewModel = GameViewModel(repo)
+
+        with(gameViewModel) {
+            startGame(1080, 1920)
+            val screenShapesValue = screenShapes.getOrAwaitValue()
+            val dropCoords = screenShapesValue.first().topLeftCoords + halfShapeSize
+            handleMatchingShapeDrop(dropCoords)
+
+            val argument = argumentCaptor<LevelStats>()
+
+            runBlocking {
+                verify(repo).writeLevelStats(argument.capture())
+            }
+
+            with(argument.firstValue) {
+                assertThat(level, equalTo(2))
+                assertThat(totalScore, equalTo(1))
+            }
         }
     }
 
