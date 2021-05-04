@@ -38,12 +38,8 @@ class GameViewModelTest {
     @Before
     fun setUp() {
         mockFirestore = Mockito.mock(FirebaseFirestore::class.java)
-        gameViewModel = GameViewModel(
-            ApplicationProvider.getApplicationContext(),
-            FirebaseRepoImpl(mockFirestore)
-        )
+        gameViewModel = GameViewModel(FirebaseRepoImpl(mockFirestore))
     }
-
 
     @Test
     fun startGame_buildsShapesAndDisplaysInitialData() {

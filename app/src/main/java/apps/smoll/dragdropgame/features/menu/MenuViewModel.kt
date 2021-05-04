@@ -12,9 +12,8 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 
-class MenuViewModel : ViewModel() {
+class MenuViewModel(val firebaseRepo : FirebaseRepo) : ViewModel() {
 
-    val firebaseRepo : FirebaseRepo = FirebaseRepoImpl()
     private val _lastCompletedLevel: MutableLiveData<LevelStats> = MutableLiveData()
     val lastCompletedLevel: LiveData<LevelStats> get() = _lastCompletedLevel
 

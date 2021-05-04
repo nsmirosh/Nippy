@@ -8,7 +8,7 @@ import kotlinx.coroutines.tasks.await
 
 const val statsPath = "stats"
 
-class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.firestore) : FirebaseRepo {
+open class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.firestore) : FirebaseRepo {
 
 //    private val firestore = Firebase.firestore
 
