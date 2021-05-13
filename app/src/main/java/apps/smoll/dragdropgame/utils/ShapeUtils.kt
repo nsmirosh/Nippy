@@ -2,6 +2,7 @@ package apps.smoll.dragdropgame.utils
 
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.shapeSize
 import java.util.*
 
 fun buildShapesWithRandomColorsAndShapeTypes(
@@ -23,6 +24,19 @@ fun buildShapesWithRandomColorsAndShapeTypes(
     }
 }
 
+fun copyAndModifyRandomShapeFrom(screenShapes: List<Shape>, width: Int, height: Int): Shape {
+
+    val oneOfTheShapesOnScreen = screenShapes.random()
+
+    val xPos = (width / 2) - shapeSize
+    val yPos = (height * 0.7).toInt()
+
+    return oneOfTheShapesOnScreen.copy(
+        topLeftCoords = Pair(xPos, yPos),
+        colorResource = R.color.shape_to_match_color
+    )
+}
+
 private fun getShuffledShapes(): Stack<Int> {
     val imageShapeArray = arrayOf(
         R.drawable.ic_square,
@@ -35,6 +49,7 @@ private fun getShuffledShapes(): Stack<Int> {
         shuffle()
     }
 }
+
 
 private fun getShuffledColors(): Stack<Int> {
     val colorsArray = arrayOf(

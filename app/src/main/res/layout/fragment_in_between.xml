@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -8,7 +7,7 @@
         <import type="android.view.View"/>
         <variable
             name="viewmodel"
-            type="apps.smoll.dragdropgame.features.menu.MenuViewModel" />
+            type="apps.smoll.dragdropgame.features.game.inbetween.InBetweenViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,59 +17,59 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/currentHighScoreTextView"
+            android:id="@+id/scoreTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:visibility="@{viewmodel.lastCompletedLevel.currentLevel != 0 ? View.VISIBLE : View.GONE}"
-            android:text="@{String.format(@string/menu_current_score, viewmodel.lastCompletedLevel.totalScore)}"
+            app:text="@{String.format(@string/score, viewmodel.levelStats.totalScore)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="Score: 25" />
 
         <TextView
-            android:id="@+id/currentLevelTextView"
+            android:id="@+id/levelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:visibility="@{viewmodel.lastCompletedLevel.currentLevel != 0 ? View.VISIBLE : View.GONE}"
-            android:text="@{String.format(@string/menu_current_level, viewmodel.lastCompletedLevel.currentLevel)}"
+            android:text="@{String.format(@string/level, viewmodel.levelStats.nextLevel)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/currentHighScoreTextView"
-            tools:text="Level: 3" />
+            app:layout_constraintTop_toBottomOf="@id/scoreTextView"
+            tools:text="`Next Level: 3" />
 
         <Button
-            android:id="@+id/resumeButton"
+            android:id="@+id/mainMenuButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="@string/main_menu_resume_game"
-            android:visibility="@{viewmodel.lastCompletedLevel.currentLevel != 0 ? View.VISIBLE : View.GONE}"
+            android:text="@string/main_menu"
+            app:layout_constraintBottom_toBottomOf="@id/containerView"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/currentLevelTextView" />
+            app:layout_constraintTop_toTopOf="@id/containerView" />
 
         <Button
-            android:id="@+id/startNewGameButton"
+            android:id="@+id/nextLevelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="@string/main_menu_start_new_game"
+            android:text="@string/next_level"
+            android:visibility="@{viewmodel.levelStats.nextLevel != -1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/resumeButton" />
+            app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
 
         <Button
-            android:id="@+id/statsButton"
+            android:id="@+id/retryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="@string/main_menu_stats"
+            android:text="@string/retry"
+            android:visibility="@{viewmodel.levelStats.nextLevel == -1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/startNewGameButton" />
+            app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -18,7 +18,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.mockito.kotlin.*
 import org.robolectric.annotation.Config
@@ -65,7 +64,7 @@ class GameViewModelTest {
             // when we "drop" the matching shape over the shape on screen
             // the actual drop coordinates are the center of the view we drag - hence we need to adjust for halfShapeSize
 
-            val dropCoords = screenShapesValue[0].topLeftCoords + halfShapeSize
+            val dropCoords = screenShapesValue.first().topLeftCoords + halfShapeSize
             handleMatchingShapeDrop(dropCoords)
             val screenShapesValue2 = screenShapes.getOrAwaitValue()
             assertThat(screenShapesValue2.size, equalTo(0))
@@ -116,8 +115,10 @@ class GameViewModelTest {
             }
 
             with(argument.firstValue) {
-                assertThat(level, equalTo(2))
-                assertThat(totalScore, equalTo(1))
+                assertThat("currentLevel", currentLevel, equalTo(1))
+                assertThat("nextLevel", nextLevel, equalTo(2))
+                assertThat("wonCurrentLevel", wonCurrentLevel, equalTo(true))
+                assertThat("totalScore", totalScore, equalTo(1))
             }
         }
     }
@@ -127,7 +128,7 @@ class GameViewModelTest {
     fun startGame_withPreviousLevelData_initializesFieldsCorrectly() {
 
         val levelStats = LevelStats(
-            level = 3,
+            currentLevel = 3,
             totalScore = 5
         )
 

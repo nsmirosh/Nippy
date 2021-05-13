@@ -6,26 +6,24 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.DragEvent
-import android.view.LayoutInflater
-import android.view.MotionEvent.ACTION_DOWN
+import android.view.KeyEvent.ACTION_DOWN
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.databinding.FragmentGameBinding
+import apps.smoll.dragdropgame.features.base.BaseFragment
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
+import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
-class GameFragment : Fragment() {
+class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
 
     val gameViewModel: GameViewModel by viewModels {
         GameViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
@@ -33,20 +31,10 @@ class GameFragment : Fragment() {
 
     val args: GameFragmentArgs by navArgs()
 
-    lateinit var binding: FragmentGameBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_game, container, false)
+    override fun initBindingDependencies() =
         with(binding) {
-            lifecycleOwner = viewLifecycleOwner
             viewmodel = gameViewModel
         }
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,48 +61,18 @@ class GameFragment : Fragment() {
                 { updateShapesOnScreen(it) }
             )
 
-            userWonEvent.observe(
+            levelCompletedEvent.observe(
                 viewLifecycleOwner,
-                {
-                    it.getContentIfNotHandled()?.let {
-                        onUserWon()
-                    }
-                }
-            )
-
-            userLostEvent.observe(
-                viewLifecycleOwner,
-                {
-                    it.getContentIfNotHandled()?.let {
-                        onUserLost()
-                    }
-                }
+                ::goToInBetweenFragment
             )
         }
     }
 
-    private fun onUserWon() {
-        with(binding) {
-            mainMenuButton.visible()
-            nextLevelButton.visible()
-        }
-    }
+    private fun goToInBetweenFragment(event: Event<LevelStats>) {
+        view?.findNavController()
+            ?.navigate(GameFragmentDirections.actionGameFragmentToInBetweenFragment(event.getContentIfNotHandled()))
 
-    private fun onUserLost() {
-        with(binding) {
-            mainMenuButton.visible()
-            retryButton.visible()
-        }
     }
-
-    private fun hideAllButtons() {
-        with(binding) {
-            mainMenuButton.gone()
-            nextLevelButton.gone()
-            retryButton.gone()
-        }
-    }
-
 
     private fun updateShapeToMatch(shape: Shape?) {
         with(binding) {
@@ -131,12 +89,10 @@ class GameFragment : Fragment() {
     private fun initListeners() {
 
         with(binding) {
-            nextLevelButton.setOnClickListener {
-                hideAllButtons()
+            /*nextLevelButton.setOnClickListener {
                 gameViewModel.startGame(containerView.width, containerView.height)
             }
             retryButton.setOnClickListener {
-                hideAllButtons()
                 gameViewModel.restartLevel(screenWidthAndHeight)
             }
 
@@ -144,7 +100,7 @@ class GameFragment : Fragment() {
             mainMenuButton.setOnClickListener {
                 view?.findNavController()
                     ?.navigate(GameFragmentDirections.actionGameFragmentToMenuFragment())
-            }
+            }*/
 
             dragImageView.setOnTouchListener { view, motionEvent ->
 

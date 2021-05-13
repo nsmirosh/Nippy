@@ -40,7 +40,7 @@ class StatsAdapter(dataSet: List<LevelStats>) :
 
         with(viewHolder) {
             dateCompleted.text = date
-            levelNo.text = levelStats.level.toString()
+            levelNo.text = levelStats.currentLevel.toString()
             timeToComplete.text = levelStats.durationMilli.toString()
         }
     }

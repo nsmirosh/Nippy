@@ -9,5 +9,7 @@ data class LevelStats(
     val durationMilli: Long = dateCompletedMillis,
     val totalScore: Int = -1,
     val levelScore: Int = -1,
-    var level: Int = -1
+    val currentLevel: Int = -1,
+    val nextLevel: Int= -1,
+    var wonCurrentLevel: Boolean = false,
 ) : Parcelable

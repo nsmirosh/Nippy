@@ -5,16 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.shapeSize
-import apps.smoll.dragdropgame.utils.Event
-import apps.smoll.dragdropgame.utils.areCoordinatesHit
-import apps.smoll.dragdropgame.utils.buildShapesWithRandomColorsAndShapeTypes
-import apps.smoll.dragdropgame.utils.minus
+import apps.smoll.dragdropgame.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 const val timeLeftInMilliseconds = 20000L
@@ -38,11 +34,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
     private val _currentLevel: MutableLiveData<Int> = MutableLiveData(1)
     val currentLevel: LiveData<Int> get() = _currentLevel
 
-    private val _userLostEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
-    val userLostEvent: LiveData<Event<Boolean>> get() = _userLostEvent
-
-    private val _userWonEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
-    val userWonEvent: LiveData<Event<Unit>> get() = _userWonEvent
+    private val _levelCompletedEvent: MutableLiveData<Event<LevelStats>> = MutableLiveData()
+    val levelCompletedEvent: LiveData<Event<LevelStats>> get() = _levelCompletedEvent
 
     val addedViewIds = mutableSetOf<Int>()
 
@@ -65,7 +58,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
 
     private fun initWithPreviousLevelStats(previousLevelStats: LevelStats) =
         with(previousLevelStats) {
-            _currentLevel.value = level
+            _currentLevel.value = currentLevel
             _totalScore.value = totalScore
         }
 
@@ -90,9 +83,9 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
     private fun onPlayerFail() {
         _totalScore.value = totalScore.value!! - levelScore
         levelScore = 0
-        _userLostEvent.value = Event(true)
         _screenShapes.value = listOf()
         _shapeToMatch.value = null
+        _levelCompletedEvent.value = Event(buildStatsWithLevelChanges())
     }
 
     private fun buildInitialShapes() {
@@ -101,18 +94,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
     }
 
     private fun buildMatchingShape() {
-
-        val oneOfTheShapesOnScreen = screenShapes.value!!.random()
-
-        val xPos = (sWidth / 2) - shapeSize
-        val yPos = (sHeight * 0.7).toInt()
-
-        val shapeToMatch = oneOfTheShapesOnScreen.copy(
-            topLeftCoords = Pair(xPos, yPos),
-            colorResource = R.color.shape_to_match_color
-        )
-
-        _shapeToMatch.value = shapeToMatch
+        _shapeToMatch.value = copyAndModifyRandomShapeFrom(screenShapes.value!!, sWidth, sHeight)
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
@@ -137,29 +119,29 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
     }
 
     private fun proceedToNextLevel() {
-        _currentLevel.value = _currentLevel.value?.inc()
-        writeLevelDataToFirestore()
+        val newStats = buildStatsWithLevelChanges()
+        newStats.wonCurrentLevel = true
+        _levelCompletedEvent.value = Event(newStats)
+        writeLevelDataToFirestore(newStats)
         timer.cancel()
         _secondsLeft.value = 0
-        _userWonEvent.value = Event(Unit)
     }
 
-    private fun writeLevelDataToFirestore() {
-
-        val currentMillis = System.currentTimeMillis()
-
-        val stats = LevelStats(
-            currentMillis,
-            currentMillis - levelStartTime,
-            totalScore.value!!,
-            levelScore,
-            currentLevel.value!!,
-        )
-
-        viewModelScope.launch {
-            firebaseRepo.writeLevelStats(stats)
+    private fun writeLevelDataToFirestore(levelStats: LevelStats) {
+        viewModelScope.launch(Dispatchers.IO) {
+            firebaseRepo.writeLevelStats(levelStats)
         }
     }
+
+
+    private fun buildStatsWithLevelChanges() = LevelStats(
+        System.currentTimeMillis(),
+        System.currentTimeMillis() - levelStartTime,
+        totalScore.value!!,
+        levelScore,
+        currentLevel.value!!,
+        currentLevel.value!!.inc()
+    )
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
         val coordsToCenterTheShape = coordinates - halfShapeSize
