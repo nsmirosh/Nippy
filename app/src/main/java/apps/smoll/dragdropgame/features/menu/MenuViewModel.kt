@@ -9,6 +9,7 @@ import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -18,8 +19,8 @@ class MenuViewModel(val firebaseRepo : FirebaseRepo) : ViewModel() {
     val lastCompletedLevel: LiveData<LevelStats> get() = _lastCompletedLevel
 
     fun init() {
-        viewModelScope.launch {
-            _lastCompletedLevel.value = firebaseRepo.getLastLevel()
+        viewModelScope.launch(Dispatchers.IO) {
+            _lastCompletedLevel.postValue(firebaseRepo.getLastLevel())
         }
     }
 }

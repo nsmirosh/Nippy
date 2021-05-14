@@ -49,9 +49,7 @@
 
         <argument
             android:name="levelStats"
-            android:defaultValue="@null"
-            app:argType="apps.smoll.dragdropgame.repository.LevelStats"
-            app:nullable="true" />
+            app:argType="apps.smoll.dragdropgame.repository.LevelStats" />
     </fragment>
 
 

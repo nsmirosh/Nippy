@@ -38,6 +38,29 @@
             app:layout_constraintTop_toBottomOf="@id/scoreTextView"
             tools:text="`Next Level: 3" />
 
+
+        <Button
+            android:id="@+id/nextLevelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/next_level"
+            android:visibility="@{viewmodel.levelStats.wonCurrentLevel ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="@id/containerView"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/retry"
+            android:visibility="@{viewmodel.levelStats.wonCurrentLevel ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@id/containerView"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
+
         <Button
             android:id="@+id/mainMenuButton"
             android:layout_width="wrap_content"
@@ -49,27 +72,6 @@
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView" />
 
-        <Button
-            android:id="@+id/nextLevelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/next_level"
-            android:visibility="@{viewmodel.levelStats.nextLevel != -1 ? View.VISIBLE : View.GONE}"
-            app:layout_constraintEnd_toEndOf="@id/containerView"
-            app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
-
-        <Button
-            android:id="@+id/retryButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/retry"
-            android:visibility="@{viewmodel.levelStats.nextLevel == -1 ? View.VISIBLE : View.GONE}"
-            app:layout_constraintEnd_toEndOf="@id/containerView"
-            app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

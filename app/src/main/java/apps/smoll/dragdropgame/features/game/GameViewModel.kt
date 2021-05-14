@@ -13,7 +13,7 @@ import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-const val timeLeftInMilliseconds = 20000L
+const val timeLeftInMilliseconds = 5000L
 const val intervalInMilliseconds = 1000L
 
 

@@ -34,6 +34,7 @@ class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
     override fun initBindingDependencies() =
         with(binding) {
             viewmodel = gameViewModel
+            lifecycleOwner = this@GameFragment
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,7 +71,7 @@ class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
 
     private fun goToInBetweenFragment(event: Event<LevelStats>) {
         view?.findNavController()
-            ?.navigate(GameFragmentDirections.actionGameFragmentToInBetweenFragment(event.getContentIfNotHandled()))
+            ?.navigate(GameFragmentDirections.actionGameFragmentToInBetweenFragment(event.getContentIfNotHandled()!!))
 
     }
 
@@ -89,18 +90,6 @@ class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
     private fun initListeners() {
 
         with(binding) {
-            /*nextLevelButton.setOnClickListener {
-                gameViewModel.startGame(containerView.width, containerView.height)
-            }
-            retryButton.setOnClickListener {
-                gameViewModel.restartLevel(screenWidthAndHeight)
-            }
-
-
-            mainMenuButton.setOnClickListener {
-                view?.findNavController()
-                    ?.navigate(GameFragmentDirections.actionGameFragmentToMenuFragment())
-            }*/
 
             dragImageView.setOnTouchListener { view, motionEvent ->
 
@@ -131,6 +120,8 @@ class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
                 }
                 true
             }
+
+
 
             val dragListen = View.OnDragListener { v, event ->
                 when (event.action) {

@@ -7,9 +7,9 @@ import kotlinx.parcelize.Parcelize
 data class LevelStats(
     val dateCompletedMillis: Long = System.currentTimeMillis(),
     val durationMilli: Long = dateCompletedMillis,
-    val totalScore: Int = -1,
-    val levelScore: Int = -1,
-    val currentLevel: Int = -1,
-    val nextLevel: Int= -1,
+    val totalScore: Int = 0,
+    val levelScore: Int = 0,
+    val currentLevel: Int = 0,
+    val nextLevel: Int= 0,
     var wonCurrentLevel: Boolean = false,
 ) : Parcelable

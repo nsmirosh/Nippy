@@ -10,29 +10,20 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.FragmentMenuBinding
+import apps.smoll.dragdropgame.features.base.BaseFragment
 import apps.smoll.dragdropgame.features.game.GameViewModelFactory
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class MenuFragment : Fragment() {
+class MenuFragment : BaseFragment<FragmentMenuBinding>(R.layout.fragment_menu) {
 
     val viewModel: MenuViewModel by viewModels {
         MenuViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
     }
 
-    lateinit var binding: FragmentMenuBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu, container, false)
-        with(binding) {
-            viewmodel = viewModel
-        }
-        return binding.root
+    override fun initBindingDependencies() = with(binding) {
+        viewmodel = viewModel
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

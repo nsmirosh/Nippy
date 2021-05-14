@@ -36,7 +36,7 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:visibility="@{viewmodel.lastCompletedLevel.currentLevel != 0 ? View.VISIBLE : View.GONE}"
-            android:text="@{String.format(@string/menu_current_level, viewmodel.lastCompletedLevel.currentLevel)}"
+            android:text="@{String.format(@string/menu_next_level, viewmodel.lastCompletedLevel.nextLevel)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/currentHighScoreTextView"
             tools:text="Level: 3" />
