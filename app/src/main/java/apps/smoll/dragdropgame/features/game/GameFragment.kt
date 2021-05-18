@@ -34,7 +34,6 @@ class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
     override fun initBindingDependencies() =
         with(binding) {
             viewmodel = gameViewModel
-            lifecycleOwner = this@GameFragment
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

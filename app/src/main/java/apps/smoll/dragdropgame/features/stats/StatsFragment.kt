@@ -10,24 +10,15 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.FragmentStatsBinding
+import apps.smoll.dragdropgame.features.base.BaseFragment
 import apps.smoll.dragdropgame.repository.LevelStats
 
-class StatsFragment : Fragment() {
+class StatsFragment : BaseFragment<FragmentStatsBinding>(R.layout.fragment_stats) {
 
     private val statsViewModel: StatsViewModel by viewModels()
 
-    lateinit var binding: FragmentStatsBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_stats, container, false)
-        with(binding) {
-            lifecycleOwner = viewLifecycleOwner
-        }
-        return binding.root
+    override fun initBindingDependencies() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

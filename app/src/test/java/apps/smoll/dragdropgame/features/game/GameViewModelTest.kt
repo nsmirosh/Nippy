@@ -115,7 +115,7 @@ class GameViewModelTest {
             }
 
             with(argument.firstValue) {
-                assertThat("currentLevel", currentLevel, equalTo(1))
+                assertThat("currentLevel", levelToBePlayed, equalTo(1))
                 assertThat("nextLevel", nextLevel, equalTo(2))
                 assertThat("wonCurrentLevel", wonCurrentLevel, equalTo(true))
                 assertThat("totalScore", totalScore, equalTo(1))
@@ -128,7 +128,7 @@ class GameViewModelTest {
     fun startGame_withPreviousLevelData_initializesFieldsCorrectly() {
 
         val levelStats = LevelStats(
-            currentLevel = 3,
+            levelToBePlayed = 3,
             totalScore = 5
         )
 

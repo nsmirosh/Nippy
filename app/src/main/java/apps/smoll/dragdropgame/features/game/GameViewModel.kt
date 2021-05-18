@@ -13,7 +13,7 @@ import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-const val timeLeftInMilliseconds = 5000L
+const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
 
@@ -58,7 +58,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
 
     private fun initWithPreviousLevelStats(previousLevelStats: LevelStats) =
         with(previousLevelStats) {
-            _currentLevel.value = currentLevel
+            _currentLevel.value = levelToBePlayed
             _totalScore.value = totalScore
         }
 
@@ -119,6 +119,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
     }
 
     private fun proceedToNextLevel() {
+        _currentLevel.value = _currentLevel.value!!.inc()
         val newStats = buildStatsWithLevelChanges()
         newStats.wonCurrentLevel = true
         _levelCompletedEvent.value = Event(newStats)
@@ -133,14 +134,12 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
         }
     }
 
-
     private fun buildStatsWithLevelChanges() = LevelStats(
         System.currentTimeMillis(),
         System.currentTimeMillis() - levelStartTime,
         totalScore.value!!,
         levelScore,
-        currentLevel.value!!,
-        currentLevel.value!!.inc()
+        currentLevel.value!!
     )
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
@@ -158,12 +157,4 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
             val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
             areCoordinatesHit(dropEventCoordinates, it.topLeftCoords) && shapeMatch
         }
-
-    fun restartLevel(screenWidthAndHeight: Pair<Int, Int>) {
-        timer.apply {
-            cancel()
-            start()
-        }
-        startGame(screenWidthAndHeight.first, screenWidthAndHeight.second)
-    }
 }
