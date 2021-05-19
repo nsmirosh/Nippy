@@ -33,11 +33,11 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
+            android:visibility="@{viewmodel.levelStats.levelToBePlayed == 5 ? View.GONE : View.VISIBLE }"
             android:text="@{String.format(@string/level, viewmodel.levelStats.levelToBePlayed)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/scoreTextView"
             tools:text="`Next Level: 3" />
-
 
         <Button
             android:id="@+id/nextLevelButton"
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/next_level"
-            android:visibility="@{viewmodel.levelStats.wonCurrentLevel ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewmodel.levelStats.wonCurrentLevel &amp;&amp; viewmodel.levelStats.levelToBePlayed != 5 ? View.VISIBLE : View.GONE }"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
@@ -61,6 +61,16 @@
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/mainMenuButton" />
 
+        <TextView
+            android:id="@+id/congratsMessage"
+            app:layout_constraintEnd_toEndOf="@id/containerView"
+            app:layout_constraintStart_toStartOf="@id/containerView"
+            app:layout_constraintTop_toBottomOf="@id/scoreTextView"
+            android:visibility="@{viewmodel.levelStats.levelToBePlayed == 5 ? View.VISIBLE : View.GONE }"
+            android:text="@string/congrats_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <Button
             android:id="@+id/mainMenuButton"
             android:layout_width="wrap_content"
@@ -73,6 +83,5 @@
             app:layout_constraintTop_toTopOf="@id/containerView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>
