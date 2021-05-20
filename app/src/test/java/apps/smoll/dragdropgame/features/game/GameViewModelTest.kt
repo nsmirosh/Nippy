@@ -12,8 +12,8 @@ import apps.smoll.dragdropgame.utils.permissibleHitFaultInPixels
 import apps.smoll.dragdropgame.utils.plus
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -116,7 +116,6 @@ class GameViewModelTest {
 
             with(argument.firstValue) {
                 assertThat("currentLevel", levelToBePlayed, equalTo(1))
-                assertThat("nextLevel", nextLevel, equalTo(2))
                 assertThat("wonCurrentLevel", wonCurrentLevel, equalTo(true))
                 assertThat("totalScore", totalScore, equalTo(1))
             }

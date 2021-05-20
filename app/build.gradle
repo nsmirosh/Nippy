@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "apps.smoll.dragdropgame"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -49,7 +49,7 @@ dependencies {
 
     final hamcrestVersion = "1.3"
     final navVersion = "2.3.5"
-    final fragmentVersion = "1.3.3"
+    final fragmentVersion = "1.3.4"
     final androidXVersion = '1.0.0'
     final androidXTestCoreVersion = '1.3.0'
     final androidXTestExtKotlinRunnerVersion = '1.1.2'

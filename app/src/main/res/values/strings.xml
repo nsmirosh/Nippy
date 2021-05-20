@@ -14,6 +14,9 @@
     <string name="main_menu_start_new_game">Start new game</string>
     <string name="main_menu_stats">Stats</string>
     <string name="main_menu_resume_game">Resume where you left off</string>
+    <string name="main_menu_no_internet">It appears you\'re not connected to the internet. Your data will be synced later with the server and might not
+    show  up in the global stats for now</string>
+
 
 
     <string name="stats_your_highscores">Your highscores: </string>

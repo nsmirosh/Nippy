@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
@@ -13,10 +14,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MenuViewModel(val firebaseRepo : FirebaseRepo) : ViewModel() {
+class MenuViewModel(val firebaseRepo : FirebaseRepo) : BaseViewModel() {
 
     private val _lastCompletedLevel: MutableLiveData<LevelStats> = MutableLiveData()
     val lastCompletedLevel: LiveData<LevelStats> get() = _lastCompletedLevel
+
+    private val _connectedToInternet: MutableLiveData<Boolean> = MutableLiveData()
+    val connectedToInternet: LiveData<Boolean> get() = _connectedToInternet
 
     fun init() {
         viewModelScope.launch(Dispatchers.IO) {

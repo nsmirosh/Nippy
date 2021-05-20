@@ -23,13 +23,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
-class GameFragment : BaseFragment<FragmentGameBinding>(R.layout.fragment_game) {
+class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.fragment_game) {
 
     val gameViewModel: GameViewModel by viewModels {
         GameViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
     }
-
     val args: GameFragmentArgs by navArgs()
+    override val viewModelInstance = gameViewModel
 
     override fun initBindingDependencies() =
         with(binding) {

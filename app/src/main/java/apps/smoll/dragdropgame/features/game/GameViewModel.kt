@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.LevelStats
@@ -17,7 +18,7 @@ const val timeLeftInMilliseconds = 20000L
 const val intervalInMilliseconds = 1000L
 
 
-class GameViewModel(val firebaseRepo: FirebaseRepo) : ViewModel() {
+class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
 
     private val _screenShapes: MutableLiveData<List<Shape>> = MutableLiveData()
     val screenShapes: LiveData<List<Shape>> get() = _screenShapes
