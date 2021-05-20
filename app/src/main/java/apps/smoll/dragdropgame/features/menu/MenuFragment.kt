@@ -21,13 +21,15 @@ class MenuFragment : BaseFragment<FragmentMenuBinding, MenuViewModel>(R.layout.f
         MenuViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
     }
 
-    override val viewModelInstance = menuViewModel
 
     override fun initBindingDependencies() {
         with(binding) {
             binding.viewmodel = menuViewModel
         }
     }
+
+
+    override fun getViewModelInstance() = menuViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

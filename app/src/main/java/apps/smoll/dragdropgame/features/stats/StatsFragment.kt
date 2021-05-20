@@ -13,13 +13,13 @@ import apps.smoll.dragdropgame.databinding.FragmentStatsBinding
 import apps.smoll.dragdropgame.features.base.BaseFragment
 import apps.smoll.dragdropgame.repository.LevelStats
 
-class StatsFragment : BaseFragment<FragmentStatsBinding>(R.layout.fragment_stats) {
+class StatsFragment : BaseFragment<FragmentStatsBinding, StatsViewModel>(R.layout.fragment_stats) {
 
     private val statsViewModel: StatsViewModel by viewModels()
 
+    override fun initBindingDependencies() {}
 
-    override fun initBindingDependencies() {
-    }
+    override fun getViewModelInstance() = statsViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

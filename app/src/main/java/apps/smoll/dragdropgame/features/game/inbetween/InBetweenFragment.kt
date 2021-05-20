@@ -15,7 +15,7 @@ import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class InBetweenFragment : BaseFragment<FragmentInBetweenBinding>(R.layout.fragment_in_between) {
+class InBetweenFragment : BaseFragment<FragmentInBetweenBinding, InBetweenViewModel>(R.layout.fragment_in_between) {
 
     val viewModel: InBetweenViewModel by viewModels()
 
@@ -25,6 +25,8 @@ class InBetweenFragment : BaseFragment<FragmentInBetweenBinding>(R.layout.fragme
         with(binding) {
             viewmodel = viewModel
         }
+
+    override fun getViewModelInstance() = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
