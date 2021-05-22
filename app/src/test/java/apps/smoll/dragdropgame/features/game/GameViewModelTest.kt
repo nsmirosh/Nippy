@@ -137,5 +137,4 @@ class GameViewModelTest {
             assertThat(currentLevel, equalTo(3))
         }
     }
-
 }
