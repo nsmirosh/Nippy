@@ -10,16 +10,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
 class AuthActivity : AppCompatActivity() {
 
     private lateinit var gClient: GoogleSignInClient
     private lateinit var binding: ActivityAuthBinding
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
+        auth = Firebase.auth
         val view = binding.root
         setContentView(view)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -28,6 +33,12 @@ class AuthActivity : AppCompatActivity() {
 
         gClient = GoogleSignIn.getClient(this, gso);
         initViews()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        Timber.d("current user - ${currentUser}")
     }
 
     private fun initViews() {
@@ -43,15 +54,18 @@ class AuthActivity : AppCompatActivity() {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 try {
                     val account = task.getResult(ApiException::class.java)!!
-                    Timber.d("firebaseAuthWithGoogle:" + account.id)
+                    Timber.d("firebaseAuthWithGoogle: ${account.id}")
 //                firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
-//                Timber.e( "Google sign in failed", e)
+                    Timber.e("Google sign in failed with message: ${e.message}")
                 }
+            }
+            else {
+                Timber.d("result =${result}")
             }
         }
 
-    fun openSomeActivityForResult() {
+    private fun openSomeActivityForResult() {
         val signInIntent = gClient.signInIntent
         resultLauncher.launch(signInIntent)
     }
