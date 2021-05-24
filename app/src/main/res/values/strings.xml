@@ -22,8 +22,5 @@
 
     <string name="menu_next_level">Next Level: %s</string>
     <string name="menu_current_score">Current Score: %s</string>
-
-
     <string name="congrats_message">Congrats! You finished the game! Try again for a better score!</string>
-
 </resources>
