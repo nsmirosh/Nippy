@@ -15,7 +15,8 @@
         android:supportsRtl="true"
 
         android:theme="@style/Theme.DragDropGame">
-        <activity android:name=".features.auth.AuthActivity"/>
+        <activity android:name=".features.auth.AuthActivity"
+            />
         <activity android:name=".features.auth.StartUpActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

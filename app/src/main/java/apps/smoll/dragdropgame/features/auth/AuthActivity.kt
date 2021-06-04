@@ -1,11 +1,14 @@
 package apps.smoll.dragdropgame.features.auth
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.ActivityAuthBinding
+import apps.smoll.dragdropgame.features.game.MainActivity
+import apps.smoll.dragdropgame.utils.extensions.snackBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -77,16 +80,12 @@ class AuthActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Timber.d("signInWithCredential:success")
-                    val user = auth.currentUser
-//                    updateUI(user)
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 } else {
-                    // If sign in fails, display a message to the user.
-                    Timber.w( "signInWithCredential:failure ${task.exception}" )
-//                    updateUI(null)
+                    window.decorView.snackBar("signInWithCredential:failure ${task.exception}")
                 }
             }
     }
-
 }
