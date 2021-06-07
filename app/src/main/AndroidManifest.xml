@@ -17,7 +17,7 @@
         android:theme="@style/Theme.DragDropGame">
         <activity android:name=".features.auth.AuthActivity"
             />
-        <activity android:name=".features.auth.StartUpActivity" >
+        <activity android:name=".features.startup.StartUpActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
