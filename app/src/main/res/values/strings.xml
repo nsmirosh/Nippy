@@ -4,7 +4,7 @@
 
     <string name="score">Score: %d</string>
     <string name="level">Level: %d</string>
-    <string name="time_left">Time left: %d</string>
+    <string name="time_left">Time left: %s</string>
 
     <string name="main_menu">Main Menu</string>
     <string name="next_level">Next Level</string>

@@ -34,7 +34,9 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ActivityAuthBinding.inflate(layoutInflater).root)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        auth = Firebase.auth
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()

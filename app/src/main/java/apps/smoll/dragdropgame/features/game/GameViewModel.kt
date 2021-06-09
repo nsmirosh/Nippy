@@ -3,7 +3,6 @@ package apps.smoll.dragdropgame.features.game
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.features.base.BaseViewModel
@@ -15,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 const val timeLeftInMilliseconds = 20000L
-const val intervalInMilliseconds = 1000L
+const val intervalInMilliseconds = 100L
 
 
 class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
@@ -29,8 +28,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private val _totalScore: MutableLiveData<Int> = MutableLiveData(0)
     val totalScore: LiveData<Int> get() = _totalScore
 
-    private val _secondsLeft: MutableLiveData<Int> = MutableLiveData(20)
-    val secondsLeft: LiveData<Int> get() = _secondsLeft
+    private val _secondsLeft: MutableLiveData<String> = MutableLiveData()
+    val secondsLeft: LiveData<String> get() = _secondsLeft
 
     private val _currentLevel: MutableLiveData<Int> = MutableLiveData(1)
     val currentLevel: LiveData<Int> get() = _currentLevel
@@ -68,8 +67,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             timer.cancel()
         }
         timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
-            override fun onTick(millisUntilFinished: Long) {
-                _secondsLeft.value = (millisUntilFinished / intervalInMilliseconds).toInt()
+            override fun onTick(millisUntilFinished: Long)  {
+                _secondsLeft.value = formatSeconds(millisUntilFinished)
             }
 
             /*
@@ -79,6 +78,12 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             override fun onFinish() = onPlayerFail()
 
         }.start()
+    }
+
+    private fun formatSeconds(millisUntilFinished: Long) : String{
+        val afterComa = (millisUntilFinished % 1000) / intervalInMilliseconds
+        val beforeComa = (millisUntilFinished / 1000).toInt()
+        return "$beforeComa,$afterComa"
     }
 
     private fun onPlayerFail() {
@@ -126,7 +131,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         _levelCompletedEvent.value = Event(newStats)
         writeLevelDataToFirestore(newStats)
         timer.cancel()
-        _secondsLeft.value = 0
+        _secondsLeft.value = formatSeconds(0)
     }
 
     private fun writeLevelDataToFirestore(levelStats: LevelStats) {
