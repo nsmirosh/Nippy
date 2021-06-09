@@ -5,10 +5,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.ActivityAuthBinding
 import apps.smoll.dragdropgame.features.game.MainActivity
+import apps.smoll.dragdropgame.features.startup.StartUpViewModelFactory
 import apps.smoll.dragdropgame.utils.extensions.snackBar
+import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,41 +28,34 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthBinding
     private lateinit var auth: FirebaseAuth
 
+    val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(FirebaseAuthUtils(Firebase.auth))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAuthBinding.inflate(layoutInflater)
-        auth = Firebase.auth
-        val view = binding.root
-        setContentView(view)
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        setContentView(ActivityAuthBinding.inflate(layoutInflater).root)
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
-            .build()
+            .build().let { gClient = GoogleSignIn.getClient(this, it) }
 
-        gClient = GoogleSignIn.getClient(this, gso);
         initViews()
     }
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        Timber.d("current user - ${currentUser}")
-    }
-
-    private fun initViews() {
+    private fun initViews() =
         binding.signInButton.setOnClickListener {
-            openSomeActivityForResult()
+            resultLauncher.launch(gClient.signInIntent)
         }
-    }
 
-    var resultLauncher =
+
+    private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 try {
                     val account = task.getResult(ApiException::class.java)!!
-                    Timber.d("firebaseAuthWithGoogle: ${account.id}")
                     firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
                     Timber.e("Google sign in failed with message: ${e.message}")
@@ -68,11 +64,6 @@ class AuthActivity : AppCompatActivity() {
                 Timber.d("result =${result}")
             }
         }
-
-    private fun openSomeActivityForResult() {
-        val signInIntent = gClient.signInIntent
-        resultLauncher.launch(signInIntent)
-    }
 
 
     private fun firebaseAuthWithGoogle(idToken: String) {
