@@ -16,17 +16,6 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/scoreTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:text="@{String.format(@string/score, viewmodel.totalScore)}"
-            app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toTopOf="@id/containerView"
-            tools:text="Score: 25" />
-
-        <TextView
             android:id="@+id/levelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,7 +23,7 @@
             android:textSize="20sp"
             android:text="@{String.format(@string/level, viewmodel.currentLevel)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toBottomOf="@id/scoreTextView"
+            app:layout_constraintTop_toBottomOf="@id/containerView"
             tools:text="Level: 3" />
 
         <TextView

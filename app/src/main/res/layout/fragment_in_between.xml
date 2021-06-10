@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:text="@{String.format(@string/score, viewmodel.levelStats.totalScore)}"
+            app:text="@{String.format(@string/score, viewmodel.levelStats.totalTimeInMillis)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="Score: 25" />

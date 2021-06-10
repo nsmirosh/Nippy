@@ -25,11 +25,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private val _shapeToMatch: MutableLiveData<Shape> = MutableLiveData()
     val shapeToMatch: LiveData<Shape> get() = _shapeToMatch
 
-    private val _totalScore: MutableLiveData<Int> = MutableLiveData(0)
-    val totalScore: LiveData<Int> get() = _totalScore
-
-    private val _secondsLeft: MutableLiveData<String> = MutableLiveData()
-    val secondsLeft: LiveData<String> get() = _secondsLeft
+    private val _timeLeftInSeconds: MutableLiveData<String> = MutableLiveData()
+    val secondsLeft: LiveData<String> get() = _timeLeftInSeconds
 
     private val _currentLevel: MutableLiveData<Int> = MutableLiveData(1)
     val currentLevel: LiveData<Int> get() = _currentLevel
@@ -41,7 +38,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
 
     lateinit var timer: CountDownTimer
 
-    private var levelScore = 0
+    private var totalTime = 0L
     private var sWidth = 0
     private var sHeight = 0
     var levelStartTime: Long = 0
@@ -59,7 +56,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private fun initWithPreviousLevelStats(previousLevelStats: LevelStats) =
         with(previousLevelStats) {
             _currentLevel.value = levelToBePlayed
-            _totalScore.value = totalScore
+            totalTime = totalTimeInMillis
         }
 
     private fun startTimer() {
@@ -67,8 +64,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             timer.cancel()
         }
         timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
-            override fun onTick(millisUntilFinished: Long)  {
-                _secondsLeft.value = formatSeconds(millisUntilFinished)
+            override fun onTick(millisUntilFinished: Long) {
+                _timeLeftInSeconds.value = formatSeconds(millisUntilFinished)
             }
 
             /*
@@ -80,15 +77,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         }.start()
     }
 
-    private fun formatSeconds(millisUntilFinished: Long) : String{
-        val afterComa = (millisUntilFinished % 1000) / intervalInMilliseconds
-        val beforeComa = (millisUntilFinished / 1000).toInt()
-        return "$beforeComa,$afterComa"
-    }
-
     private fun onPlayerFail() {
-        _totalScore.value = totalScore.value!! - levelScore
-        levelScore = 0
         _screenShapes.value = listOf()
         _shapeToMatch.value = null
         _levelCompletedEvent.value = Event(buildStatsWithLevelChanges())
@@ -114,38 +103,34 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         }
     }
 
-    private fun onShapeHit() {
-        _totalScore.value = totalScore.value?.inc()
-        if (screenShapes.value!!.isEmpty()) {
+    private fun onShapeHit() =
+        if (screenShapes.value!!.isEmpty())
             proceedToNextLevel()
-        } else {
-            levelScore++
+        else
             buildMatchingShape()
-        }
-    }
+
 
     private fun proceedToNextLevel() {
         _currentLevel.value = _currentLevel.value!!.inc()
-        val newStats = buildStatsWithLevelChanges()
-        newStats.wonCurrentLevel = true
-        _levelCompletedEvent.value = Event(newStats)
-        writeLevelDataToFirestore(newStats)
+        totalTime += (System.currentTimeMillis() - levelStartTime)
+        buildStatsWithLevelChanges().let {
+            it.wonCurrentLevel = true
+            _levelCompletedEvent.value = Event(it)
+            writeLevelDataToFirestore(it)
+        }
         timer.cancel()
-        _secondsLeft.value = formatSeconds(0)
+        _timeLeftInSeconds.value = formatSeconds(0)
     }
 
-    private fun writeLevelDataToFirestore(levelStats: LevelStats) {
+    private fun writeLevelDataToFirestore(levelStats: LevelStats) =
         viewModelScope.launch(Dispatchers.IO) {
             firebaseRepo.writeLevelStats(levelStats)
         }
-    }
 
     private fun buildStatsWithLevelChanges() = LevelStats(
-        System.currentTimeMillis(),
-        System.currentTimeMillis() - levelStartTime,
-        totalScore.value!!,
-        levelScore,
-        currentLevel.value!!
+        levelTimeInMillis = System.currentTimeMillis() - levelStartTime,
+        totalTimeInMillis = totalTime,
+        levelToBePlayed = currentLevel.value!!
     )
 
     private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {

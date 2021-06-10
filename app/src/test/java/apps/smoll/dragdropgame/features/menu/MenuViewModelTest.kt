@@ -8,7 +8,6 @@ import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,13 +39,13 @@ class MenuViewModelTest {
     fun init_InitializesLastCompleteLevelCorrectly() {
 
         mockFirestore.stub {
-            onBlocking { getLastLevel() }.doReturn(LevelStats(totalScore = 50))
+            onBlocking { getLastLevel() }.doReturn(LevelStats(totalTimeInMillis = 50))
         }
 
         with (menuViewModel) {
             init()
             val lastLevel = lastCompletedLevel.getOrAwaitValue()
-            assertThat(lastLevel.totalScore, equalTo(50))
+            assertThat(lastLevel.totalTimeInMillis, equalTo(50))
         }
     }
 }

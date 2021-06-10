@@ -117,7 +117,7 @@ class GameViewModelTest {
             with(argument.firstValue) {
                 assertThat("currentLevel", levelToBePlayed, equalTo(1))
                 assertThat("wonCurrentLevel", wonCurrentLevel, equalTo(true))
-                assertThat("totalScore", totalScore, equalTo(1))
+                assertThat("totalScore", totalTimeInMillis, equalTo(1))
             }
         }
     }
@@ -128,7 +128,7 @@ class GameViewModelTest {
 
         val levelStats = LevelStats(
             levelToBePlayed = 3,
-            totalScore = 5
+            totalTimeInMillis = 5
         )
 
         with(gameViewModel) {
