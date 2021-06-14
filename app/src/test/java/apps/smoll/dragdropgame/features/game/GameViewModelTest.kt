@@ -41,7 +41,7 @@ class GameViewModelTest {
     }
 
     @Test
-    fun startGame_buildsShapesAndDisplaysInitialData() {
+    fun startGame_withNoPreexistingLevelData_buildsShapesAndDisplaysInitialData() {
 
         with(gameViewModel) {
             startGame(1080, 1920)
@@ -55,7 +55,7 @@ class GameViewModelTest {
     }
 
     @Test
-    fun handleDrop_removesShapeOnHit() {
+    fun handleMatchingShapeDrop_withCoordsMatchingExisting_removesShape() {
 
         with(gameViewModel) {
             startGame(1080, 1920)
@@ -73,7 +73,7 @@ class GameViewModelTest {
 
 
     @Test
-    fun handleMatchingShapeDrop_movesTheMatchingShapeToNewCoords() {
+    fun handleMatchingShapeDrop_withCoordsAwayFromExisting_movesToNewCoords() {
 
         with(gameViewModel) {
             startGame(1080, 1920)
@@ -115,9 +115,9 @@ class GameViewModelTest {
             }
 
             with(argument.firstValue) {
-                assertThat("currentLevel", levelToBePlayed, equalTo(1))
+                assertThat("currentLevel", levelToBePlayed, equalTo(2))
                 assertThat("wonCurrentLevel", wonCurrentLevel, equalTo(true))
-                assertThat("totalScore", totalTimeInMillis, equalTo(1))
+                assertThat("levelTimeInMillis", levelTimeInMillis, lessThan(1000))
             }
         }
     }
@@ -128,13 +128,15 @@ class GameViewModelTest {
 
         val levelStats = LevelStats(
             levelToBePlayed = 3,
-            totalTimeInMillis = 5
+            totalTimeInMillis = 1000
         )
 
         with(gameViewModel) {
             startGame(1080, 1920, levelStats)
             val currentLevel = currentLevel.getOrAwaitValue()
+            val screenShapes = screenShapes.getOrAwaitValue()
             assertThat(currentLevel, equalTo(3))
+            assertThat(screenShapes.size, equalTo(3))
         }
     }
 }

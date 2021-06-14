@@ -148,4 +148,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
             areCoordinatesHit(dropEventCoordinates, it.topLeftCoords) && shapeMatch
         }
+
+    fun cleanUp() {
+        timer.cancel()
+    }
 }

@@ -148,8 +148,11 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
             }
             containerView.setOnDragListener(dragListen)
         }
+    }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        gameViewModel.cleanUp()
     }
 
     private fun updateShapesOnScreen(shapes: List<Shape>) {

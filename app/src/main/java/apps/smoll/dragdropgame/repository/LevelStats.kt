@@ -8,7 +8,6 @@ data class LevelStats(
     val dateCompletedMillis: Long = System.currentTimeMillis(),
     val levelTimeInMillis: Long = 0,
     val totalTimeInMillis: Long = 0,
-//    val levelScore: Int = 0,
     val levelToBePlayed: Int = 0,
     var wonCurrentLevel: Boolean = false,
 ) : Parcelable
