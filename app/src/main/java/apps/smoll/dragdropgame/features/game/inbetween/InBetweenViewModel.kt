@@ -17,6 +17,6 @@ class InBetweenViewModel : BaseViewModel() {
 
     fun initWithArgs(stats: LevelStats) {
         _levelStats.value = stats
-        _score.value = formatDateTime(stats.totalTimeInMillis)
+        _score.value = formatDateTime("mm:ss", stats.totalTimeInMillis)
     }
 }

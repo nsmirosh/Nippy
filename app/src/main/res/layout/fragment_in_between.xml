@@ -9,9 +9,6 @@
             name="viewmodel"
             type="apps.smoll.dragdropgame.features.game.inbetween.InBetweenViewModel" />
 
-        <variable
-            name="dateUtils"
-            type="apps.smoll.dragdropgame.utils.DateTimeUtils" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

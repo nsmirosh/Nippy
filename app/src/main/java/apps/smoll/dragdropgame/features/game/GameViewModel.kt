@@ -65,7 +65,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         }
         timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
             override fun onTick(millisUntilFinished: Long) {
-                _timeLeftInSeconds.value = formatSeconds(millisUntilFinished)
+                _timeLeftInSeconds.value = formatDateTime("s,S", millisUntilFinished)
             }
 
             /*
@@ -119,7 +119,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             writeLevelDataToFirestore(it)
         }
         timer.cancel()
-        _timeLeftInSeconds.value = formatSeconds(0)
+        _timeLeftInSeconds.value = formatDateTime("s,S", 0)
     }
 
     private fun writeLevelDataToFirestore(levelStats: LevelStats) =
