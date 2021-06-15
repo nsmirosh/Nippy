@@ -8,6 +8,10 @@
         <variable
             name="viewmodel"
             type="apps.smoll.dragdropgame.features.game.inbetween.InBetweenViewModel" />
+
+        <variable
+            name="dateUtils"
+            type="apps.smoll.dragdropgame.utils.DateTimeUtils" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +26,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:text="@{String.format(@string/score, viewmodel.levelStats.totalTimeInMillis)}"
+            app:text="@{viewmodel.score}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="Score: 25" />

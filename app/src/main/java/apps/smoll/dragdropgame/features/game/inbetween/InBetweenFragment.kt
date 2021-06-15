@@ -21,10 +21,9 @@ class InBetweenFragment : BaseFragment<FragmentInBetweenBinding, InBetweenViewMo
 
     val args: InBetweenFragmentArgs by navArgs()
 
-    override fun initBindingDependencies() =
-        with(binding) {
-            viewmodel = viewModel
-        }
+    override fun initBindingDependencies() {
+        binding.viewmodel = viewModel
+    }
 
     override fun getViewModelInstance() = viewModel
 
