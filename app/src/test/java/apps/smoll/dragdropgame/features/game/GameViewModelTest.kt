@@ -1,6 +1,8 @@
 package apps.smoll.dragdropgame.features.game
 
+import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import apps.smoll.dragdropgame.features.getOrAwaitValue
@@ -137,6 +139,35 @@ class GameViewModelTest {
             val screenShapes = screenShapes.getOrAwaitValue()
             assertThat(currentLevel, equalTo(3))
             assertThat(screenShapes.size, equalTo(3))
+        }
+    }
+
+
+    @Test
+    fun startGame_withTimeRunningOut_runsPlayerFailsCallback() {
+
+        val levelStats = LevelStats(
+            levelToBePlayed = 3,
+            totalTimeInMillis = 1000
+        )
+
+        with ()
+
+        Intent().apply {
+            putExtras(this)
+        }
+
+        with(gameViewModel) {
+            startGame(1080, 1920, levelStats)
+//            Thread.sleep(4000)
+//            val currentLevel = currentLevel.getOrAwaitValue()
+            val screenShapesRes1 = screenShapes.getOrAwaitValue()
+            assertThat(screenShapesRes1.size, equalTo(3))
+
+            after(4000)
+            val screenShapesRes2 = screenShapes.getOrAwaitValue()
+            assertThat(screenShapesRes2.size, equalTo(0))
+//            assertThat(currentLevel, equalTo(3))
         }
     }
 }

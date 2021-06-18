@@ -42,7 +42,6 @@ class InBetweenViewModelTest {
 
             assertThat(score, equalTo("02:03:456"))
             assertThat(levelStats, equalTo(stats))
-
         }
     }
 }

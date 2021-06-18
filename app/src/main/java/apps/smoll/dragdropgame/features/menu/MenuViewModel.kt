@@ -23,13 +23,15 @@ class MenuViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private val _connectedToInternet: MutableLiveData<Boolean> = MutableLiveData()
     val connectedToInternet: LiveData<Boolean> get() = _connectedToInternet
 
-
     private val _score: MutableLiveData<String> = MutableLiveData()
     val score: LiveData<String> get() = _score
 
     fun init() = viewModelScope.launch(Dispatchers.IO) {
-        val levelStats = firebaseRepo.getLastLevel()!!
+        val levelStats = firebaseRepo.getLastLevel()
         _lastCompletedLevel.postValue(levelStats)
-        _score.postValue(formatDateTime("mm:ss:SS", levelStats.totalTimeInMillis))
+
+        levelStats?.let {
+            _score.postValue(formatDateTime("mm:ss:SS", it.totalTimeInMillis))
+        }
     }
 }

@@ -12,8 +12,9 @@ import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
-const val timeLeftInMilliseconds = 20000L
+const val timeLeftInMilliseconds = 3000L
 const val intervalInMilliseconds = 100L
 
 
@@ -119,6 +120,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             writeLevelDataToFirestore(it)
         }
         timer.cancel()
+
         _timeLeftInSeconds.value = formatDateTime("s,S", 0)
     }
 

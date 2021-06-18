@@ -1,6 +1,5 @@
 package apps.smoll.dragdropgame.features.stats
 
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,7 @@ import apps.smoll.dragdropgame.repository.LevelStats
 class StatsAdapter(dataSet: List<LevelStats>) :
     RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
-    private val sortedDataSet: List<LevelStats> = dataSet.sortedByDescending { it.dateCompletedMillis }
+    private val sortedDataSet: List<LevelStats> = dataSet.sortedByDescending { it.dateCompleted }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val dateCompleted: TextView = view.findViewById(R.id.dateCompleted)
@@ -32,11 +31,11 @@ class StatsAdapter(dataSet: List<LevelStats>) :
         val levelStats = sortedDataSet[position]
 
         val now = System.currentTimeMillis()
-        val date = DateUtils.getRelativeTimeSpanString(
-            levelStats.dateCompletedMillis,
+        val date = /*DateUtils.getRelativeTimeSpanString(
+            levelStats.dateCompleted,
             now,
             DateUtils.DAY_IN_MILLIS
-        )
+        )*/ ""
 
         with(viewHolder) {
             dateCompleted.text = date
