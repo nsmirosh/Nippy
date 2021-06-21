@@ -6,30 +6,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
     <TextView
-        android:id="@+id/dateCompleted"
+        android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@id/container"
         app:layout_constraintTop_toTopOf="@id/container"
-        tools:text="Date completed" />
+        tools:text="User Name" />
 
     <TextView
-        android:id="@+id/levelNo"
+        android:id="@+id/noOfLevelsCompleted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
-        app:layout_constraintStart_toEndOf="@id/dateCompleted"
+        app:layout_constraintStart_toEndOf="@id/userName"
         app:layout_constraintTop_toTopOf="@id/container"
         tools:text="Level no 1" />
 
     <TextView
-        android:id="@+id/timeToComplete"
+        android:id="@+id/totalTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
-        app:layout_constraintStart_toEndOf="@id/levelNo"
+        app:layout_constraintStart_toEndOf="@id/noOfLevelsCompleted"
         app:layout_constraintTop_toTopOf="@id/container"
         tools:text="Time to complete" />
+
+    <TextView
+        android:id="@+id/dateCompleted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/totalTime"
+        app:layout_constraintTop_toTopOf="@id/container"
+        tools:text="Date completed" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,9 +12,7 @@ import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
-const val timeLeftInMilliseconds = 3000L
 const val intervalInMilliseconds = 100L
 
 
@@ -43,6 +41,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private var sWidth = 0
     private var sHeight = 0
     var levelStartTime: Long = 0
+    private var timerTime = 3000L
 
     fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
         sWidth = width
@@ -58,13 +57,14 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         with(previousLevelStats) {
             _currentLevel.value = levelToBePlayed
             totalTime = totalTimeInMillis
+            timerTime += levelToBePlayed * 1000L
         }
 
     private fun startTimer() {
         if (this::timer.isInitialized) {
             timer.cancel()
         }
-        timer = object : CountDownTimer(timeLeftInMilliseconds, intervalInMilliseconds) {
+        timer = object : CountDownTimer(timerTime, intervalInMilliseconds) {
             override fun onTick(millisUntilFinished: Long) {
                 _timeLeftInSeconds.value = formatDateTime("s,S", millisUntilFinished)
             }

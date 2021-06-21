@@ -14,9 +14,10 @@ class StatsAdapter(dataSet: List<LevelStats>) :
     private val sortedDataSet: List<LevelStats> = dataSet.sortedByDescending { it.dateCompleted }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val userName: TextView = view.findViewById(R.id.userName)
+        val noOfLevels: TextView = view.findViewById(R.id.noOfLevelsCompleted)
+        val totalTime: TextView = view.findViewById(R.id.totalTime)
         val dateCompleted: TextView = view.findViewById(R.id.dateCompleted)
-        val levelNo: TextView = view.findViewById(R.id.levelNo)
-        val timeToComplete: TextView = view.findViewById(R.id.timeToComplete)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -30,7 +31,6 @@ class StatsAdapter(dataSet: List<LevelStats>) :
 
         val levelStats = sortedDataSet[position]
 
-        val now = System.currentTimeMillis()
         val date = /*DateUtils.getRelativeTimeSpanString(
             levelStats.dateCompleted,
             now,
@@ -39,8 +39,8 @@ class StatsAdapter(dataSet: List<LevelStats>) :
 
         with(viewHolder) {
             dateCompleted.text = date
-            levelNo.text = levelStats.levelToBePlayed.toString()
-            timeToComplete.text = levelStats.levelTimeInMillis.toString()
+            noOfLevels.text = levelStats.levelToBePlayed.toString()
+            totalTime.text = levelStats.levelTimeInMillis.toString()
         }
     }
 

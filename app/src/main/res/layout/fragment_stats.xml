@@ -16,8 +16,7 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@id/containerView"
-            app:layout_constraintTop_toTopOf="@id/containerView"
-            tools:text="Score: 25" />
+            app:layout_constraintTop_toTopOf="@id/containerView" />
 
         <androidx.recyclerview.widget.RecyclerView
 

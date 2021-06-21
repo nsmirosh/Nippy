@@ -11,7 +11,7 @@ fun formatDateTime(pattern: String, millis: Long): String {
 
 
 fun getCurrentTimeAsDate(): String {
-    val time  = Calendar.getInstance().time
+    val time = Calendar.getInstance().time
     val formatter  = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
     return formatter.format(time)
 }

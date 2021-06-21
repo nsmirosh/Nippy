@@ -5,13 +5,12 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 const val statsPath = "stats"
 
-open class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.firestore) : FirebaseRepo {
-
-//    private val firestore = Firebase.firestore
-
+open class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.firestore) :
+    FirebaseRepo {
 
     override suspend fun writeLevelStats(stats: LevelStats): Boolean = try {
         firestore
@@ -20,6 +19,7 @@ open class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.
             .await()
         true
     } catch (e: Exception) {
+        Timber.e(e)
         false
     }
 
@@ -34,21 +34,24 @@ open class FirebaseRepoImpl(private val firestore: FirebaseFirestore = Firebase.
                 it.toObject(LevelStats::class.java)
             }
     } catch (e: Exception) {
+        Timber.e(e)
         null
     }
 
 
     override suspend fun getLastLevel(): LevelStats? = try {
-        val data = firestore
+        firestore
             .collection(statsPath)
-            .orderBy("dateCompletedMillis", Query.Direction.DESCENDING)
+            .orderBy("dateCompleted", Query.Direction.DESCENDING)
             .limit(1)
             .get()
             .await()
-
-        data.documents.first().toObject(LevelStats::class.java)
+            .documents
+            .first()
+            .toObject(LevelStats::class.java)
 
     } catch (e: Exception) {
+        Timber.e(e)
         null
     }
 }
