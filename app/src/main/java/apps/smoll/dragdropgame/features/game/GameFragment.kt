@@ -19,6 +19,8 @@ import apps.smoll.dragdropgame.features.base.BaseFragment
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.*
+import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
@@ -26,7 +28,7 @@ import timber.log.Timber
 class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.fragment_game) {
 
     val gameViewModel: GameViewModel by viewModels {
-        GameViewModelFactory(FirebaseRepoImpl(Firebase.firestore))
+        GameViewModelFactory(FirebaseRepoImpl(Firebase.firestore, FirebaseAuthUtils(Firebase.auth)))
     }
     val args: GameFragmentArgs by navArgs()
     override fun getViewModelInstance() = gameViewModel

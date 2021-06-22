@@ -1,5 +1,7 @@
 package apps.smoll.dragdropgame.repository
 
+import apps.smoll.dragdropgame.features.entities.HighScore
+
 interface FirebaseRepo {
 
     suspend fun getLastLevel(): LevelStats?
@@ -8,4 +10,7 @@ interface FirebaseRepo {
 
     suspend fun getAllLevelStats()
             : List<LevelStats>?
+
+
+    suspend fun getHighscoresByUser(): Set<HighScore>
 }
