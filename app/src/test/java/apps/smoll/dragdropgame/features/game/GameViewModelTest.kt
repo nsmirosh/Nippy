@@ -2,7 +2,6 @@ package apps.smoll.dragdropgame.features.game
 
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import apps.smoll.dragdropgame.features.getOrAwaitValue
@@ -113,7 +112,7 @@ class GameViewModelTest {
             val argument = argumentCaptor<LevelStats>()
 
             runBlocking {
-                verify(repo).writeLevelStats(argument.capture())
+                verify(repo).addStats(argument.capture())
             }
 
             with(argument.firstValue) {

@@ -126,7 +126,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
 
     private fun writeLevelDataToFirestore(levelStats: LevelStats) =
         viewModelScope.launch(Dispatchers.IO) {
-            firebaseRepo.writeLevelStats(levelStats)
+            firebaseRepo.addStats(levelStats)
+
         }
 
     private fun buildStatsWithLevelChanges() = LevelStats(
