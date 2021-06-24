@@ -30,6 +30,7 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
     val gameViewModel: GameViewModel by viewModels {
         GameViewModelFactory(FirebaseRepoImpl(Firebase.firestore, FirebaseAuthUtils(Firebase.auth)))
     }
+
     val args: GameFragmentArgs by navArgs()
     override fun getViewModelInstance() = gameViewModel
 

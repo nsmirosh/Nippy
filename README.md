@@ -1,5 +1,12 @@
 # DragDropGame
 
+A simple drag drop game app that is my playground for trying out new things. 
+
+The game allows various players to compete and see their highscore in the global leaderboard.
+
+Any contributions are very welcome! Also, the game really needs a new design - so please see the design requirements if you're interested :) 
+
+
 ## Game Logic:
 1. Once the game starts:
     1. Timer starts at the top with 20 seconds along with shapes left to match
@@ -13,8 +20,9 @@
 
 - Clean architecture
 - MVVM
-- Kotlin coroutines + Room
-- Kotlin collections
+- Kotlin coroutines
+- Firestore database + firebase auth
+- Kotlin collections operators
 
 
 ## tasks
