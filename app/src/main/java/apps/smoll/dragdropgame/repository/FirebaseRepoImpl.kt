@@ -80,7 +80,6 @@ open class FirebaseRepoImpl(
         null
     }
 
-
     private fun getCurrentUserDocument() = firestore
         .collection(usersPath)
         .document(uID)

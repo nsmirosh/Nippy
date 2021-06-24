@@ -126,8 +126,27 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
 
     private fun writeLevelDataToFirestore(levelStats: LevelStats) =
         viewModelScope.launch(Dispatchers.IO) {
-            firebaseRepo.addStats(levelStats)
+            //don't set the new highScore if something went wrong with writing the result to the database
+            if (firebaseRepo.addStats(levelStats)) {
+                setHighScoreIfNeeded(levelStats)
+            }
+            else {
+                //TODO show the error to the user that we couldn't write the data to the database
+            }
+        }
 
+    private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) =
+        with(levelStats) {
+            firebaseRepo.getUserHighScore().let {
+                if (it == null ||
+                    totalTimeInMillis > it.totalTime!! && levelToBePlayed.dec() > it.noOfCompletedLevels!!
+                ) {
+                    toHighScore().let { newHighScore ->
+                        newHighScore.userName = "balls"
+                        firebaseRepo.setHighScore(newHighScore)
+                    }
+                }
+            }
         }
 
     private fun buildStatsWithLevelChanges() = LevelStats(

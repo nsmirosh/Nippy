@@ -1,6 +1,7 @@
 package apps.smoll.dragdropgame.repository
 
 import android.os.Parcelable
+import apps.smoll.dragdropgame.features.entities.HighScore
 import apps.smoll.dragdropgame.utils.formatDateTime
 import apps.smoll.dragdropgame.utils.getCurrentTimeAsDate
 import kotlinx.parcelize.Parcelize
@@ -12,4 +13,15 @@ data class LevelStats(
     val totalTimeInMillis: Long = 0,
     val levelToBePlayed: Int = 0,
     var wonCurrentLevel: Boolean = false,
-) : Parcelable
+) : Parcelable {
+
+
+    fun toHighScore() =
+        HighScore(
+            noOfCompletedLevels = levelToBePlayed.dec(),
+            totalTime = totalTimeInMillis,
+            dateCompleted = dateCompleted
+        )
+
+
+}
