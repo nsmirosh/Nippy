@@ -15,13 +15,16 @@ data class LevelStats(
     var wonCurrentLevel: Boolean = false,
 ) : Parcelable {
 
-
     fun toHighScore() =
         HighScore(
             noOfCompletedLevels = levelToBePlayed.dec(),
             totalTime = totalTimeInMillis,
             dateCompleted = dateCompleted
         )
+}
 
 
+fun LevelStats.isBetterThanCurrentHighScore(currentHighScore: HighScore?): Boolean {
+    return currentHighScore == null ||
+            (totalTimeInMillis >= currentHighScore.totalTime!! && levelToBePlayed.dec() >= currentHighScore.noOfCompletedLevels!!)
 }

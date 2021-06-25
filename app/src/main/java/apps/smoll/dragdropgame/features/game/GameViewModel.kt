@@ -9,6 +9,7 @@ import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.LevelStats
+import apps.smoll.dragdropgame.repository.isBetterThanCurrentHighScore
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private var sWidth = 0
     private var sHeight = 0
     var levelStartTime: Long = 0
-    private var timerTime = 3000L
+    private var timerTime = 10000L
 
     fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
         sWidth = width
@@ -137,10 +138,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
 
     private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) =
         with(levelStats) {
-            firebaseRepo.getUserHighScore().let {
-                if (it == null ||
-                    totalTimeInMillis > it.totalTime!! && levelToBePlayed.dec() > it.noOfCompletedLevels!!
-                ) {
+            firebaseRepo.getUserHighScore().let { currentHighScore ->
+                if (isBetterThanCurrentHighScore(currentHighScore)) {
                     toHighScore().let { newHighScore ->
                         newHighScore.userName = "balls"
                         firebaseRepo.setHighScore(newHighScore)
@@ -148,6 +147,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
                 }
             }
         }
+
 
     private fun buildStatsWithLevelChanges() = LevelStats(
         levelTimeInMillis = System.currentTimeMillis() - levelStartTime,

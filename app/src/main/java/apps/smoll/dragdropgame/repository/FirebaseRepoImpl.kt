@@ -36,22 +36,26 @@ open class FirebaseRepoImpl(
     }
 
 
-    override suspend fun getAllLevelStats() = withContext(Dispatchers.IO) {
-        try {
-            getCurrentUserDocument()
+    override suspend fun getAllLevelStats(): List<LevelStats>? = try {
+        withContext(Dispatchers.IO) {
+            val result = getCurrentUserDocument()
                 .collection(completedLevelsPath)
                 .get()
                 .await()
-                .map {
-                    it.toObject(LevelStats::class.java)
-                }
-        } catch (e: Exception) {
-            Timber.e(e)
-            null
+
+            val map = result.map {
+                it.toObject(LevelStats::class.java)
+            }
+
+            map
         }
+    } catch (e: Exception) {
+        Timber.e(e)
+        null
     }
 
-    override suspend fun getUserHighScore() =
+
+    override suspend fun getUserHighScore(): HighScore? =
         getAllLevelStats()
             ?.maxByOrNull { it.levelToBePlayed }
             ?.let {
@@ -80,7 +84,7 @@ open class FirebaseRepoImpl(
         null
     }
 
-    private fun getCurrentUserDocument() = firestore
+    private fun getCurrentUserDocument(): DocumentReference = firestore
         .collection(usersPath)
         .document(uID)
 
