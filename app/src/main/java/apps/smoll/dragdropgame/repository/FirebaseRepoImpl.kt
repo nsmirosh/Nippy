@@ -85,7 +85,9 @@ open class FirebaseRepoImpl(
         .document(uID)
 
     override suspend fun setHighScore(highScore: HighScore): Boolean = try {
-        getCurrentUserDocument()
+        firestore
+            .collection(highScorePath)
+            .document(uID)
             .set(highScore)
             .await()
         true
