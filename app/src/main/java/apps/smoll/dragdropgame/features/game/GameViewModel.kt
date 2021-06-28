@@ -141,7 +141,6 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             firebaseRepo.getUserHighScore().let { currentHighScore ->
                 if (isBetterThanCurrentHighScore(currentHighScore)) {
                     toHighScore().let { newHighScore ->
-                        newHighScore.userName = "balls"
                         firebaseRepo.setHighScore(newHighScore)
                     }
                 }

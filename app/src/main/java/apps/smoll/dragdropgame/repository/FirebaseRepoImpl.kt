@@ -22,6 +22,7 @@ open class FirebaseRepoImpl(
 ) : FirebaseRepo {
 
     private val uID = firestoreAuthUtils.firebaseAuth.uid!!
+    private val email = firestoreAuthUtils.firebaseAuth.currentUser!!.email!! //TODO refactor this
 
 
     override suspend fun addStats(stats: LevelStats): Boolean = try {
@@ -87,8 +88,8 @@ open class FirebaseRepoImpl(
     override suspend fun setHighScore(highScore: HighScore): Boolean = try {
         firestore
             .collection(highScorePath)
-            .document(uID)
-            .set(highScore)
+            .document(email)
+            .set(highScore.copy(email = email))
             .await()
         true
     } catch (e: Exception) {
@@ -97,6 +98,16 @@ open class FirebaseRepoImpl(
     }
 
     override suspend fun getHighscoresByUser(): Set<HighScore> {
-        return setOf()
+        return firestore
+            .collection(highScorePath)
+            .get()
+            .await()
+            .map {
+                it.toObject(HighScore::class.java)
+            }.toSet()
+    }
+
+    suspend fun insertFakeHighScores() {
+
     }
 }
