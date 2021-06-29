@@ -17,4 +17,5 @@ interface FirebaseRepo {
     suspend fun setHighScore(highScore: HighScore) : Boolean
 
     suspend fun getUserHighScore(): HighScore?
+    suspend fun insertFakeHighScores(): Boolean
 }

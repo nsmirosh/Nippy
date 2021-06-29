@@ -33,5 +33,7 @@ class MenuViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         levelStats?.let {
             _score.postValue(formatDateTime("mm:ss:SS", it.totalTimeInMillis))
         }
+
+        firebaseRepo.insertFakeHighScores()
     }
 }

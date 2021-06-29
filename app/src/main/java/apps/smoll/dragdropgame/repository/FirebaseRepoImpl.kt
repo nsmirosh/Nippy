@@ -2,6 +2,7 @@ package apps.smoll.dragdropgame.repository
 
 import apps.smoll.dragdropgame.features.entities.HighScore
 import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
+import apps.smoll.dragdropgame.utils.formatDateTime
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -11,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 const val completedLevelsPath = "completedLevels"
 const val usersPath = "users"
@@ -107,7 +110,34 @@ open class FirebaseRepoImpl(
             }.toSet()
     }
 
-    suspend fun insertFakeHighScores() {
+    override suspend fun insertFakeHighScores() = try {
 
+        val calendar = Calendar.getInstance()
+
+        val formatter  = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
+
+        val first = HighScore("balls@balls.com", 4, 45432, formatter.format(calendar.time))
+
+        calendar.set(2020, 5, 25, 13, 44, 53)
+
+        val second = HighScore("balls2@ba.com", 10, 105499, formatter.format(calendar.time))
+
+        calendar.set(2021, 4, 23, 17, 55, 14)
+        val third = HighScore("balls3@ba.com", 1, 10444, formatter.format(calendar.time))
+        val highscores = mutableListOf(first, second, third)
+
+        highscores.forEach {
+            firestore
+                .collection(highScorePath)
+                .document(it.email!!)
+                .set(it)
+                .await()
+        }
+        true
+    }
+
+    catch (e: Exception) {
+        Timber.e(e)
+        false
     }
 }
