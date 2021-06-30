@@ -1,4 +1,4 @@
-# VisualReactionGame
+# ReactionGame
 
 A simple drag drop game app that is my playground for trying out new things. 
 
