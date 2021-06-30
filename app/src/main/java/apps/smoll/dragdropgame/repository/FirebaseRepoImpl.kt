@@ -116,11 +116,11 @@ open class FirebaseRepoImpl(
 
         val formatter  = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
 
-        val first = HighScore("balls@balls.com", 4, 45432, formatter.format(calendar.time))
+        val first = HighScore("balls@balls.com", 4, 45132, formatter.format(calendar.time))
 
         calendar.set(2020, 5, 25, 13, 44, 53)
 
-        val second = HighScore("balls2@ba.com", 10, 105499, formatter.format(calendar.time))
+        val second = HighScore("balls2@ba.com", 10, 105899, formatter.format(calendar.time))
 
         calendar.set(2021, 4, 23, 17, 55, 14)
         val third = HighScore("balls3@ba.com", 1, 10444, formatter.format(calendar.time))

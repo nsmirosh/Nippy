@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.FragmentStatsBinding
 import apps.smoll.dragdropgame.features.base.BaseFragment
+import apps.smoll.dragdropgame.features.entities.HighScore
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
@@ -43,7 +44,7 @@ class StatsFragment : BaseFragment<FragmentStatsBinding, StatsViewModel>(R.layou
         )
     }
 
-    private fun setUpRecyclerList(levelStats: List<LevelStats>) {
+    private fun setUpRecyclerList(levelStats: Set<HighScore>) {
         with(binding.statsRecyclerView) {
             adapter = StatsAdapter(levelStats)
             layoutManager = LinearLayoutManager(activity)

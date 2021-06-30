@@ -8,11 +8,13 @@
 
 
     <TextView
-        android:id="@+id/userName"
+        android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@id/container"
         app:layout_constraintTop_toTopOf="@id/container"
+        android:scrollHorizontally="false"
+        android:maxLength="15"
         tools:text="User Name" />
 
     <TextView
@@ -20,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
-        app:layout_constraintStart_toEndOf="@id/userName"
+        app:layout_constraintStart_toEndOf="@id/email"
         app:layout_constraintTop_toTopOf="@id/container"
         tools:text="Level no 1" />
 
@@ -37,6 +39,8 @@
         android:id="@+id/dateCompleted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+
         app:layout_constraintStart_toEndOf="@id/totalTime"
         app:layout_constraintTop_toTopOf="@id/container"
         tools:text="Date completed" />

@@ -13,20 +13,13 @@ import kotlinx.coroutines.launch
 
 class StatsViewModel(val firebaseRepo : FirebaseRepo) : BaseViewModel() {
 
-    private val _levelStats: MutableLiveData<List<LevelStats>> = MutableLiveData()
-    val levelStats: LiveData<List<LevelStats>> get() = _levelStats
+    private val _levelStats: MutableLiveData<Set<HighScore>> = MutableLiveData()
+    val levelStats: LiveData<Set<HighScore>> get() = _levelStats
 
     fun init() {
         viewModelScope.launch {
-            _levelStats.value = firebaseRepo.getAllLevelStats()
+            _levelStats.value = firebaseRepo.getHighscoresByUser()
         }
     }
-
-    /*private fun prepareDataForStatsAdapter(): List<HighScore> {
-
-//        firebaseRepo.getAllLevelStats()
-
-    }*/
-
 
 }

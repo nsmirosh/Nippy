@@ -49,7 +49,7 @@ dependencies {
 
     final hamcrestVersion = "1.3"
     final navVersion = "2.3.5"
-    final fragmentVersion = "1.3.4"
+    final fragmentVersion = "1.3.5"
     final androidXTestCoreVersion = '1.3.0'
     final androidXTestExtKotlinRunnerVersion = '1.1.2'
     final robolectricVersion = '4.5.1'
