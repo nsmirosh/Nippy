@@ -11,18 +11,19 @@
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxWidth="120dp"
         app:layout_constraintStart_toStartOf="@id/container"
         app:layout_constraintTop_toTopOf="@id/container"
         android:scrollHorizontally="false"
-        android:maxLength="15"
         tools:text="User Name" />
 
     <TextView
         android:id="@+id/noOfLevelsCompleted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
-        app:layout_constraintStart_toEndOf="@id/email"
+        android:layout_marginStart="150dp"
+        android:minWidth="20dp"
+        app:layout_constraintStart_toStartOf="@id/container"
         app:layout_constraintTop_toTopOf="@id/container"
         tools:text="Level no 1" />
 

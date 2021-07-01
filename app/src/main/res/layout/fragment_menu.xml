@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:visibility="@{viewmodel.lastCompletedLevel.levelToBePlayed != 0 ? View.VISIBLE : View.GONE}"
+            android:visibility="@{(viewmodel.lastCompletedLevel.levelToBePlayed != 0 &amp;&amp; viewmodel.lastCompletedLevel.levelToBePlayed &lt; 5) ? View.VISIBLE : View.GONE}"
             android:text="@{String.format(@string/menu_next_level, viewmodel.lastCompletedLevel.levelToBePlayed)}"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/currentHighScoreTextView"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/main_menu_resume_game"
-            android:visibility="@{viewmodel.lastCompletedLevel.levelToBePlayed != 0 ? View.VISIBLE : View.GONE}"
+            android:visibility="@{(viewmodel.lastCompletedLevel.levelToBePlayed != 0 &amp;&amp; viewmodel.lastCompletedLevel.levelToBePlayed &lt; 5) ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@id/containerView"
             app:layout_constraintStart_toStartOf="@id/containerView"
             app:layout_constraintTop_toBottomOf="@id/currentLevelTextView" />
