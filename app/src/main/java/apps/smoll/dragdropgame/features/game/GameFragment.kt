@@ -43,7 +43,7 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
         super.onViewCreated(view, savedInstanceState)
 
         startObservingLiveData()
-        initListeners()
+//        initListeners()
         with(binding.containerView) {
             post {
                 gameViewModel.startGame(width, height, args.levelStats)
@@ -78,25 +78,18 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
     }
 
     private fun updateShapeToMatch(shape: Shape?) {
-        with(binding) {
-            if (shape != null) {
-                dragImageView.apply {
-                    setShape(requireContext(), shape)
-                }
-            } else {
-                dragImageView.gone()
+        if (shape != null) {
+            addViewToContainer(shape).let {
+                makeViewDraggable(it)
             }
         }
     }
 
-    private fun initListeners() {
 
+    private fun makeViewDraggable(view: View) {
         with(binding) {
-
-            dragImageView.setOnTouchListener { view, motionEvent ->
-
+            view.setOnTouchListener { view, motionEvent ->
                 when (motionEvent.action) {
-
                     ACTION_DOWN -> {
                         val item = ClipData.Item(view.tag as? CharSequence)
                         val dragData = ClipData(
@@ -105,8 +98,8 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
                             item
                         )
 
-                        val myShadow = MyDragShadowBuilder(dragImageView)
-                        val dragShadow = View.DragShadowBuilder(dragImageView)
+                        val myShadow = MyDragShadowBuilder(view)
+                        val dragShadow = View.DragShadowBuilder(view)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             view.startDragAndDrop(dragData, dragShadow, null, 0);
                         } else {
@@ -124,11 +117,10 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
             }
 
 
-
             val dragListen = View.OnDragListener { v, event ->
                 when (event.action) {
                     DragEvent.ACTION_DRAG_STARTED -> {
-                        dragImageView.invisible()
+                        view.invisible()
                         event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                     }
                     DragEvent.ACTION_DROP -> {
@@ -160,21 +152,26 @@ class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.f
 
     private fun updateShapesOnScreen(shapes: List<Shape>) {
         clearPreviouslyConstructedShapes()
-
-        for (shape in shapes) {
-            ImageView(requireContext()).apply {
-                setShape(requireContext(), shape)
-                id = View.generateViewId()
-                gameViewModel.addedViewIds.add(id)
-                requestLayout()
-                binding.containerView.addView(this)
-            }
+        shapes.forEach {
+            addViewToContainer(it)
         }
-
         binding.containerView.post {
             Timber.d("containerView height after shapes laid out = ${binding.containerView.height}")
         }
     }
+
+
+    //TODO read this https://stackoverflow.com/questions/45875491/what-is-a-receiver-in-kotlin
+
+    private fun addViewToContainer(shape: Shape) =
+        ImageView(requireContext()).apply {
+            setShape(requireContext(), shape)
+            id = View.generateViewId()
+            gameViewModel.addedViewIds.add(id)
+            requestLayout()
+            binding.containerView.addView(this)
+        }
+
 
     private fun clearPreviouslyConstructedShapes() {
         gameViewModel.addedViewIds.apply {

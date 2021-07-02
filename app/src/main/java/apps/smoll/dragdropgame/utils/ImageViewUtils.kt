@@ -9,12 +9,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.shapeSize
+import timber.log.Timber
 
 fun ImageView.setShape(context: Context, shape: Shape) {
 
     visible()
-    layoutParams =  ConstraintLayout.LayoutParams(   shapeSize,
-        shapeSize)
+    layoutParams =  ConstraintLayout.LayoutParams(shapeSize, shapeSize)
     setImageDrawable(
         ContextCompat.getDrawable(
             context,
@@ -27,10 +27,14 @@ fun ImageView.setShape(context: Context, shape: Shape) {
         ColorStateList.valueOf(ContextCompat.getColor(context, shape.colorResource))
     )
 
+
     shape.topLeftCoords.apply {
         x = first.toFloat()
         y = second.toFloat()
     }
+
+    Timber.d("building a shape on screen with x = $x y = $y")
+//    invalidate()
 }
 
 fun View.invisible() {

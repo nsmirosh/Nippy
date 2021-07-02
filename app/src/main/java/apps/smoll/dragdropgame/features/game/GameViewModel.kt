@@ -13,6 +13,7 @@ import apps.smoll.dragdropgame.repository.isBetterThanCurrentHighScore
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 const val intervalInMilliseconds = 100L
 
@@ -47,6 +48,7 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     fun startGame(width: Int, height: Int, previousLevelStats: LevelStats? = null) {
         sWidth = width
         sHeight = height
+        Timber.d("creating a game with height = $height, width = $width")
         levelStartTime = System.currentTimeMillis()
         previousLevelStats?.let { initWithPreviousLevelStats(it) }
         buildInitialShapes()
@@ -88,10 +90,17 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private fun buildInitialShapes() {
         _screenShapes.value =
             buildShapesWithRandomColorsAndShapeTypes(currentLevel.value!!, Pair(sWidth, sHeight))
+                .also {
+                    it.forEach {
+                        Timber.d("built screen shape = $it")
+                    }
+                }
     }
 
     private fun buildMatchingShape() {
-        _shapeToMatch.value = copyAndModifyRandomShapeFrom(screenShapes.value!!, sWidth, sHeight)
+        _shapeToMatch.value = copyAndModifyRandomShapeFrom(screenShapes.value!!, sWidth, sHeight).also {
+            Timber.d("built matching shape = $it")
+        }
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {

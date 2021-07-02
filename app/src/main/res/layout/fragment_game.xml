@@ -37,16 +37,6 @@
             app:layout_constraintTop_toTopOf="@id/containerView"
             tools:text="time left: 9 seconds" />
 
-        <ImageView
-            android:id="@+id/dragImageView"
-            android:layout_width="150px"
-            android:layout_height="150px"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/ic_circle"
-            app:layout_constraintBottom_toTopOf="@id/mainMenuButton"
-            app:layout_constraintEnd_toEndOf="@id/containerView"
-            app:layout_constraintStart_toStartOf="@id/containerView" />
-
         <Button
             android:id="@+id/mainMenuButton"
             android:layout_width="wrap_content"
