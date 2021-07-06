@@ -1,13 +1,13 @@
-package apps.smoll.dragdropgame.features.entities
+package apps.smoll.dragdropgame.features.entities.network
 
-data class HighScore(
+data class NetworkHighScore(
     var email: String? = null,
     val noOfCompletedLevels: Int? = null,
     val totalTime: Long? = null,
     val dateCompleted: String? = null
-) : Comparable<HighScore> {
+) : Comparable<NetworkHighScore> {
 
-    override fun compareTo(other: HighScore): Int {
+    override fun compareTo(other: NetworkHighScore): Int {
         if (noOfCompletedLevels!! > other.noOfCompletedLevels!!) {
             return 1
         }

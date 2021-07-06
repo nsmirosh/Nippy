@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import apps.smoll.dragdropgame.R
-import apps.smoll.dragdropgame.features.entities.HighScore
+import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.utils.formatDateFromString
 import apps.smoll.dragdropgame.utils.formatDateTime
 
-class StatsAdapter(private val dataSet: Set<HighScore>) :
+class StatsAdapter(private val dataSet: Set<NetworkHighScore>) :
     RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

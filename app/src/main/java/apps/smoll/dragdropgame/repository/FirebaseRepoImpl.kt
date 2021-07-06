@@ -1,8 +1,7 @@
 package apps.smoll.dragdropgame.repository
 
-import apps.smoll.dragdropgame.features.entities.HighScore
+import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
-import apps.smoll.dragdropgame.utils.formatDateTime
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -55,14 +54,14 @@ open class FirebaseRepoImpl(
     }
 
 
-    override suspend fun getUserHighScore(): HighScore? =
+    override suspend fun getUserHighScore(): NetworkHighScore? =
         try {
             firestore
                 .collection(highScorePath)
                 .document(uID)
                 .get()
                 .await()
-                .toObject(HighScore::class.java)
+                .toObject(NetworkHighScore::class.java)
         } catch (e: Exception) {
             Timber.e(e)
             null
@@ -88,7 +87,7 @@ open class FirebaseRepoImpl(
         .collection(usersPath)
         .document(uID)
 
-    override suspend fun setHighScore(highScore: HighScore): Boolean = try {
+    override suspend fun setHighScore(highScore: NetworkHighScore): Boolean = try {
         firestore
             .collection(highScorePath)
             .document(email)
@@ -100,13 +99,13 @@ open class FirebaseRepoImpl(
         false
     }
 
-    override suspend fun getHighscoresByUser(): Set<HighScore> {
+    override suspend fun getHighscoresByUser(): Set<NetworkHighScore> {
         return firestore
             .collection(highScorePath)
             .get()
             .await()
             .map {
-                it.toObject(HighScore::class.java)
+                it.toObject(NetworkHighScore::class.java)
             }.toSet()
     }
 
@@ -116,14 +115,14 @@ open class FirebaseRepoImpl(
 
         val formatter  = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
 
-        val first = HighScore("balls@balls.com", 4, 45132, formatter.format(calendar.time))
+        val first = NetworkHighScore("balls@balls.com", 4, 45132, formatter.format(calendar.time))
 
         calendar.set(2020, 5, 25, 13, 44, 53)
 
-        val second = HighScore("balls2@ba.com", 10, 105899, formatter.format(calendar.time))
+        val second = NetworkHighScore("balls2@ba.com", 10, 105899, formatter.format(calendar.time))
 
         calendar.set(2021, 4, 23, 17, 55, 14)
-        val third = HighScore("balls3@ba.com", 1, 10444, formatter.format(calendar.time))
+        val third = NetworkHighScore("balls3@ba.com", 1, 10444, formatter.format(calendar.time))
         val highscores = mutableListOf(first, second, third)
 
         highscores.forEach {

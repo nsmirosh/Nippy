@@ -1,6 +1,6 @@
 package apps.smoll.dragdropgame.repository
 
-import apps.smoll.dragdropgame.features.entities.HighScore
+import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 
 interface FirebaseRepo {
 
@@ -12,10 +12,10 @@ interface FirebaseRepo {
             : List<LevelStats>?
 
 
-    suspend fun getHighscoresByUser(): Set<HighScore>
+    suspend fun getHighscoresByUser(): Set<NetworkHighScore>
 
-    suspend fun setHighScore(highScore: HighScore) : Boolean
+    suspend fun setHighScore(highScore: NetworkHighScore) : Boolean
 
-    suspend fun getUserHighScore(): HighScore?
+    suspend fun getUserHighScore(): NetworkHighScore?
     suspend fun insertFakeHighScores(): Boolean
 }
