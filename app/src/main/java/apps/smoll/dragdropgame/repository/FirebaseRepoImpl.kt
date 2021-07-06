@@ -1,6 +1,8 @@
 package apps.smoll.dragdropgame.repository
 
+import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
+import apps.smoll.dragdropgame.repository.mappers.HighScoreListMapper
 import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,11 +22,13 @@ const val highScorePath = "highscores"
 
 open class FirebaseRepoImpl(
     private val firestore: FirebaseFirestore = Firebase.firestore,
-    firestoreAuthUtils: FirebaseAuthUtils
+    private val firestoreAuthUtils: FirebaseAuthUtils
 ) : FirebaseRepo {
 
     private val uID = firestoreAuthUtils.firebaseAuth.uid!!
     private val email = firestoreAuthUtils.firebaseAuth.currentUser!!.email!! //TODO refactor this
+
+    private val highScoreListMapper = HighScoreListMapper()
 
 
     override suspend fun addStats(stats: LevelStats): Boolean = try {
@@ -99,21 +103,22 @@ open class FirebaseRepoImpl(
         false
     }
 
-    override suspend fun getHighscoresByUser(): Set<NetworkHighScore> {
-        return firestore
+    override suspend fun getHighscoresByUserSorted(): List<HighScore> = highScoreListMapper.map(
+        firestore
             .collection(highScorePath)
             .get()
             .await()
             .map {
                 it.toObject(NetworkHighScore::class.java)
-            }.toSet()
-    }
+            }
+            .sortedDescending()
+    )
 
     override suspend fun insertFakeHighScores() = try {
 
         val calendar = Calendar.getInstance()
 
-        val formatter  = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
 
         val first = NetworkHighScore("balls@balls.com", 4, 45132, formatter.format(calendar.time))
 
@@ -133,9 +138,7 @@ open class FirebaseRepoImpl(
                 .await()
         }
         true
-    }
-
-    catch (e: Exception) {
+    } catch (e: Exception) {
         Timber.e(e)
         false
     }

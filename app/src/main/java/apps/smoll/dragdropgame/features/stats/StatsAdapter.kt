@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import apps.smoll.dragdropgame.R
+import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.utils.formatDateFromString
 import apps.smoll.dragdropgame.utils.formatDateTime
+import apps.smoll.dragdropgame.utils.getStringFromDate
 
-class StatsAdapter(private val dataSet: Set<NetworkHighScore>) :
+class StatsAdapter(private val dataSet: List<HighScore>) :
     RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -28,9 +30,9 @@ class StatsAdapter(private val dataSet: Set<NetworkHighScore>) :
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) = with(viewHolder) {
-        dataSet.toList().sortedDescending()[position].let {
+        dataSet[position].let {
             email.text = it.email
-            dateCompleted.text = formatDateFromString(it.dateCompleted)
+            dateCompleted.text = getStringFromDate(it.dateCompleted)
             noOfLevels.text = it.noOfCompletedLevels.toString()
             totalTime.text = formatDateTime("mm:ss:SSS", it.totalTime)
         }

@@ -37,3 +37,21 @@ fun formatDateFromString(date: String?): String {
         return it.format(parsedDate!!)
     }
 }
+
+
+fun getStringFromDate(date: Date): String =
+    try {
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(date)
+    } catch (e: Exception) {
+        Timber.e(e)
+        "Could not parse date :("
+    }
+
+
+fun getDateFrom(date: String?): Date =
+    try {
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).parse(date!!)
+    } catch (e: Exception) {
+        Timber.e(e)
+        Calendar.getInstance().time
+    }
