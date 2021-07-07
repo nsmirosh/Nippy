@@ -6,13 +6,10 @@ import apps.smoll.dragdropgame.utils.getDateFrom
 
 class HighScoreListMapper : ListMapper<NetworkHighScore, HighScore> {
 
+    private val highScoreMapper = HighScoreMapper()
+
     override fun map(input: List<NetworkHighScore>): List<HighScore> =
         input.map {
-            HighScore(
-                it.email!!,
-                it.noOfCompletedLevels!!,
-                it.totalTime!!,
-                getDateFrom(it.dateCompleted!!)
-            )
+            highScoreMapper.map(it)
         }
 }

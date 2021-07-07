@@ -13,7 +13,7 @@ interface FirebaseRepo {
 
     suspend fun getHighscoresByUserSorted(): List<HighScore>
 
-    suspend fun setHighScore(highScore: NetworkHighScore) : Boolean
+    suspend fun setHighScore(highScore: HighScore) : Boolean
 
     suspend fun getUserHighScore(): NetworkHighScore?
 

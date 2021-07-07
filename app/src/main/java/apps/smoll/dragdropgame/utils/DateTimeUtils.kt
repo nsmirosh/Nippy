@@ -41,7 +41,7 @@ fun formatDateFromString(date: String?): String {
 
 fun getStringFromDate(date: Date): String =
     try {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault()).format(date)
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
     } catch (e: Exception) {
         Timber.e(e)
         "Could not parse date :("

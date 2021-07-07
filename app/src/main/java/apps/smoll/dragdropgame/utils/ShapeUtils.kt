@@ -2,6 +2,7 @@ package apps.smoll.dragdropgame.utils
 
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
+import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.shapeSize
 import java.util.*
 
@@ -50,6 +51,23 @@ private fun getShuffledShapes(): Stack<Int> {
     }
 }
 
+
+fun removeShapeThatWasHit(screenShapes: List<Shape>, shapeThatWasHit: Shape) =
+    screenShapes.filter { it.typeResource != shapeThatWasHit.typeResource }
+
+
+fun getShapeThatIsHit(
+    screenShapes: List<Shape>?,
+    shapeToMatch: Shape?,
+    dropEventCoordinates: Pair<Int, Int>
+) =
+    screenShapes?.find {
+        val shapeMatch = shapeToMatch?.typeResource == it.typeResource
+        areCoordinatesHit(dropEventCoordinates, it.topLeftCoords) && shapeMatch
+    }
+
+fun buildShapeToMatchWithNewCoords(coordinates: Pair<Int, Int>, shapeToMatch: Shape): Shape =
+    shapeToMatch.copy(topLeftCoords = coordinates - halfShapeSize)
 
 private fun getShuffledColors(): Stack<Int> {
     val colorsArray = arrayOf(

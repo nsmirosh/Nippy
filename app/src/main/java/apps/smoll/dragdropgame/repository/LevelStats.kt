@@ -1,8 +1,10 @@
 package apps.smoll.dragdropgame.repository
 
 import android.os.Parcelable
+import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.utils.getCurrentTimeAsDate
+import apps.smoll.dragdropgame.utils.getDateFrom
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -12,15 +14,7 @@ data class LevelStats(
     val totalTimeInMillis: Long = 0,
     val levelToBePlayed: Int = 0,
     var wonCurrentLevel: Boolean = false,
-) : Parcelable {
-
-    fun toHighScore() =
-        NetworkHighScore(
-            noOfCompletedLevels = levelToBePlayed.dec(),
-            totalTime = totalTimeInMillis,
-            dateCompleted = dateCompleted
-        )
-}
+) : Parcelable
 
 
 fun LevelStats.isBetterThanCurrentHighScore(currentHighScore: NetworkHighScore?): Boolean {

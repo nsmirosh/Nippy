@@ -6,10 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.features.base.BaseViewModel
-import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.repository.isBetterThanCurrentHighScore
+import apps.smoll.dragdropgame.repository.mappers.LevelStatsToHighScoreMapper
 import apps.smoll.dragdropgame.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +38,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     val addedViewIds = mutableSetOf<Int>()
 
     lateinit var timer: CountDownTimer
+
+    private val toHighScoreMapper = LevelStatsToHighScoreMapper()
 
     private var totalTime = 0L
     private var sWidth = 0
@@ -98,18 +100,19 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     }
 
     private fun buildMatchingShape() {
-        _shapeToMatch.value = copyAndModifyRandomShapeFrom(screenShapes.value!!, sWidth, sHeight).also {
-            Timber.d("built matching shape = $it")
-        }
+        _shapeToMatch.value =
+            copyAndModifyRandomShapeFrom(screenShapes.value!!, sWidth, sHeight).also {
+                Timber.d("built matching shape = $it")
+            }
     }
 
     fun handleMatchingShapeDrop(dropEventCoordinates: Pair<Int, Int>) {
-        getShapeThatIsHit(dropEventCoordinates).apply {
+        getShapeThatIsHit(screenShapes.value, shapeToMatch.value, dropEventCoordinates).apply {
             if (this != null) {
-                removeShapeThatWasHit(this)
+                _screenShapes.value = removeShapeThatWasHit(_screenShapes.value!!, this)
                 onShapeHit()
             } else {
-                updateMatchingShapePosOnScreen(dropEventCoordinates)
+                _shapeToMatch.value = buildShapeToMatchWithNewCoords(dropEventCoordinates, shapeToMatch.value!!)
             }
         }
     }
@@ -139,45 +142,23 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
             //don't set the new highScore if something went wrong with writing the result to the database
             if (firebaseRepo.addStats(levelStats)) {
                 setHighScoreIfNeeded(levelStats)
-            }
-            else {
+            } else {
                 //TODO show the error to the user that we couldn't write the data to the database
             }
         }
 
     private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) =
-        with(levelStats) {
             firebaseRepo.getUserHighScore().let { currentHighScore ->
-                if (isBetterThanCurrentHighScore(currentHighScore)) {
-                    toHighScore().let { newHighScore ->
-                        firebaseRepo.setHighScore(newHighScore)
-                    }
+                if (levelStats.isBetterThanCurrentHighScore(currentHighScore)) {
+                    firebaseRepo.setHighScore(toHighScoreMapper.map(levelStats))
                 }
             }
-        }
-
 
     private fun buildStatsWithLevelChanges() = LevelStats(
         levelTimeInMillis = System.currentTimeMillis() - levelStartTime,
         totalTimeInMillis = totalTime,
         levelToBePlayed = currentLevel.value!!
     )
-
-    private fun updateMatchingShapePosOnScreen(coordinates: Pair<Int, Int>) {
-        val coordsToCenterTheShape = coordinates - halfShapeSize
-        _shapeToMatch.value = shapeToMatch.value!!.copy(coordsToCenterTheShape)
-    }
-
-    private fun removeShapeThatWasHit(shapeThatWasHit: Shape) {
-        _screenShapes.value =
-            screenShapes.value?.filter { it.typeResource != shapeThatWasHit.typeResource }
-    }
-
-    private fun getShapeThatIsHit(dropEventCoordinates: Pair<Int, Int>) =
-        screenShapes.value?.find {
-            val shapeMatch = shapeToMatch.value?.typeResource == it.typeResource
-            areCoordinatesHit(dropEventCoordinates, it.topLeftCoords) && shapeMatch
-        }
 
     fun cleanUp() {
         timer.cancel()

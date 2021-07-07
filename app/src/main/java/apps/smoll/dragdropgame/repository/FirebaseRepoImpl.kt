@@ -3,6 +3,7 @@ package apps.smoll.dragdropgame.repository
 import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.repository.mappers.HighScoreListMapper
+import apps.smoll.dragdropgame.repository.mappers.HighScoreMapper
 import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,6 +30,7 @@ open class FirebaseRepoImpl(
     private val email = firestoreAuthUtils.firebaseAuth.currentUser!!.email!! //TODO refactor this
 
     private val highScoreListMapper = HighScoreListMapper()
+    private val highScoreMapper = HighScoreMapper()
 
 
     override suspend fun addStats(stats: LevelStats): Boolean = try {
@@ -48,7 +50,8 @@ open class FirebaseRepoImpl(
             getCurrentUserDocument()
                 .collection(completedLevelsPath)
                 .get()
-                .await().map {
+                .await()
+                .map {
                     it.toObject(LevelStats::class.java)
                 }
         }
@@ -91,7 +94,7 @@ open class FirebaseRepoImpl(
         .collection(usersPath)
         .document(uID)
 
-    override suspend fun setHighScore(highScore: NetworkHighScore): Boolean = try {
+    override suspend fun setHighScore(highScore: HighScore): Boolean = try {
         firestore
             .collection(highScorePath)
             .document(email)
