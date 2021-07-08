@@ -2,16 +2,15 @@ package apps.smoll.dragdropgame.features.auth
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.ActivityAuthBinding
 import apps.smoll.dragdropgame.features.game.MainActivity
-import apps.smoll.dragdropgame.features.startup.StartUpViewModelFactory
 import apps.smoll.dragdropgame.utils.extensions.snackBar
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -29,7 +28,7 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     val authViewModel: AuthViewModel by viewModels {
-        AuthViewModelFactory(FirebaseAuthUtils(Firebase.auth))
+        AuthViewModelFactory()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

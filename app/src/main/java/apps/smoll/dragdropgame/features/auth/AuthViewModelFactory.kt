@@ -2,13 +2,10 @@ package apps.smoll.dragdropgame.features.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 
-class AuthViewModelFactory(
-    private val firebaseAuthUtils: FirebaseAuthUtils
-
-) : ViewModelProvider.Factory {
+class AuthViewModelFactory: ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return AuthViewModel(firebaseAuthUtils) as T
+        return AuthViewModel(FirebaseUtils()) as T
     }
 }

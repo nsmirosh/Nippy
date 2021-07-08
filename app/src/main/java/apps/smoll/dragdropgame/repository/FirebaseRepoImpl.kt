@@ -4,7 +4,7 @@ import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.repository.mappers.HighScoreListMapper
 import apps.smoll.dragdropgame.repository.mappers.HighScoreMapper
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -22,12 +22,12 @@ const val usersPath = "users"
 const val highScorePath = "highscores"
 
 open class FirebaseRepoImpl(
-    private val firestore: FirebaseFirestore = Firebase.firestore,
-    private val firestoreAuthUtils: FirebaseAuthUtils
+    private val firestoreUtils: FirebaseUtils
 ) : FirebaseRepo {
 
-    private val uID = firestoreAuthUtils.firebaseAuth.uid!!
-    private val email = firestoreAuthUtils.firebaseAuth.currentUser!!.email!! //TODO refactor this
+    private val firestore = firestoreUtils.fireStoreInstance
+    private val uID = firestoreUtils.authInstance.uid!!
+    private val email = firestoreUtils.authInstance.currentUser!!.email!! //TODO refactor this
 
     private val highScoreListMapper = HighScoreListMapper()
     private val highScoreMapper = HighScoreMapper()

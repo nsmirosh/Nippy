@@ -8,17 +8,10 @@ import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.FragmentStatsBinding
 import apps.smoll.dragdropgame.features.base.BaseFragment
 import apps.smoll.dragdropgame.features.entities.domain.HighScore
-import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 class StatsFragment : BaseFragment<FragmentStatsBinding, StatsViewModel>(R.layout.fragment_stats) {
 
-    private val statsViewModel: StatsViewModel by viewModels {
-        StatsViewModelFactory(FirebaseRepoImpl(Firebase.firestore, FirebaseAuthUtils(Firebase.auth)))
-    }
+    private val statsViewModel: StatsViewModel by viewModels { StatsViewModelFactory() }
 
     override fun initBindingDependencies() {}
 

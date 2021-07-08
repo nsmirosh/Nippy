@@ -5,10 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import apps.smoll.dragdropgame.R
-import apps.smoll.dragdropgame.features.auth.AuthActivity
-import apps.smoll.dragdropgame.features.game.MainActivity
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
-import com.google.firebase.auth.FirebaseAuth
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -16,7 +13,7 @@ import com.google.firebase.ktx.Firebase
 class StartUpActivity : AppCompatActivity() {
 
     private val startUpViewModel: StartUpViewModel by viewModels {
-        StartUpViewModelFactory(FirebaseAuthUtils(Firebase.auth))
+        StartUpViewModelFactory()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

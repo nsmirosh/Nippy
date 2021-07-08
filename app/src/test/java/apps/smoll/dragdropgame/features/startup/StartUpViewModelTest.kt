@@ -6,8 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import apps.smoll.dragdropgame.features.auth.AuthActivity
 import apps.smoll.dragdropgame.features.game.MainActivity
 import apps.smoll.dragdropgame.features.getOrAwaitValue
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
-import com.google.firebase.firestore.auth.User
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -16,7 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
 import org.robolectric.annotation.Config
 
 
@@ -28,17 +26,17 @@ class StartUpViewModelTest {
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var startUpViewModel: StartUpViewModel
-    private lateinit var firebaseAuthUtils: FirebaseAuthUtils
+    private lateinit var firebaseUtils: FirebaseUtils
 
     @Before
     fun setUp() {
-        firebaseAuthUtils = Mockito.mock(FirebaseAuthUtils::class.java)
-        startUpViewModel = StartUpViewModel(firebaseAuthUtils)
+        firebaseUtils = Mockito.mock(FirebaseUtils::class.java)
+        startUpViewModel = StartUpViewModel(firebaseUtils)
     }
 
     @Test
     fun onStart_withUser_redirectsToMainActivity() = with (startUpViewModel){
-        `when`(firebaseAuthUtils.isAuthenticated()).thenReturn(true)
+        `when`(firebaseUtils.isAuthenticated()).thenReturn(true)
         onStart()
         val value = launchScreenEvent.getOrAwaitValue().getContentIfNotHandled()
         assertThat(MainActivity::class.java, equalTo(value))
@@ -46,7 +44,7 @@ class StartUpViewModelTest {
 
     @Test
     fun onStart_withoutUser_redirectsToAuthActivity() = with (startUpViewModel){
-        `when`(firebaseAuthUtils.isAuthenticated()).thenReturn(false)
+        `when`(firebaseUtils.isAuthenticated()).thenReturn(false)
         onStart()
         val value = launchScreenEvent.getOrAwaitValue().getContentIfNotHandled()
         assertThat(AuthActivity::class.java, equalTo(value))

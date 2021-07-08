@@ -6,11 +6,14 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import apps.smoll.dragdropgame.features.getOrAwaitValue
 import apps.smoll.dragdropgame.halfShapeSize
+import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 import apps.smoll.dragdropgame.utils.minus
 import apps.smoll.dragdropgame.utils.permissibleHitFaultInPixels
 import apps.smoll.dragdropgame.utils.plus
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert.assertThat
@@ -32,13 +35,12 @@ class GameViewModelTest {
     var instantExecutorRule = InstantTaskExecutorRule()
 
 
-    private lateinit var mockFirestore: FirebaseFirestore
     private lateinit var gameViewModel: GameViewModel
 
     @Before
     fun setUp() {
-        mockFirestore = Mockito.mock(FirebaseFirestore::class.java)
-        gameViewModel = GameViewModel(FirebaseRepoImpl(mockFirestore))
+        val mockRepo = Mockito.mock(FirebaseRepo::class.java)
+        gameViewModel = GameViewModel(mockRepo)
     }
 
     @Test
@@ -150,7 +152,6 @@ class GameViewModelTest {
             totalTimeInMillis = 1000
         )
 
-        with ()
 
         Intent().apply {
             putExtras(this)
@@ -158,8 +159,6 @@ class GameViewModelTest {
 
         with(gameViewModel) {
             startGame(1080, 1920, levelStats)
-//            Thread.sleep(4000)
-//            val currentLevel = currentLevel.getOrAwaitValue()
             val screenShapesRes1 = screenShapes.getOrAwaitValue()
             assertThat(screenShapesRes1.size, equalTo(3))
 

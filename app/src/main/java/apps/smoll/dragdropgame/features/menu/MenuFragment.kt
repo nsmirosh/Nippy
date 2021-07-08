@@ -7,20 +7,17 @@ import androidx.navigation.findNavController
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.databinding.FragmentMenuBinding
 import apps.smoll.dragdropgame.features.base.BaseFragment
-import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
-import apps.smoll.dragdropgame.utils.extensions.longToast
-import apps.smoll.dragdropgame.utils.firestoreAuth.FirebaseAuthUtils
+import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.io.IOException
 
 
 class MenuFragment : BaseFragment<FragmentMenuBinding, MenuViewModel>(R.layout.fragment_menu) {
 
     val menuViewModel: MenuViewModel by viewModels {
-        MenuViewModelFactory(FirebaseRepoImpl(Firebase.firestore, FirebaseAuthUtils(Firebase.auth)))
+        MenuViewModelFactory()
     }
 
     override fun initBindingDependencies() {
