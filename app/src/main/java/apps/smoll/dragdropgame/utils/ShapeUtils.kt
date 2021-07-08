@@ -50,11 +50,8 @@ private fun getShuffledShapes(): Stack<Int> {
         shuffle()
     }
 }
-
-
 fun removeShapeThatWasHit(screenShapes: List<Shape>, shapeThatWasHit: Shape) =
     screenShapes.filter { it.typeResource != shapeThatWasHit.typeResource }
-
 
 fun getShapeThatIsHit(
     screenShapes: List<Shape>?,

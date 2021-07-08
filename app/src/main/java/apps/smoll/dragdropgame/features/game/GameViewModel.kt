@@ -112,7 +112,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
                 _screenShapes.value = removeShapeThatWasHit(_screenShapes.value!!, this)
                 onShapeHit()
             } else {
-                _shapeToMatch.value = buildShapeToMatchWithNewCoords(dropEventCoordinates, shapeToMatch.value!!)
+                _shapeToMatch.value =
+                    buildShapeToMatchWithNewCoords(dropEventCoordinates, shapeToMatch.value!!)
             }
         }
     }
@@ -148,11 +149,11 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         }
 
     private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) =
-            firebaseRepo.getUserHighScore().let { currentHighScore ->
-                if (levelStats.isBetterThanCurrentHighScore(currentHighScore)) {
-                    firebaseRepo.setHighScore(toHighScoreMapper.map(levelStats))
-                }
+        firebaseRepo.getUserHighScore().let { currentHighScore ->
+            if (levelStats.isBetterThanCurrentHighScore(currentHighScore)) {
+                firebaseRepo.setHighScore(toHighScoreMapper.map(levelStats))
             }
+        }
 
     private fun buildStatsWithLevelChanges() = LevelStats(
         levelTimeInMillis = System.currentTimeMillis() - levelStartTime,
@@ -160,7 +161,6 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         levelToBePlayed = currentLevel.value!!
     )
 
-    fun cleanUp() {
-        timer.cancel()
-    }
+    fun cleanUp() = timer.cancel()
+
 }
