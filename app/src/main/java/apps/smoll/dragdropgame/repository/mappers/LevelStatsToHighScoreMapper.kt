@@ -2,7 +2,7 @@ package apps.smoll.dragdropgame.repository.mappers
 
 import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.utils.getDateFrom
+import apps.smoll.dragdropgame.utils.ui.getDateFrom
 
 class LevelStatsToHighScoreMapper : Mapper<LevelStats, HighScore> {
 

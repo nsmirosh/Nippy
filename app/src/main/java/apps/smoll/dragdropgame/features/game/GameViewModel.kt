@@ -10,8 +10,10 @@ import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.LevelStats
 import apps.smoll.dragdropgame.repository.isBetterThanCurrentHighScore
 import apps.smoll.dragdropgame.repository.mappers.LevelStatsToHighScoreMapper
-import apps.smoll.dragdropgame.utils.*
-import kotlinx.coroutines.Dispatchers
+import apps.smoll.dragdropgame.utils.events.Event
+import apps.smoll.dragdropgame.utils.firestore.ResultWrapper
+import apps.smoll.dragdropgame.utils.ui.*
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -136,15 +138,20 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         timer.cancel()
 
         _timeLeftInSeconds.value = formatDateTime("s,S", 0)
+
+
     }
 
     private fun writeLevelDataToFirestore(levelStats: LevelStats) =
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
+
+            async {
+
+            }
             //don't set the new highScore if something went wrong with writing the result to the database
-            if (firebaseRepo.addStats(levelStats)) {
-                setHighScoreIfNeeded(levelStats)
-            } else {
-                //TODO show the error to the user that we couldn't write the data to the database
+            when (val result = firebaseRepo.addStat(levelStats)) {
+                is ResultWrapper.Success -> setHighScoreIfNeeded(levelStats)
+                else -> Timber.d(" do stuff")
             }
         }
 

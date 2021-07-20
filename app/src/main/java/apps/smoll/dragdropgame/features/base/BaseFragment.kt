@@ -45,10 +45,10 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel>(val layout:
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getViewModelInstance().genericErrorMessage.observe(
+        getViewModelInstance().errorMessage.observe(
             viewLifecycleOwner,
             {
-                showError(it.message!!)
+                showError(it)
             }
         )
     }

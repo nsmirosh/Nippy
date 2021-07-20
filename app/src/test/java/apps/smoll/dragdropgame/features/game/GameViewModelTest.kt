@@ -9,12 +9,9 @@ import apps.smoll.dragdropgame.halfShapeSize
 import apps.smoll.dragdropgame.repository.FirebaseRepo
 import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
-import apps.smoll.dragdropgame.utils.minus
-import apps.smoll.dragdropgame.utils.permissibleHitFaultInPixels
-import apps.smoll.dragdropgame.utils.plus
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import apps.smoll.dragdropgame.utils.ui.minus
+import apps.smoll.dragdropgame.utils.ui.permissibleHitFaultInPixels
+import apps.smoll.dragdropgame.utils.ui.plus
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*

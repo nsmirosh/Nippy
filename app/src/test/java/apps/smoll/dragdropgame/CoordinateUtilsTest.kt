@@ -1,8 +1,10 @@
 package apps.smoll.dragdropgame
 
-import apps.smoll.dragdropgame.utils.*
+import apps.smoll.dragdropgame.utils.ui.generateNewShapeCoords
+import apps.smoll.dragdropgame.utils.ui.generateNonCollidingCoordinateList
+import apps.smoll.dragdropgame.utils.ui.getDistanceBetween
+import apps.smoll.dragdropgame.utils.ui.getRandomXYCoordsIn
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.Matchers.greaterThan
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.Assert.*
 import org.junit.Test

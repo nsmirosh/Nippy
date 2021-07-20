@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame.utils
+package apps.smoll.dragdropgame.utils.ui
 
 import timber.log.Timber
 import java.lang.Exception

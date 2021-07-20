@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame.utils
+package apps.smoll.dragdropgame.utils.events
 
 import android.util.Log
 import androidx.annotation.MainThread

@@ -7,10 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.features.entities.domain.HighScore
-import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
-import apps.smoll.dragdropgame.utils.formatDateFromString
-import apps.smoll.dragdropgame.utils.formatDateTime
-import apps.smoll.dragdropgame.utils.getStringFromDate
+import apps.smoll.dragdropgame.utils.ui.formatDateTime
+import apps.smoll.dragdropgame.utils.ui.getStringFromDate
 
 class StatsAdapter(private val dataSet: List<HighScore>) :
     RecyclerView.Adapter<StatsAdapter.ViewHolder>() {

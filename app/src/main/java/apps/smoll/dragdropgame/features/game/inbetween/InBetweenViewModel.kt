@@ -2,10 +2,9 @@ package apps.smoll.dragdropgame.features.game.inbetween
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.utils.formatDateTime
+import apps.smoll.dragdropgame.utils.ui.formatDateTime
 
 class InBetweenViewModel : BaseViewModel() {
 

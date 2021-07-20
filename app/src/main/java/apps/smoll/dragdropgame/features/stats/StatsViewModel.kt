@@ -10,7 +10,7 @@ import apps.smoll.dragdropgame.repository.FirebaseRepo
 import kotlinx.coroutines.launch
 
 
-class StatsViewModel(val firebaseRepo : FirebaseRepo) : BaseViewModel() {
+class StatsViewModel(private val firebaseRepo : FirebaseRepo) : BaseViewModel() {
 
     private val _levelStats: MutableLiveData<List<HighScore>> = MutableLiveData()
     val levelStats: LiveData<List<HighScore>> get() = _levelStats

@@ -16,13 +16,11 @@ import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape
 import apps.smoll.dragdropgame.databinding.FragmentGameBinding
 import apps.smoll.dragdropgame.features.base.BaseFragment
-import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.utils.*
-import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import apps.smoll.dragdropgame.utils.events.Event
+import apps.smoll.dragdropgame.utils.ui.MyDragShadowBuilder
+import apps.smoll.dragdropgame.utils.ui.invisible
+import apps.smoll.dragdropgame.utils.ui.setShape
 import timber.log.Timber
 
 class GameFragment : BaseFragment<FragmentGameBinding, GameViewModel>(R.layout.fragment_game) {

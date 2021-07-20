@@ -4,12 +4,12 @@ import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.repository.mappers.HighScoreListMapper
 import apps.smoll.dragdropgame.repository.mappers.HighScoreMapper
+import apps.smoll.dragdropgame.repository.mappers.Mapper
 import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
+import apps.smoll.dragdropgame.utils.firestore.ResultWrapper
+import apps.smoll.dragdropgame.utils.firestore.safeApiCall
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -26,39 +26,48 @@ open class FirebaseRepoImpl(
 ) : FirebaseRepo {
 
     private val firestore = firestoreUtils.fireStoreInstance
+
     private val uID = firestoreUtils.authInstance.uid!!
-    private val email = firestoreUtils.authInstance.currentUser!!.email!! //TODO refactor this
+    private val email = firestoreUtils.authInstance.currentUser!!.email!!
 
     private val highScoreListMapper = HighScoreListMapper()
-    private val highScoreMapper = HighScoreMapper()
 
-
-    override suspend fun addStats(stats: LevelStats): Boolean = try {
-        getCurrentUserDocument()
-            .collection(completedLevelsPath)
-            .add(stats)
-            .await()
-        true
-    } catch (e: Exception) {
-        Timber.e(e)
-        false
-    }
-
-
-    override suspend fun getAllLevelStats(): List<LevelStats>? = try {
-        withContext(Dispatchers.IO) {
+    override suspend fun addStats(stats: LevelStats): ResultWrapper<Unit> =
+        when(val result = safeApiCall(
             getCurrentUserDocument()
                 .collection(completedLevelsPath)
-                .get()
-                .await()
-                .map {
-                    it.toObject(LevelStats::class.java)
-                }
+                .add(stats)
+        ))  {
+            is ResultWrapper.Success -> ResultWrapper.Success(Unit)
+            else ->
         }
-    } catch (e: Exception) {
-        Timber.e(e)
-        null
+
+
     }
+
+
+
+    override suspend fun getAllLevelStats(): ResultWrapper<List<LevelStats>?> =
+        safeApiCall (
+        getCurrentUserDocument()
+            .collection(completedLevelsPath)
+            .get()
+            .await()
+            .map {
+                it.toObject(LevelStats::class.java)
+            }
+        ,
+
+            object: Mapper<List<LevelStats>, List<LevelStats>> {
+                override fun map(input: List<LevelStats>): List<LevelStats> {
+                    return listOf()
+                }
+            }
+
+        ,
+
+
+        )
 
 
     override suspend fun getUserHighScore(): NetworkHighScore? =
@@ -90,10 +99,6 @@ open class FirebaseRepoImpl(
         null
     }
 
-    private fun getCurrentUserDocument(): DocumentReference = firestore
-        .collection(usersPath)
-        .document(uID)
-
     override suspend fun setHighScore(highScore: HighScore): Boolean = try {
         firestore
             .collection(highScorePath)
@@ -106,16 +111,30 @@ open class FirebaseRepoImpl(
         false
     }
 
-    override suspend fun getHighscoresByUserSorted(): List<HighScore> = highScoreListMapper.map(
-        firestore
-            .collection(highScorePath)
-            .get()
-            .await()
-            .map {
-                it.toObject(NetworkHighScore::class.java)
-            }
-            .sortedDescending()
-    )
+    override suspend fun getHighscoresByUserSorted(): List<HighScore>? =
+        try {
+            highScoreListMapper.map(
+                firestore
+                    .collection(highScorePath)
+                    .get()
+                    .await()
+                    .map {
+                        it.toObject(NetworkHighScore::class.java)
+                    }
+                    .sortedDescending()
+            )
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+
+
+
+    fun getHighScoresByUsersSorted() {
+
+
+
+    }
 
     override suspend fun insertFakeHighScores() = try {
 
@@ -145,4 +164,8 @@ open class FirebaseRepoImpl(
         Timber.e(e)
         false
     }
+
+    private fun getCurrentUserDocument(): DocumentReference = firestore
+        .collection(usersPath)
+        .document(uID)
 }

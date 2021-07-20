@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame.utils
+package apps.smoll.dragdropgame.utils.events
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.

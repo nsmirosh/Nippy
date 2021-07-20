@@ -2,15 +2,11 @@ package apps.smoll.dragdropgame.features.menu
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.repository.FirebaseRepo
-import apps.smoll.dragdropgame.repository.FirebaseRepoImpl
 import apps.smoll.dragdropgame.repository.LevelStats
-import apps.smoll.dragdropgame.utils.formatDateTime
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import apps.smoll.dragdropgame.utils.ui.formatDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

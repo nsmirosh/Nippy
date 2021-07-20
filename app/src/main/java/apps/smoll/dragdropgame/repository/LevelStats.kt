@@ -1,10 +1,8 @@
 package apps.smoll.dragdropgame.repository
 
 import android.os.Parcelable
-import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
-import apps.smoll.dragdropgame.utils.getCurrentTimeAsDate
-import apps.smoll.dragdropgame.utils.getDateFrom
+import apps.smoll.dragdropgame.utils.ui.getCurrentTimeAsDate
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

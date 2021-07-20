@@ -1,4 +1,4 @@
-package apps.smoll.dragdropgame.utils
+package apps.smoll.dragdropgame.utils.ui
 
 import apps.smoll.dragdropgame.R
 import apps.smoll.dragdropgame.Shape

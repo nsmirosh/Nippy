@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import apps.smoll.dragdropgame.features.auth.AuthActivity
 import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.features.game.MainActivity
-import apps.smoll.dragdropgame.utils.Event
+import apps.smoll.dragdropgame.utils.events.Event
 import apps.smoll.dragdropgame.utils.firestore.FirebaseUtils
 
 class StartUpViewModel(val firebaseUtils: FirebaseUtils) : BaseViewModel() {
