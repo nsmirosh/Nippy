@@ -12,6 +12,7 @@ import apps.smoll.dragdropgame.repository.isBetterThanCurrentHighScore
 import apps.smoll.dragdropgame.repository.mappers.LevelStatsToHighScoreMapper
 import apps.smoll.dragdropgame.utils.events.Event
 import apps.smoll.dragdropgame.utils.firestore.ResultWrapper
+import apps.smoll.dragdropgame.utils.firestore.ResultWrapper.*
 import apps.smoll.dragdropgame.utils.ui.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -142,23 +143,20 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         viewModelScope.launch {
             //don't set the new highScore if something went wrong with writing the result to the database
             when (val result = firebaseRepo.addStats(levelStats)) {
-                is ResultWrapper.Success -> setHighScoreIfNeeded(levelStats)
-                else -> Timber.d(" do stuff")
+                is Success -> setHighScoreIfNeeded(levelStats)
+                is GenericError -> _errorMessage.postValue(result.message)
             }
         }
 
     private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) {
         when (val result = firebaseRepo.getUserHighScore()) {
-            is ResultWrapper.Success ->  {
+            is Success ->  {
                 if (levelStats.isBetterThanCurrentHighScore(result.value)) {
                     firebaseRepo.setHighScore(toHighScoreMapper.map(levelStats))
                 }
             }
-            is ResultWrapper.GenericError -> {
-
-            }
+            is GenericError -> _errorMessage.postValue(result.message)
         }
-
     }
 
 

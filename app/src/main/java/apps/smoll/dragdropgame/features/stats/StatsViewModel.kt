@@ -24,7 +24,7 @@ class StatsViewModel(private val firebaseRepo : FirebaseRepo) : BaseViewModel() 
                     _levelStats.value = result.value
                 }
                 is ResultWrapper.GenericError -> {
-
+                    _errorMessage.postValue(result.message)
                 }
             }
         }
