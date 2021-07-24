@@ -7,6 +7,8 @@ import apps.smoll.dragdropgame.features.base.BaseViewModel
 import apps.smoll.dragdropgame.features.entities.domain.HighScore
 import apps.smoll.dragdropgame.features.entities.network.NetworkHighScore
 import apps.smoll.dragdropgame.repository.FirebaseRepo
+import apps.smoll.dragdropgame.repository.isBetterThanCurrentHighScore
+import apps.smoll.dragdropgame.utils.firestore.ResultWrapper
 import kotlinx.coroutines.launch
 
 
@@ -17,7 +19,14 @@ class StatsViewModel(private val firebaseRepo : FirebaseRepo) : BaseViewModel() 
 
     fun init() {
         viewModelScope.launch {
-            _levelStats.value = firebaseRepo.getHighscoresByUserSorted()
+            when (val result = firebaseRepo.getHighscoresByUserSorted()) {
+                is ResultWrapper.Success ->  {
+                    _levelStats.value = result.value
+                }
+                is ResultWrapper.GenericError -> {
+
+                }
+            }
         }
     }
 

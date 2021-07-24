@@ -25,3 +25,23 @@ suspend fun <T> safeApiCall(
         }
     }
 }
+
+
+suspend fun <T, R> safeApiCall2(
+    transform: (T) -> R,
+    apiCall: Task<T>,
+): ResultWrapper<R> {
+    return withContext(Dispatchers.IO) {
+        try {
+            ResultWrapper.Success(transform(apiCall.await()))
+        } catch (throwable: Throwable) {
+            when (throwable) {
+                is IOException -> ResultWrapper.NetworkError
+                else -> {
+                    Timber.e("safe api call error = %s", throwable.message)
+                    ResultWrapper.GenericError(throwable.message ?: "something strange happened!")
+                }
+            }
+        }
+    }
+}

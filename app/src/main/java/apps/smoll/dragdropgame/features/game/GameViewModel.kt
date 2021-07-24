@@ -94,10 +94,8 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
     private fun buildInitialShapes() {
         _screenShapes.value =
             buildShapesWithRandomColorsAndShapeTypes(currentLevel.value!!, Pair(sWidth, sHeight))
-                .also {
-                    it.forEach {
-                        Timber.d("built screen shape = $it")
-                    }
+                .onEach {
+                    Timber.d("built screen shape = $it")
                 }
     }
 
@@ -138,29 +136,31 @@ class GameViewModel(val firebaseRepo: FirebaseRepo) : BaseViewModel() {
         timer.cancel()
 
         _timeLeftInSeconds.value = formatDateTime("s,S", 0)
-
-
     }
 
     private fun writeLevelDataToFirestore(levelStats: LevelStats) =
         viewModelScope.launch {
-
-            async {
-
-            }
             //don't set the new highScore if something went wrong with writing the result to the database
-            when (val result = firebaseRepo.addStat(levelStats)) {
+            when (val result = firebaseRepo.addStats(levelStats)) {
                 is ResultWrapper.Success -> setHighScoreIfNeeded(levelStats)
                 else -> Timber.d(" do stuff")
             }
         }
 
-    private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) =
-        firebaseRepo.getUserHighScore().let { currentHighScore ->
-            if (levelStats.isBetterThanCurrentHighScore(currentHighScore)) {
-                firebaseRepo.setHighScore(toHighScoreMapper.map(levelStats))
+    private suspend fun setHighScoreIfNeeded(levelStats: LevelStats) {
+        when (val result = firebaseRepo.getUserHighScore()) {
+            is ResultWrapper.Success ->  {
+                if (levelStats.isBetterThanCurrentHighScore(result.value)) {
+                    firebaseRepo.setHighScore(toHighScoreMapper.map(levelStats))
+                }
+            }
+            is ResultWrapper.GenericError -> {
+
             }
         }
+
+    }
+
 
     private fun buildStatsWithLevelChanges() = LevelStats(
         levelTimeInMillis = System.currentTimeMillis() - levelStartTime,

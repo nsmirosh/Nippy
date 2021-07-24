@@ -13,11 +13,11 @@ interface FirebaseRepo {
 
     suspend fun getAllLevelStats(): ResultWrapper<List<LevelStats>?>
 
-    suspend fun getHighscoresByUserSorted(): List<HighScore>?
+    suspend fun getHighscoresByUserSorted(): ResultWrapper<List<HighScore>?>
 
     suspend fun setHighScore(highScore: HighScore) : Boolean
 
-    suspend fun getUserHighScore(): NetworkHighScore?
+    suspend fun getUserHighScore(): ResultWrapper<HighScore>
 
     suspend fun insertFakeHighScores(): Boolean
 }
