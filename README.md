@@ -1,15 +1,17 @@
-# ReactionGame
+# Nippy
 
-A simple drag drop game app that is my playground for trying out new things. 
+Nippy is a simple drag drop game app that allows you to sharpen your reaction time via visual stimuli. 
 
 The game allows various players to compete and see their highscore in the global leaderboard.
+
+This project also serves as my playground for trying out new things
 
 Any contributions are very welcome! Also, the game really needs a new design - so please see the design requirements if you're interested :) 
 
 
 ## Game Logic:
 1. Once the game starts:
-    1. Timer starts at the top with 20 seconds along with shapes left to match
+    1. Timer starts at the top with along with shapes that have to be matched
     2. A shape appears at the bottom placeholder along with a unique set of shapes on the screen
     3. The player must match shape with the shapes on screen
     4. The shape that is matched - dissapears from the screen and a new shape to match appears at the bottom of the screen
